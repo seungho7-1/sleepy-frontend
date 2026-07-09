@@ -1,11 +1,17 @@
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
+import { formatDate } from '../utils/formatDate'
 
 export default function MediaPostItem({ post }) {
   const [isHovered, setIsHovered] = useState(false)
 
   // Use a default placeholder if no imageUrl is present
   const imageUrl = post.imageUrl || 'https://via.placeholder.com/400x400?text=No+Image'
+
+  const isVideo = (url) => {
+    if (!url) return false;
+    return url.toLowerCase().includes('.mp4') || url.toLowerCase().includes('.webm') || url.toLowerCase().includes('.mov') || url.toLowerCase().includes('.avi');
+  }
 
   return (
     <Link 
@@ -28,20 +34,36 @@ export default function MediaPostItem({ post }) {
         }}
       >
         <div style={{ position: 'relative', width: '100%', paddingTop: '100%', overflow: 'hidden' }}>
-          <img 
-            src={imageUrl} 
-            alt={post.title}
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              transition: 'transform 0.5s ease',
-              transform: isHovered ? 'scale(1.05)' : 'scale(1)'
-            }} 
-          />
+          {isVideo(imageUrl) ? (
+            <video 
+              src={imageUrl} 
+              muted 
+              playsInline
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover'
+              }} 
+            />
+          ) : (
+            <img 
+              src={imageUrl} 
+              alt={post.title}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                transition: 'transform 0.5s ease',
+                transform: isHovered ? 'scale(1.05)' : 'scale(1)'
+              }} 
+            />
+          )}
           <div style={{
             position: 'absolute',
             bottom: '10px',
@@ -63,7 +85,7 @@ export default function MediaPostItem({ post }) {
           </h4>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', color: '#666' }}>
             <span style={{ fontWeight: '500', color: 'var(--primary-color)' }}>@{post.nickname}</span>
-            <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+            <span>{formatDate(post.createdAt)}</span>
           </div>
         </div>
       </div>

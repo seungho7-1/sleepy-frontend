@@ -1,0 +1,15 @@
+/* -----------------------------
+   Media Grid Layout (Responsive)
+----------------------------- */
+.media-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+@media (min-width: 768px) {
+  .media-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

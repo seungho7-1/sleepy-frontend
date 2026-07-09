@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
+import Footer from './components/Footer'
 import Home from './pages/Home'
 import ProductDetail from './pages/ProductDetail'
 import Login from './pages/Login'
@@ -27,6 +28,7 @@ function App() {
         <Route path="/community/create" element={<PostCreate />} />
         <Route path="/community/:id" element={<PostDetail />} />
       </Routes>
+      <Footer />
     </Router>
   )
 }

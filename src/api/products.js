@@ -17,6 +17,10 @@ export const productApi = {
   createProduct: (data) => 
     api.post(`/products/create`, data),
 
+  // 상품 수정 (판매자)
+  updateProduct: (id, data) =>
+    api.post(`/products/update/${id}`, data),
+
   // 상품 삭제 (판매자)
   deleteProduct: (id) => 
     api.post(`/products/delete/${id}`),

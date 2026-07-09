@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuthStore } from '../store'
 import { Link, useNavigate } from 'react-router-dom'
 import { productApi } from '../api/products'
+import { boardApi } from '../api/board'
 import ProductCard from '../components/ProductCard'
 
 export default function MyPage() {
@@ -9,6 +10,9 @@ export default function MyPage() {
   const navigate = useNavigate()
   
   const [wishlist, setWishlist] = useState([])
+  const [myPosts, setMyPosts] = useState([])
+  const [myComments, setMyComments] = useState([])
+  const [myMedia, setMyMedia] = useState([])
   const [activeTab, setActiveTab] = useState('profile')
 
   useEffect(() => {
@@ -17,15 +21,45 @@ export default function MyPage() {
       navigate('/login')
       return
     }
-    if (activeTab === 'wishlist') {
-      fetchWishlist()
-    }
-  }, [token, activeTab])
+    
+    // Load all user content counts on mount
+    fetchWishlist()
+    fetchMyPosts()
+    fetchMyComments()
+    fetchMyMedia()
+  }, [token])
 
   const fetchWishlist = async () => {
     try {
       const data = await productApi.getWishlist();
       setWishlist(data);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  const fetchMyPosts = async () => {
+    try {
+      const data = await boardApi.getMyPosts('TEXT');
+      setMyPosts(data);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  const fetchMyComments = async () => {
+    try {
+      const data = await boardApi.getMyComments();
+      setMyComments(data);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  const fetchMyMedia = async () => {
+    try {
+      const data = await boardApi.getMyPosts('MEDIA');
+      setMyMedia(data);
     } catch (err) {
       console.error(err);
     }
@@ -62,6 +96,24 @@ export default function MyPage() {
             onClick={() => setActiveTab('wishlist')}
           >
             보관함 ({wishlist.length})
+          </button>
+          <button 
+            className={`mypage-nav-btn ${activeTab === 'my-posts' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('my-posts')}
+          >
+            내가 쓴 글 ({myPosts.length})
+          </button>
+          <button 
+            className={`mypage-nav-btn ${activeTab === 'my-comments' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('my-comments')}
+          >
+            내가 쓴 댓글 ({myComments.length})
+          </button>
+          <button 
+            className={`mypage-nav-btn ${activeTab === 'my-media' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('my-media')}
+          >
+            내 사진/영상 ({myMedia.length})
           </button>
           {role === 'SELLER' && (
             <button className="mypage-nav-btn" onClick={() => navigate('/seller')}>
@@ -109,6 +161,80 @@ export default function MyPage() {
                 <div className="product-grid">
                   {wishlist.map(product => (
                     <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'my-posts' && (
+            <div className="glass-card fade-in">
+              <h3 style={{ fontSize: '1.1rem', fontWeight: '700', marginBottom: '1.5rem' }}>내가 쓴 글</h3>
+              {myPosts.length === 0 ? (
+                <div className="empty-state">작성한 게시글이 없습니다.</div>
+              ) : (
+                <div className="my-posts-list">
+                  {myPosts.map(post => (
+                    <div key={post.id} className="my-post-item-row">
+                      <div className="my-post-info">
+                        <span className="my-post-tag">
+                          {post.boardType === 'FREE' ? '자유' : post.boardType === 'QNA' ? '질문' : post.boardType === 'NOTICE' ? '공지' : '기타'}
+                        </span>
+                        <Link to={`/community/${post.id}`} className="my-post-title-link">
+                          {post.title}
+                        </Link>
+                      </div>
+                      <div className="my-post-meta">
+                        <span>좋아요 {post.likeCount}</span>
+                        <span>조회 {post.viewCount}</span>
+                        <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'my-comments' && (
+            <div className="glass-card fade-in">
+              <h3 style={{ fontSize: '1.1rem', fontWeight: '700', marginBottom: '1.5rem' }}>내가 쓴 댓글</h3>
+              {myComments.length === 0 ? (
+                <div className="empty-state">작성한 댓글이 없습니다.</div>
+              ) : (
+                <div className="my-comments-list">
+                  {myComments.map(comment => (
+                    <div key={comment.id} className="my-comment-item-row">
+                      <div className="my-comment-text">"{comment.content}"</div>
+                      <div className="my-comment-origin">
+                        {comment.targetType === 'POST' ? (
+                          <span>원문: <Link to={`/community/${comment.targetId}`}>{comment.targetTitle}</Link></span>
+                        ) : (
+                          <span>원문: <Link to={`/product/${comment.targetId}`}>{comment.targetTitle}</Link></span>
+                        )}
+                        <span className="my-comment-date">{new Date(comment.createdAt).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'my-media' && (
+            <div className="glass-card fade-in">
+              <h3 style={{ fontSize: '1.1rem', fontWeight: '700', marginBottom: '1.5rem' }}>내 사진/영상</h3>
+              {myMedia.length === 0 ? (
+                <div className="empty-state">등록한 사진이나 영상이 없습니다.</div>
+              ) : (
+                <div className="my-media-grid">
+                  {myMedia.map(post => (
+                    <Link key={post.id} to={`/community/${post.id}`} className="my-media-card">
+                      <img src={post.imageUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500'} alt={post.title} />
+                      <div className="my-media-overlay">
+                        <span className="my-media-title">{post.title}</span>
+                      </div>
+                    </Link>
                   ))}
                 </div>
               )}

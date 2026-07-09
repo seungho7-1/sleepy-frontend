@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { formatDate } from '../utils/formatDate';
 
 export default function PostItem({ post }) {
   return (
@@ -12,7 +13,7 @@ export default function PostItem({ post }) {
       <td>{post.nickname}</td>
       <td>{post.viewCount}</td>
       <td>{post.likeCount}</td>
-      <td>{new Date(post.createdAt).toLocaleDateString()}</td>
+      <td>{formatDate(post.createdAt)}</td>
     </tr>
   );
 }

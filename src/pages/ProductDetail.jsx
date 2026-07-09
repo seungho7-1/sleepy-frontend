@@ -5,6 +5,28 @@ import { productApi } from '../api/products'
 import { reviewApi } from '../api/reviews'
 import { boardApi } from '../api/board'
 
+function getYoutubeId(url) {
+  if (!url) return null;
+  if (url.includes('/shorts/')) {
+    const parts = url.split('/shorts/');
+    if (parts[1]) {
+      return parts[1].split(/[?#&]/)[0];
+    }
+  }
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+}
+
+function getInstagramEmbedUrl(url) {
+  if (!url) return '';
+  let cleanUrl = url.split('?')[0];
+  if (!cleanUrl.endsWith('/')) {
+    cleanUrl += '/';
+  }
+  return `${cleanUrl}embed/`;
+}
+
 export default function ProductDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -13,6 +35,11 @@ export default function ProductDetail() {
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('detail')
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  
+  const images = product && product.imageUrls && product.imageUrls.length > 0 
+    ? product.imageUrls 
+    : product ? [product.imageUrl] : []
   
   const [reviews, setReviews] = useState([])
   const [rating, setRating] = useState(5)
@@ -151,7 +178,7 @@ export default function ProductDetail() {
       
       {/* 상단 요약 영역 */}
       <div className="detail-summary">
-        {/* 왼쪽: 1:1 비율 정사각형 대표 이미지 & 슬라임 감성 테두리 */}
+        {/* 왼쪽: 1:1 비율 정사각형 이미지 Carousel 슬라이더 */}
         <div 
           className="product-image-wrapper" 
           style={{ 
@@ -166,19 +193,100 @@ export default function ProductDetail() {
             backgroundColor: '#fffcfd'
           }}
         >
-          <img 
-            src={product.imageUrl} 
-            alt={product.name} 
-            style={{ 
-              width: '100%', 
-              height: '100%', 
-              objectFit: 'cover' 
-            }} 
-          />
+          {images.length > 0 && (
+            <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+              <img 
+                src={images[currentImageIndex]} 
+                alt={`${product.name}-${currentImageIndex}`} 
+                style={{ 
+                  width: '100%', 
+                  height: '100%', 
+                  objectFit: 'cover',
+                  transition: 'opacity 0.2s ease-in-out'
+                }} 
+              />
+
+              {/* Carousel Navigation Buttons */}
+              {images.length > 1 && (
+                <>
+                  <button 
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(prev => (prev === 0 ? images.length - 1 : prev - 1)) }}
+                    style={{
+                      position: 'absolute', top: '50%', left: '12px', transform: 'translateY(-50%)',
+                      width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255, 255, 255, 0.8)',
+                      border: '1px solid #ffeef2', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      cursor: 'pointer', fontWeight: 'bold', fontSize: '1rem', color: 'var(--primary-color)',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.15)', zIndex: 10
+                    }}
+                  >
+                    &lt;
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(prev => (prev === images.length - 1 ? 0 : prev + 1)) }}
+                    style={{
+                      position: 'absolute', top: '50%', right: '12px', transform: 'translateY(-50%)',
+                      width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255, 255, 255, 0.8)',
+                      border: '1px solid #ffeef2', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      cursor: 'pointer', fontWeight: 'bold', fontSize: '1rem', color: 'var(--primary-color)',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.15)', zIndex: 10
+                    }}
+                  >
+                    &gt;
+                  </button>
+
+                  {/* Carousel Dot Indicators */}
+                  <div style={{ position: 'absolute', bottom: '12px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '6px', zIndex: 10 }}>
+                    {images.map((_, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setCurrentImageIndex(idx)}
+                        style={{
+                          width: '8px', height: '8px', borderRadius: '50%',
+                          background: idx === currentImageIndex ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.5)',
+                          border: 'none', padding: 0, cursor: 'pointer', transition: 'background 0.2s'
+                        }}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
           {/* 러블리 버블 데코레이션 */}
-          <div style={{ position: 'absolute', top: '12px', left: '12px', background: 'rgba(255, 255, 255, 0.85)', padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--primary-color)', backdropFilter: 'blur(4px)', border: '1.5px solid #ffd6e0' }}>
+          <div style={{ position: 'absolute', top: '12px', left: '12px', background: 'rgba(255, 255, 255, 0.85)', padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--primary-color)', backdropFilter: 'blur(4px)', border: '1.5px solid #ffd6e0', zIndex: 10 }}>
             🫧 SLIME
           </div>
+          {/* 1:1 이미지 우측 하단에 플로팅 찜하기 하트 버튼 배치 */}
+          <button 
+            className={`wish-btn ${isWished ? 'active' : ''}`} 
+            onClick={toggleWish}
+            style={{
+              position: 'absolute',
+              bottom: '16px',
+              right: '16px',
+              width: '46px',
+              height: '46px',
+              borderRadius: '50%',
+              background: 'rgba(255, 255, 255, 0.85)',
+              backdropFilter: 'blur(8px)',
+              border: isWished ? '1.5px solid var(--primary-color)' : '1px solid #ffeef2',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              fontSize: '1.4rem',
+              color: isWished ? 'var(--primary-color)' : '#888',
+              boxShadow: '0 4px 12px rgba(255, 32, 112, 0.12)',
+              transition: 'all 0.2s ease',
+              zIndex: 10
+            }}
+          >
+            {isWished ? '♥' : '♡'}
+          </button>
         </div>
         
         {/* 오른쪽: 상품 정보 & 구매 액션 */}
@@ -225,31 +333,8 @@ export default function ProductDetail() {
           )}
 
           {/* 구매 / 찜하기 버튼 그룹 */}
-          <div className="bottom-bar" style={{ display: 'flex', gap: '12px', marginTop: 'auto', width: '100%', position: 'relative', background: 'none', padding: 0, boxShadow: 'none' }}>
-            {/* 찜하기 토글 버튼 (슬라임 테마 핑크 보더) */}
-            <button 
-              className={`wish-btn ${isWished ? 'active' : ''}`} 
-              onClick={toggleWish}
-              style={{
-                width: '56px',
-                height: '56px',
-                border: isWished ? '1.5px solid var(--primary-color)' : '1px solid #e5e5e5',
-                borderRadius: '12px',
-                background: isWished ? '#fff5f7' : 'white',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                fontSize: '1.6rem',
-                color: isWished ? 'var(--primary-color)' : '#888',
-                boxShadow: isWished ? '0 4px 10px rgba(255, 32, 112, 0.08)' : 'none',
-                transition: 'all 0.2s',
-              }}
-            >
-              {isWished ? '♥' : '♡'}
-            </button>
-
-            {/* 슬라임 핫핑크 그라데이션 구매버튼 */}
+          <div className="bottom-bar">
+            {/* 슬라임 핫핑크 그라데이션 구매버튼 - 모바일에서는 화면 폭 전체 차지 */}
             <a 
               href={product.purchaseUrl} 
               target="_blank" 
@@ -301,10 +386,12 @@ export default function ProductDetail() {
         <div className="tab-content" style={{ padding: '2.5rem 0' }}>
           {activeTab === 'detail' && (
             <div className="fade-in">
-              {/* 안전 거래 경고창 */}
-              <div className="warning-box">
-                <span className="warning-icon">!</span>
-                <span>판매자가 외부 메신저 유도 또는 개인 계좌로 직거래 입금을 권유하는 경우 <strong>결제하지 마시고</strong> 고객센터로 신고해주세요.</span>
+              {/* 법적 고지 면책 경고창 */}
+              <div className="warning-box" style={{ background: '#fafafa', border: '1px solid #e5e5e5' }}>
+                <span className="warning-icon" style={{ background: '#888' }}>i</span>
+                <span style={{ fontSize: '0.85rem', color: '#666', lineHeight: '1.6' }}>
+                  본 플랫폼은 상품 정보만 제공하는 통신판매중개자로서 거래의 당사자가 아니며, 등록된 상품의 정보, 배송 및 일체의 거래 이행에 대한 책임은 해당 판매자에게 있습니다.
+                </span>
               </div>
 
               {/* 상품정보 표 */}
@@ -347,22 +434,98 @@ export default function ProductDetail() {
                 </table>
               </div>
 
+              {/* 플레이 영상 쇼케이스 (상세 정보 탭 내부로 이동) */}
+              {product.videoUrl && product.videoType !== 'NONE' && (
+                <div className="product-video-section" style={{ marginTop: '2.5rem', background: '#fffcfd', border: '1px solid #ffd6e0', borderRadius: '16px', padding: '1.5rem', boxShadow: '0 4px 12px rgba(255, 32, 112, 0.04)' }}>
+                  <h4 style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: '800', color: 'var(--primary-color)' }}>
+                    플레이 영상 📹
+                  </h4>
+                  <div 
+                    style={{ 
+                      width: '100%', 
+                      maxWidth: '480px', 
+                      margin: '0 auto',
+                      aspectRatio: product.videoUrl.includes('instagram.com') ? '1 / 1.25' : '16 / 9', 
+                      borderRadius: '12px', 
+                      overflow: 'hidden', 
+                      border: '1px solid #ffd6e0',
+                      background: product.videoUrl.includes('instagram.com') ? '#fff' : '#000'
+                    }}
+                  >
+                    {product.videoType === 'FILE' ? (
+                      <video 
+                        src={product.videoUrl} 
+                        controls 
+                        muted 
+                        loop 
+                        playsInline 
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+                      />
+                    ) : getYoutubeId(product.videoUrl) ? (
+                      <iframe
+                        src={`https://www.youtube.com/embed/${getYoutubeId(product.videoUrl)}`}
+                        title={product.name}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                        style={{ width: '100%', height: '100%', border: 'none' }}
+                      />
+                    ) : product.videoUrl.includes('instagram.com') ? (
+                      <iframe
+                        src={getInstagramEmbedUrl(product.videoUrl)}
+                        title={product.name}
+                        frameBorder="0"
+                        scrolling="no"
+                        allowtransparency="true"
+                        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
+                        style={{ width: '100%', height: '100%', border: 'none', background: '#fff' }}
+                      />
+                    ) : (
+                      <a 
+                        href={product.videoUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        style={{ 
+                          display: 'flex', 
+                          flexDirection: 'column', 
+                          alignItems: 'center', 
+                          justifyContent: 'center', 
+                          height: '100%', 
+                          color: '#fff', 
+                          textDecoration: 'none',
+                          background: 'linear-gradient(135deg, #111 0%, #333 100%)' 
+                        }}
+                      >
+                        <span style={{ fontSize: '2.5rem', marginBottom: '8px' }}>📺</span>
+                        <strong style={{ fontSize: '0.95rem' }}>외부 동영상 링크 보러가기</strong>
+                        <span style={{ fontSize: '0.75rem', opacity: 0.7, marginTop: '4px' }}>{product.videoUrl}</span>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
+
               <div className="detail-desc-box" style={{ marginTop: '2.5rem' }}>
                 <p style={{ whiteSpace: 'pre-wrap', lineHeight: '1.8', fontSize: '1rem', color: '#333', marginBottom: '2.5rem' }}>
                   {product.description}
                 </p>
-                <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-                  <img 
-                    src={product.imageUrl} 
-                    alt="상세 설명 이미지" 
-                    style={{ 
-                      maxWidth: '100%', 
-                      borderRadius: '12px', 
-                      border: '1px solid #ffeef2',
-                      boxShadow: '0 8px 24px rgba(255, 32, 112, 0.05)'
-                    }} 
-                  />
-                </div>
+                {product.descriptionImageUrls && product.descriptionImageUrls.length > 0 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', alignItems: 'center', marginTop: '2rem' }}>
+                    {product.descriptionImageUrls.map((url, index) => (
+                      <img 
+                        key={index}
+                        src={url} 
+                        alt={`상세 설명 이미지 ${index + 1}`} 
+                        style={{ 
+                          maxWidth: '100%', 
+                          borderRadius: '12px', 
+                          border: '1px solid #ffeef2',
+                          boxShadow: '0 8px 24px rgba(255, 32, 112, 0.05)'
+                        }} 
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}
