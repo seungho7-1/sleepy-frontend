@@ -1,0 +1,89 @@
+/* Append to extra.css to fix mobile view and add Wishlist icon styles */
+
+@media (max-width: 600px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.8rem;
+  }
+  .detail-container {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .detail-image {
+    width: 100% !important;
+  }
+  .detail-content {
+    width: 100% !important;
+  }
+  .bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    margin-top: 0;
+    background: var(--bg-color);
+    padding: 1rem 1.2rem;
+    border-top: 1px solid var(--border-color);
+    z-index: 100;
+  }
+  .detail-container {
+    padding-bottom: 80px; /* Space for sticky bottom button on mobile */
+  }
+}
+
+.product-image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background-color: var(--bg-secondary);
+  margin-bottom: 0.8rem;
+}
+.product-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.product-image {
+  margin-bottom: 0 !important;
+  border-radius: 0 !important;
+  background-color: transparent !important;
+}
+
+.wish-btn {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(4px);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: #ccc;
+  cursor: pointer;
+  transition: all 0.2s;
+  z-index: 10;
+}
+.wish-btn.active {
+  color: #ff2070;
+}
+.wish-btn:hover {
+  transform: scale(1.1);
+}
+
+.rating-badge {
+  display: inline-block;
+  background: #fff3f6;
+  color: #ff2070;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
