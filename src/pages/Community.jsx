@@ -13,10 +13,13 @@ const SORT_OPTIONS = [
   { label: '좋아요 많은순', value: 'likeCount,desc' },
 ]
 
-export default function Community() {
+export default function Community({ mode = 'all' }) {
   const [searchParams] = useSearchParams()
   const [posts, setPosts] = useState([])
-  const [boardType, setBoardType] = useState(searchParams.get('tab') || 'FREE')
+  
+  // mode에 따라 기본 게시판 타입 설정
+  const defaultBoardType = mode === 'gallery' ? 'MEDIA' : (mode === 'lounge' ? 'NOTICE' : (searchParams.get('tab') || 'FREE'))
+  const [boardType, setBoardType] = useState(defaultBoardType)
 
   // Pagination state (공지/자유/질문 전용)
   const [page, setPage] = useState(0)
@@ -31,6 +34,12 @@ export default function Community() {
     setPage(0)
     setSortBy('createdAt,desc')
   }, [boardType])
+  
+  // 모드가 변경되면 탭도 강제 변경
+  useEffect(() => {
+    if (mode === 'gallery') setBoardType('MEDIA')
+    if (mode === 'lounge') setBoardType('NOTICE')
+  }, [mode])
 
   useEffect(() => {
     fetchPosts()
@@ -76,36 +85,45 @@ export default function Community() {
   return (
     <div className="home-container">
       <div className="hero-section" style={{ padding: '2rem 1rem', marginBottom: '2rem' }}>
-        <h2>SlimeHub 커뮤니티</h2>
-        <p>슬라임 정보를 공유하고 자유롭게 소통하세요.</p>
+        <h2>{mode === 'gallery' ? '슬라임 갤러리 ✨' : mode === 'lounge' ? 'Q&A 라운지 💬' : 'Sleepy 커뮤니티'}</h2>
+        <p>{mode === 'gallery' ? '여러분의 예쁜 슬라임을 마음껏 자랑해보세요!' : '공지사항을 확인하고 자유롭게 질문과 답변을 나누세요.'}</p>
       </div>
 
       <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', justifyContent: 'center' }}>
-        <button 
-          className={`nav-btn ${boardType === 'NOTICE' ? 'admin-btn' : ''}`}
-          onClick={() => setBoardType('NOTICE')}
-        >
-          공지사항
-        </button>
-        <button 
-          className={`nav-btn ${boardType === 'FREE' ? 'admin-btn' : ''}`}
-          onClick={() => setBoardType('FREE')}
-        >
-          자유게시판
-        </button>
-        <button 
-          className={`nav-btn ${boardType === 'QNA' ? 'admin-btn' : ''}`}
-          onClick={() => setBoardType('QNA')}
-        >
-          질문게시판
-        </button>
-        <button 
-          className={`nav-btn ${boardType === 'MEDIA' ? 'admin-btn' : ''}`}
-          onClick={() => setBoardType('MEDIA')}
-          style={{ background: boardType === 'MEDIA' ? 'linear-gradient(135deg, #ff6b8b, #ff8da1)' : '', color: boardType === 'MEDIA' ? 'white' : '' }}
-        >
-          미디어(사진/영상)
-        </button>
+        {mode !== 'gallery' && (
+          <>
+            <button 
+              className={`nav-btn ${boardType === 'NOTICE' ? 'admin-btn' : ''}`}
+              onClick={() => setBoardType('NOTICE')}
+            >
+              공지사항
+            </button>
+            <button 
+              className={`nav-btn ${boardType === 'QNA' ? 'admin-btn' : ''}`}
+              onClick={() => setBoardType('QNA')}
+            >
+              질문게시판
+            </button>
+            {mode === 'all' && (
+              <button 
+                className={`nav-btn ${boardType === 'FREE' ? 'admin-btn' : ''}`}
+                onClick={() => setBoardType('FREE')}
+              >
+                자유게시판
+              </button>
+            )}
+          </>
+        )}
+        
+        {mode !== 'lounge' && (
+          <button 
+            className={`nav-btn ${boardType === 'MEDIA' ? 'admin-btn' : ''}`}
+            onClick={() => setBoardType('MEDIA')}
+            style={{ background: boardType === 'MEDIA' ? 'linear-gradient(135deg, #ff6b8b, #ff8da1)' : '', color: boardType === 'MEDIA' ? 'white' : '' }}
+          >
+            미디어(자랑)
+          </button>
+        )}
       </div>
 
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
@@ -134,14 +152,14 @@ export default function Community() {
             ))}
           </div>
 
-          <Link to="/community/create" className="submit-btn" style={{ textDecoration: 'none', padding: '0.5rem 1rem', width: 'auto', flexShrink: 0 }}>
+          <Link to={`/community/create?boardType=${boardType}`} className="submit-btn" style={{ textDecoration: 'none', padding: '0.5rem 1rem', width: 'auto', flexShrink: 0 }}>
             글쓰기
           </Link>
         </div>
 
         {posts.length === 0 ? (
           <div className="empty-state">등록된 글이 없습니다.</div>
-        ) : isMedia ? (
+        ) : boardType === 'MEDIA' ? (
           <div className="media-grid">
             {posts.map(post => (
               <MediaPostItem key={post.id} post={post} />

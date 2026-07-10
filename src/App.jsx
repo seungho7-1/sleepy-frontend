@@ -12,6 +12,9 @@ import Community from './pages/Community'
 import PostDetail from './pages/PostDetail'
 import PostCreate from './pages/PostCreate'
 
+import SellerApplyPage from './pages/SellerApplyPage'
+import AdminApprovalPage from './pages/AdminApprovalPage'
+
 function App() {
   return (
     <Router>
@@ -23,8 +26,11 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/seller" element={<SellerDashboard />} />
+        <Route path="/seller/apply" element={<SellerApplyPage />} />
         <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/community" element={<Community />} />
+        <Route path="/admin/applications" element={<AdminApprovalPage />} />
+        <Route path="/gallery" element={<Community mode="gallery" />} />
+        <Route path="/lounge" element={<Community mode="lounge" />} />
         <Route path="/community/create" element={<PostCreate />} />
         <Route path="/community/:id" element={<PostDetail />} />
       </Routes>

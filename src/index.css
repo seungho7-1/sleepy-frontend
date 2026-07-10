@@ -57,51 +57,409 @@ button {
 /* -----------------------------
    Header / Navbar
 ----------------------------- */
-header {
+.main-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1.2rem;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--border-color);
+  padding: 0 1.5rem;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 32, 112, 0.08);
   position: sticky;
   top: 0;
   z-index: 100;
-  height: 60px;
+  height: 64px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.015);
+  transition: all 0.3s ease;
 }
 
-.logo-text {
-  font-size: 1.2rem;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-}
-.logo-text a {
+.hamburger-btn {
+  font-size: 1.4rem;
   color: var(--text-main);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: none; /* 기본적으로 데스크톱에서는 숨김 */
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+.hamburger-btn:hover {
+  transform: scale(1.1);
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  font-family: 'Outfit', sans-serif;
+}
+.bubble-icon {
+  font-size: 1.5rem;
+  animation: bounceBubble 2s infinite ease-in-out;
+}
+.brand-name {
+  font-size: 1.45rem;
+  font-weight: 900;
+  letter-spacing: -0.8px;
+  background: linear-gradient(135deg, var(--primary-color) 0%, #ff5c97 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes bounceBubble {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-4px) scale(1.05); }
 }
 
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.5rem;
 }
-.welcome-text {
-  font-size: 0.9rem;
-  color: var(--text-sub);
-  margin-right: 0.5rem;
+
+.nav-divider {
+  color: #eee;
+  margin: 0 0.5rem;
+  font-size: 0.8rem;
+  user-select: none;
 }
+
+.user-nav-actions, .auth-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.welcome-badge {
+  font-size: 0.82rem;
+  color: var(--primary-color);
+  font-weight: 700;
+  background: #fff0f3;
+  padding: 5px 12px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.welcome-badge .dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  display: inline-block;
+}
+
 .nav-btn {
   font-size: 0.9rem;
   color: var(--text-sub);
-  font-weight: 500;
-  transition: color 0.2s;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 20px;
+  transition: all 0.25s ease;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 .nav-btn:hover {
+  color: var(--primary-color);
+  background-color: #fff8f9;
+}
+.nav-btn.active {
+  color: var(--primary-color);
+  background-color: #fff0f3;
+  font-weight: 700;
+}
+
+.admin-badge {
+  font-weight: 700;
+}
+.admin-badge.seller {
+  background: #f0f7ff;
+  color: #007aff;
+}
+.admin-badge.seller:hover {
+  background: #e1f0ff;
+  color: #0063cc;
+}
+.admin-badge.admin {
+  background: #f3f0ff;
+  color: #7000ff;
+}
+.admin-badge.admin:hover {
+  background: #e7e1ff;
+  color: #5c00d6;
+}
+
+.login-btn {
   color: var(--text-main);
 }
-.admin-btn {
-  color: var(--primary-color);
+.signup-btn {
+  background: linear-gradient(135deg, var(--primary-color) 0%, #ff5294 100%);
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(255, 32, 112, 0.15);
+}
+.signup-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(255, 32, 112, 0.22);
+}
+
+.logout-btn {
+  background: none;
+  border: 1px solid #eee;
+  cursor: pointer;
+}
+.logout-btn:hover {
+  background-color: #fafafa;
+  color: #ff3b30;
+  border-color: #ffcccc;
+}
+
+/* -----------------------------
+   Mobile Side Drawer (Clean, Minimalist Layout)
+----------------------------- */
+.drawer-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 999;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.drawer-container {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 270px;
+  height: 100vh;
+  background: #ffffff;
+  z-index: 1000;
+  box-shadow: 1px 0 12px rgba(0, 0, 0, 0.04);
+  border-right: 1px solid #f2f2f2;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: auto;
+}
+.drawer-container.open {
+  transform: translateX(280px);
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem;
+}
+.close-drawer-btn {
+  font-size: 1.1rem;
+  color: #999;
+  padding: 6px;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+.close-drawer-btn:hover {
+  color: #333;
+}
+
+.drawer-profile-section {
+  padding: 1.2rem;
+  background: #ffffff;
+  border-bottom: 1px solid #f5f5f5;
+  margin-bottom: 0.5rem;
+}
+.profile-logged-in {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.profile-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #f7f7f7;
+  color: #666;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #eaeaea;
+}
+.profile-nickname {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111;
+}
+.profile-welcome {
+  font-size: 0.75rem;
+  color: #999;
+  margin-top: 2px;
+}
+
+.profile-logged-out {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.login-message {
+  font-size: 0.78rem;
+  color: #888;
+  line-height: 1.4;
+}
+.drawer-auth-buttons {
+  display: flex;
+  gap: 6px;
+}
+.drawer-btn {
+  flex: 1;
+  padding: 8px;
+  text-align: center;
+  border-radius: 6px;
+  font-size: 0.8rem;
   font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.drawer-btn.login {
+  background: #f8f8f8;
+  color: #555;
+  border: 1px solid #e8e8e8;
+}
+.drawer-btn.login:hover {
+  background: #f0f0f0;
+}
+.drawer-btn.signup {
+  background: var(--primary-color);
+  color: white;
+}
+.drawer-btn.signup:hover {
+  background: var(--primary-hover);
+}
+
+.drawer-menu-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 0;
+}
+.drawer-menu-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 1.5rem;
+  font-size: 0.88rem;
+  color: #444;
+  font-weight: 550;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.drawer-menu-item:hover, .drawer-menu-item.active {
+  color: var(--primary-color);
+  background: #fff8f9;
+}
+.drawer-menu-divider {
+  height: 1px;
+  background-color: #f7f7f7;
+  margin: 6px 1.5rem;
+}
+
+/* 아코디언 */
+.drawer-accordion {
+  display: flex;
+  flex-direction: column;
+}
+.accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 1.5rem;
+  font-size: 0.88rem;
+  color: #444;
+  font-weight: 550;
+  text-align: left;
+  cursor: pointer;
+}
+.accordion-header .arrow {
+  font-size: 0.7rem;
+  color: #bbb;
+  transition: transform 0.2s ease;
+}
+.accordion-header .arrow.open {
+  transform: rotate(180deg);
+}
+.accordion-content {
+  display: flex;
+  flex-direction: column;
+  background-color: #fafafa;
+  padding: 4px 0;
+}
+.category-sub-item {
+  padding: 8px 1.5rem 8px 2.5rem;
+  font-size: 0.82rem;
+  color: #666;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.category-sub-item:hover {
+  color: var(--primary-color);
+  background-color: #fff4f6;
+}
+
+.drawer-quick-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.quick-badge.seller {
+  color: #007aff;
+}
+.quick-badge.admin {
+  color: #7000ff;
+}
+.drawer-quick-links .logout-btn {
+  text-align: left;
+  border: none;
+  font-size: 0.88rem;
+  font-weight: 550;
+  color: #999;
+  padding: 10px 1.5rem;
+}
+.drawer-quick-links .logout-btn:hover {
+  background: #fff0f0;
+  color: #ff3b30;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 900px) {
+  .main-header {
+    position: relative;
+    justify-content: space-between;
+  }
+  .hamburger-btn {
+    display: flex;
+    z-index: 10;
+  }
+  .logo-text {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+  }
+  .nav-links {
+    display: none; /* 모바일에서는 탑 바 네비게이션 숨김 */
+  }
 }
 
 /* -----------------------------

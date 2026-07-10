@@ -48,7 +48,7 @@ export default function PostCreate() {
 
       await boardApi.createPost({ title, content, boardType, imageUrl });
       alert('게시글이 등록되었습니다.');
-      navigate('/community');
+      navigate(boardType === 'MEDIA' ? '/gallery' : '/lounge');
     } catch (err) {
       alert(err.message || '게시글 등록에 실패했습니다.');
     } finally {

@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import ProductCard from '../components/ProductCard'
 import { productApi } from '../api/products'
 import { boardApi } from '../api/board'
+import { isVideo } from '../utils/media'
 
 const CATEGORIES = ['전체', '크런키', '클리어', '샤베트', '버터']
 const FEED_MAX = 10 // 자랑피드 최대 표시 개수
@@ -14,10 +15,27 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [latestPosts, setLatestPosts] = useState([])
   const feedScrollRef = useRef(null)
+  const [searchParams, setSearchParams] = useSearchParams()
   
   // Paging state
   const [page, setPage] = useState(0)
   const [totalPages, setTotalPages] = useState(1)
+
+  // Sync state with URL category and search parameters
+  useEffect(() => {
+    const cat = searchParams.get('category')
+    const search = searchParams.get('search')
+    if (cat && CATEGORIES.includes(cat)) {
+      setActiveCategory(cat)
+      setSearchQuery(cat === '전체' ? '' : cat)
+    } else if (search) {
+      setActiveCategory('전체')
+      setSearchQuery(search)
+    } else {
+      setActiveCategory('전체')
+      setSearchQuery('')
+    }
+  }, [searchParams])
 
   useEffect(() => {
     fetchProducts(0, true)
@@ -59,16 +77,12 @@ export default function Home() {
 
   const handleSearch = (e) => {
     e.preventDefault()
+    setSearchParams(searchQuery ? { search: searchQuery } : {})
     fetchProducts(0, true)
   }
 
   const handleCategoryClick = (cat) => {
-    setActiveCategory(cat)
-    if (cat === '전체') {
-      setSearchQuery('')
-    } else {
-      setSearchQuery(cat)
-    }
+    setSearchParams({ category: cat })
   }
 
   const loadMore = () => {
@@ -100,14 +114,19 @@ export default function Home() {
         </form>
       </div>
 
-      {/* 실시간 슬라임 자랑 피드 📷 — 2행 그리드, 좌우 스와이프 */}
+      {/* 실시간 슬라임 자랑 피드 📷 — Ohouse 스타일 캐러셀 */}
       <div className="latest-posts-section" style={{ padding: '0 1.5rem', marginBottom: '2.5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h3 style={{ fontSize: '1.2rem', fontWeight: '800', color: 'var(--text-main)', margin: 0 }}>
-            실시간 슬라임 자랑 피드 📷
-          </h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '1.2rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: '800', color: '#111', margin: 0 }}>
+              실시간 슬라임 자랑 피드 📷
+            </h3>
+            <p style={{ fontSize: '0.8rem', color: '#888', margin: 0 }}>
+              유저들이 올린 매력 만점 슬라임 플레이 피드
+            </p>
+          </div>
           <Link 
-            to="/community?tab=MEDIA" 
+            to="/gallery" 
             style={{ fontSize: '0.85rem', color: 'var(--primary-color)', fontWeight: '700', textDecoration: 'none' }}
           >
             더보기 &gt;
@@ -120,36 +139,34 @@ export default function Home() {
           </div>
         ) : (
           <div style={{ position: 'relative' }}>
-            {/* 좌측 스크롤 화살표 (데스크톱) */}
+            {/* 좌측 스크롤 화살표 (데스크톱 전용) */}
             <button
               onClick={() => scrollFeed('left')}
               aria-label="이전"
               style={{
-                position: 'absolute', top: '50%', left: '-12px', transform: 'translateY(-50%)',
-                zIndex: 10, width: '32px', height: '32px', borderRadius: '50%',
-                background: 'white', border: '1px solid #eee',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.08)', cursor: 'pointer',
+                position: 'absolute', top: '50%', left: '-16px', transform: 'translateY(-50%)',
+                zIndex: 10, width: '36px', height: '36px', borderRadius: '50%',
+                background: 'white', border: '1px solid #ffeef2',
+                boxShadow: '0 4px 10px rgba(255, 32, 112, 0.08)', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '0.9rem', color: '#555'
+                fontSize: '1rem', color: '#ff2070', fontWeight: 'bold',
+                transition: 'all 0.2s'
               }}
             >‹</button>
 
-            {/* 2행 가로 스크롤 그리드 */}
+            {/* 단일행 가로 스크롤 캐러셀 */}
             <div
               ref={feedScrollRef}
               style={{
-                display: 'grid',
-                gridTemplateRows: 'repeat(2, 1fr)',
-                gridAutoFlow: 'column',
-                gridAutoColumns: '140px',
-                gap: '10px',
+                display: 'flex',
+                gap: '12px',
                 overflowX: 'auto',
                 overflowY: 'hidden',
                 scrollSnapType: 'x mandatory',
                 WebkitOverflowScrolling: 'touch',
                 scrollbarWidth: 'none',
                 msOverflowStyle: 'none',
-                paddingBottom: '4px',
+                padding: '4px 0',
               }}
             >
               {latestPosts.map(post => (
@@ -160,17 +177,19 @@ export default function Home() {
                     scrollSnapAlign: 'start',
                     textDecoration: 'none',
                     color: 'inherit',
+                    flex: '0 0 135px',
                     display: 'block',
                   }}
                 >
                   <div style={{
                     position: 'relative',
-                    width: '140px',
-                    height: '140px',
-                    borderRadius: '12px',
+                    width: '135px',
+                    aspectRatio: '3 / 4',
+                    borderRadius: '10px',
                     overflow: 'hidden',
                     border: '1px solid #ffeef2',
                     backgroundColor: '#fafafa',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
                   }}>
                     {post.imageUrl ? (
                       post.imageUrl.match(/\.(mp4|webm)$/i) ? (
@@ -183,19 +202,38 @@ export default function Home() {
                         <span style={{ fontSize: '2rem' }}>🫧</span>
                       </div>
                     )}
-                    {/* 하단 그라데이션 오버레이 */}
+
+                    {/* 이미지 내 하단 오버레이 (아바타, 닉네임, 좋아요 표시) */}
                     <div style={{
                       position: 'absolute', bottom: 0, left: 0, right: 0,
-                      background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)',
-                      padding: '0.6rem 0.5rem 0.4rem',
+                      background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 100%)',
+                      padding: '12px 10px 8px 10px',
                       color: 'white',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
                     }}>
-                      <div style={{ fontSize: '0.75rem', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {post.title}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <img 
+                          src={`https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(post.nickname || 'slime')}`} 
+                          alt={post.nickname} 
+                          style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'white', border: '1px solid #ffd6e0' }}
+                        />
+                        <span style={{ 
+                          fontSize: '0.72rem', 
+                          fontWeight: '600', 
+                          textShadow: '0 1px 2px rgba(0,0,0,0.4)', 
+                          maxWidth: '65px', 
+                          overflow: 'hidden', 
+                          textOverflow: 'ellipsis', 
+                          whiteSpace: 'nowrap' 
+                        }}>
+                          {post.nickname}
+                        </span>
                       </div>
-                      <div style={{ fontSize: '0.65rem', opacity: 0.85, marginTop: '2px', display: 'flex', justifyContent: 'space-between' }}>
-                        <span>@{post.nickname}</span>
-                        <span>♥ {post.likeCount}</span>
+                      <div style={{ color: '#ff5b94', textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '2px' }}>
+                        <span>♥</span>
+                        <span style={{ fontSize: '0.7rem', color: 'white' }}>{post.likeCount}</span>
                       </div>
                     </div>
                   </div>
@@ -203,17 +241,18 @@ export default function Home() {
               ))}
             </div>
 
-            {/* 우측 스크롤 화살표 (데스크톱) */}
+            {/* 우측 스크롤 화살표 (데스크톱 전용) */}
             <button
               onClick={() => scrollFeed('right')}
               aria-label="다음"
               style={{
-                position: 'absolute', top: '50%', right: '-12px', transform: 'translateY(-50%)',
-                zIndex: 10, width: '32px', height: '32px', borderRadius: '50%',
-                background: 'white', border: '1px solid #eee',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.08)', cursor: 'pointer',
+                position: 'absolute', top: '50%', right: '-16px', transform: 'translateY(-50%)',
+                zIndex: 10, width: '36px', height: '36px', borderRadius: '50%',
+                background: 'white', border: '1px solid #ffeef2',
+                boxShadow: '0 4px 10px rgba(255, 32, 112, 0.08)', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '0.9rem', color: '#555'
+                fontSize: '1rem', color: '#ff2070', fontWeight: 'bold',
+                transition: 'all 0.2s'
               }}
             >›</button>
           </div>

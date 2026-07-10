@@ -27,7 +27,7 @@ export default function PostDetail() {
       setPost(data);
     } catch (err) {
       alert('게시글을 찾을 수 없습니다.');
-      navigate('/community');
+      navigate(-1);
     }
   }
 

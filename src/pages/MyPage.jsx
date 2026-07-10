@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { productApi } from '../api/products'
 import { boardApi } from '../api/board'
 import ProductCard from '../components/ProductCard'
+import { formatDate } from '../utils/formatDate'
 
 export default function MyPage() {
   const { token, role, nickname, email } = useAuthStore()
@@ -187,7 +188,7 @@ export default function MyPage() {
                       <div className="my-post-meta">
                         <span>좋아요 {post.likeCount}</span>
                         <span>조회 {post.viewCount}</span>
-                        <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+                        <span>{formatDate(post.createdAt)}</span>
                       </div>
                     </div>
                   ))}
@@ -212,7 +213,7 @@ export default function MyPage() {
                         ) : (
                           <span>원문: <Link to={`/product/${comment.targetId}`}>{comment.targetTitle}</Link></span>
                         )}
-                        <span className="my-comment-date">{new Date(comment.createdAt).toLocaleDateString()}</span>
+                        <span className="my-comment-date">{formatDate(comment.createdAt)}</span>
                       </div>
                     </div>
                   ))}
