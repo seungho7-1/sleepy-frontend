@@ -4,9 +4,9 @@ export const adminApi = {
   getDashboard: () => 
     api.get(`/admin/dashboard`),
   getApplications: () =>
-    api.get(`/admin/sellers/applications`),
+    api.get(`/admin/applications`),
   approveApplication: (id) =>
-    api.post(`/admin/sellers/applications/${id}/approve`),
-  rejectApplication: (id) =>
-    api.post(`/admin/sellers/applications/${id}/reject`),
+    api.post(`/admin/applications/${id}/approve`),
+  rejectApplication: (id, reason) =>
+    api.post(`/admin/applications/${id}/reject`, { reason }),
 };

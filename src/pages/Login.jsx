@@ -1,32 +1,49 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { useAuthStore } from '../store'
 import { authApi } from '../api/auth'
 
 export default function Login() {
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const { login } = useAuthStore()
 
+  const location = useLocation()
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    const token = params.get('token')
+    const role = params.get('role')
+    const nickname = params.get('nickname')
+    if (token) {
+      login(token, role, nickname)
+      navigate('/')
+    }
+  }, [location, login, navigate])
+
+  const getBackendUrl = () => {
+    return window.location.hostname === 'localhost' ? 'http://localhost:8383' : '';
+  }
+
   const handleLogin = async (e) => {
     e.preventDefault()
     setLoading(true)
     try {
-      const data = await authApi.login({ email, password });
+      const data = await authApi.login({ username, password });
       login(data.accessToken, data.role, data.nickname);
       navigate('/');
     } catch (error) {
-      alert(error.message || '로그인에 실패했어요 🥲 이메일과 비밀번호를 확인해주세요.');
+      alert(error.message || '로그인에 실패했어요 🥲 아이디와 비밀번호를 확인해주세요.');
     } finally {
       setLoading(false);
     }
   }
 
   const showDemoNotice = (service) => {
-    alert(`[${service} 연동 안내]\n현재 데모 버전입니다. 실제 계정으로 서비스를 이용하시려면 이메일로 로그인해 주세요! 🧪`);
+    alert(`[${service} 연동 안내]\n현재 데모 버전입니다. 실제 계정으로 서비스를 이용하시려면 아이디로 로그인해 주세요! 🧪`);
   }
 
   return (
@@ -47,23 +64,23 @@ export default function Login() {
 
         <h2>로그인</h2>
         <form onSubmit={handleLogin} className="auth-form">
-          {/* Email Input */}
+          {/* Username Input */}
           <div className="auth-form-group">
-            <label htmlFor="email">이메일</label>
+            <label htmlFor="username">아이디</label>
             <div className="input-wrapper" style={{ marginTop: '0.6rem' }}>
               <span className="input-icon">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="4" width="20" height="16" rx="2" />
-                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
                 </svg>
               </span>
               <input 
-                id="email"
-                type="email" 
-                placeholder="example@sleepy.com" 
+                id="username"
+                type="text" 
+                placeholder="아이디를 입력하세요" 
                 required 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </div>
           </div>
@@ -118,12 +135,12 @@ export default function Login() {
         <div className="social-login-section">
           <div className="social-login-divider">또는 간편 로그인</div>
           <div className="social-buttons">
-            <a href="/oauth2/authorization/kakao" className="social-btn kakao" title="카카오 로그인">
+            <a href={`${getBackendUrl()}/oauth2/authorization/kakao`} className="social-btn kakao" title="카카오 로그인">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 3c-4.97 0-9 3.185-9 7.11 0 2.507 1.642 4.718 4.14 5.926-.17.6-.613 2.164-.702 2.502-.112.434.156.428.328.314.135-.09 2.146-1.458 3.003-2.04.72.1 1.464.153 2.23.153 4.97 0 9-3.185 9-7.11S16.97 3 12 3z"/>
               </svg>
             </a>
-            <a href="/oauth2/authorization/naver" className="social-btn naver" title="네이버 로그인" style={{ backgroundColor: '#03C75A', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', width: '40px', height: '40px', textDecoration: 'none' }}>
+            <a href={`${getBackendUrl()}/oauth2/authorization/naver`} className="social-btn naver" title="네이버 로그인" style={{ textDecoration: 'none' }}>
               <span style={{ fontWeight: 'bold', fontSize: '1.2rem', fontFamily: 'Arial' }}>N</span>
             </a>
           </div>

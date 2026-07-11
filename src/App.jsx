@@ -14,6 +14,7 @@ import PostCreate from './pages/PostCreate'
 
 import SellerApplyPage from './pages/SellerApplyPage'
 import AdminApprovalPage from './pages/AdminApprovalPage'
+import OAuth2Onboarding from './pages/OAuth2Onboarding'
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/oauth2/onboarding" element={<OAuth2Onboarding />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/seller" element={<SellerDashboard />} />
         <Route path="/seller/apply" element={<SellerApplyPage />} />

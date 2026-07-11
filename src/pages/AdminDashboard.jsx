@@ -41,6 +41,10 @@ export default function AdminDashboard() {
           <h3>총 등록 상품 수</h3>
           <p className="stat-number">{stats.totalProducts}개</p>
         </div>
+        <div className="stat-card" style={{ cursor: 'pointer', backgroundColor: '#eef2ff' }} onClick={() => navigate('/admin/applications')}>
+          <h3>셀러 신청 관리 ➡️</h3>
+          <p style={{ marginTop: '1rem', color: '#4f46e5', fontWeight: 'bold' }}>미승인된 판매자 신청을 관리합니다</p>
+        </div>
       </div>
 
       <div className="admin-table-container">

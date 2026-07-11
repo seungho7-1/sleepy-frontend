@@ -292,7 +292,10 @@ export default function ProductDetail() {
         {/* 오른쪽: 상품 정보 & 구매 액션 */}
         <div className="detail-summary-content" style={{ flex: '1.2', display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
           {/* 스토어 정보 (슬라임 핑크 스타일) */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <div 
+            onClick={() => navigate(`/?search=${encodeURIComponent(product.shopName || '일반스토어')}`)}
+            style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}
+          >
             <span style={{ fontSize: '0.95rem', fontWeight: 'bold', color: 'var(--primary-color)' }}>
               {product.shopName || '일반스토어'}
             </span>
@@ -412,7 +415,14 @@ export default function ProductDetail() {
                     </tr>
                     <tr>
                       <th>🏪 제조사/브랜드</th>
-                      <td>{product.shopName || '일반스토어'}</td>
+                      <td>
+                        <span 
+                          onClick={() => navigate(`/?search=${encodeURIComponent(product.shopName || '일반스토어')}`)}
+                          style={{ cursor: 'pointer', color: 'var(--primary-color)', fontWeight: 'bold', textDecoration: 'underline' }}
+                        >
+                          {product.shopName || '일반스토어'}
+                        </span>
+                      </td>
                     </tr>
                     <tr>
                       <th>💧 용량</th>

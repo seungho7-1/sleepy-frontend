@@ -126,30 +126,37 @@ export default function Community({ mode = 'all' }) {
         )}
       </div>
 
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 1rem' }}>
         {/* 상단 툴바: 정렬 + 글쓰기 */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
           {/* 정렬 필터 (모든 탭) */}
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-            {SORT_OPTIONS.map(opt => (
-              <button
-                key={opt.value}
-                onClick={() => handleSortChange(opt.value)}
-                style={{
-                  padding: '6px 14px',
-                  borderRadius: '20px',
-                  border: sortBy === opt.value ? '1.5px solid var(--primary-color)' : '1px solid #e0e0e0',
-                  background: sortBy === opt.value ? 'var(--primary-color)' : 'white',
-                  color: sortBy === opt.value ? 'white' : '#666',
-                  fontSize: '0.8rem',
-                  fontWeight: sortBy === opt.value ? '700' : '500',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                }}
-              >
-                {opt.label}
-              </button>
-            ))}
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <select
+              value={sortBy}
+              onChange={(e) => handleSortChange(e.target.value)}
+              style={{
+                padding: '8px 12px',
+                borderRadius: '8px',
+                border: '1px solid #ddd',
+                backgroundColor: 'white',
+                color: '#333',
+                fontSize: '0.9rem',
+                fontWeight: '500',
+                outline: 'none',
+                cursor: 'pointer',
+                WebkitAppearance: 'none',
+                appearance: 'none',
+                background: 'white url("data:image/svg+xml;utf8,<svg fill=\'%23333\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/><path d=\'M0 0h24v24H0z\' fill=\'none\'/></svg>") no-repeat right 8px center',
+                backgroundSize: '20px',
+                paddingRight: '32px'
+              }}
+            >
+              {SORT_OPTIONS.map(opt => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           <Link to={`/community/create?boardType=${boardType}`} className="submit-btn" style={{ textDecoration: 'none', padding: '0.5rem 1rem', width: 'auto', flexShrink: 0 }}>

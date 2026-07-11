@@ -3,18 +3,22 @@ import { useAuthStore } from '../store'
 import { Link, useNavigate } from 'react-router-dom'
 import { productApi } from '../api/products'
 import { boardApi } from '../api/board'
+import { sellerApi } from '../api/seller'
+import { authApi } from '../api/auth'
 import ProductCard from '../components/ProductCard'
 import { formatDate } from '../utils/formatDate'
 
 export default function MyPage() {
-  const { token, role, nickname, email } = useAuthStore()
+  const { token, role, nickname, logout } = useAuthStore()
   const navigate = useNavigate()
   
+  const [profile, setProfile] = useState(null)
   const [wishlist, setWishlist] = useState([])
   const [myPosts, setMyPosts] = useState([])
   const [myComments, setMyComments] = useState([])
   const [myMedia, setMyMedia] = useState([])
   const [activeTab, setActiveTab] = useState('profile')
+  const [application, setApplication] = useState(null)
 
   useEffect(() => {
     if (!token) {
@@ -24,11 +28,33 @@ export default function MyPage() {
     }
     
     // Load all user content counts on mount
+    fetchProfile()
     fetchWishlist()
     fetchMyPosts()
     fetchMyComments()
     fetchMyMedia()
+    fetchApplicationStatus()
   }, [token])
+
+  const fetchProfile = async () => {
+    try {
+      const data = await authApi.me()
+      setProfile(data)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  const fetchApplicationStatus = async () => {
+    try {
+      const data = await sellerApi.getLatest()
+      if (data && data.status) {
+        setApplication(data)
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
 
   const fetchWishlist = async () => {
     try {
@@ -66,6 +92,22 @@ export default function MyPage() {
     }
   }
 
+  const handleWithdraw = async () => {
+    const confirmWithdraw = window.confirm(
+      '정말로 회원 탈퇴를 진행하시겠습니까?\n계정과 등록된 모든 정보가 영구 삭제되며 소셜 로그인 연동이 해제됩니다.'
+    )
+    if (!confirmWithdraw) return;
+    
+    try {
+      await authApi.withdraw()
+      alert('회원 탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.')
+      logout()
+      navigate('/')
+    } catch (err) {
+      alert(err.message || '탈퇴 처리 중 오류가 발생했습니다.')
+    }
+  }
+
   return (
     <div className="mypage-container">
       {/* 미니멀 프로필 영역 */}
@@ -77,7 +119,7 @@ export default function MyPage() {
           <div className="profile-info-header">
             <h2>{nickname}님</h2>
             <p className="role-badge">
-              {role === 'USER' ? '일반 구매자' : role === 'SELLER' ? '슬라임 판매자' : '관리자'}
+              {(role === 'USER' || role === 'BUYER') ? '일반 구매자' : role === 'SELLER' ? '슬라임 판매자' : '관리자'}
             </p>
           </div>
         </div>
@@ -116,6 +158,20 @@ export default function MyPage() {
           >
             내 사진/영상 ({myMedia.length})
           </button>
+          {(role === 'USER' || role === 'BUYER') && (
+            <>
+              {(!application || application.status === 'REJECTED') && (
+                <button className="mypage-nav-btn" onClick={() => navigate('/seller/apply')}>
+                  {application?.status === 'REJECTED' ? '판매자 다시 신청하기' : '판매자 신청하기'}
+                </button>
+              )}
+              {application?.status === 'PENDING' && (
+                <button className="mypage-nav-btn pending-btn" disabled style={{ opacity: 0.7, cursor: 'not-allowed', backgroundColor: '#fef3c7', color: '#d97706', fontWeight: 'bold' }}>
+                  ⏳ 판매자 신청 (대기 중)
+                </button>
+              )}
+            </>
+          )}
           {role === 'SELLER' && (
             <button className="mypage-nav-btn" onClick={() => navigate('/seller')}>
               판매자 관리센터
@@ -135,16 +191,60 @@ export default function MyPage() {
               <h3 style={{ fontSize: '1.1rem', fontWeight: '700', marginBottom: '1.2rem' }}>프로필 상세</h3>
               <div className="profile-details">
                 <div className="detail-item">
-                  <span className="detail-label">이메일 계정</span>
-                  <span className="detail-value">{email}</span>
+                  <span className="detail-label">아이디 계정</span>
+                  <span className="detail-value">{profile?.username || '-'}</span>
                 </div>
-                <div className="detail-item">
+                <div className="detail-item" style={{ marginTop: '0.8rem' }}>
+                  <span className="detail-label">이메일 주소</span>
+                  <span className="detail-value">{profile?.email || '등록된 이메일이 없습니다.'}</span>
+                </div>
+                <div className="detail-item" style={{ marginTop: '0.8rem' }}>
                   <span className="detail-label">닉네임</span>
-                  <span className="detail-value">{nickname}</span>
+                  <span className="detail-value">{profile?.nickname || '-'}</span>
                 </div>
-                <div className="detail-item">
+                <div className="detail-item" style={{ marginTop: '0.8rem' }}>
                   <span className="detail-label">계정 등급</span>
-                  <span className="detail-value">{role === 'USER' ? '일반 회원' : role === 'SELLER' ? '판매자 회원' : '관리자'}</span>
+                  <span className="detail-value">{(role === 'USER' || role === 'BUYER') ? '일반 회원' : role === 'SELLER' ? '판매자 회원' : '관리자'}</span>
+                </div>
+                {application && (role === 'USER' || role === 'BUYER') && (
+                  <div className="detail-item seller-status-item" style={{ marginTop: '1rem', borderTop: '1px dashed var(--border-color)', paddingTop: '1rem' }}>
+                    <span className="detail-label">판매자 신청 상태</span>
+                    <span className="detail-value" style={{ 
+                      fontWeight: 'bold', 
+                      color: application.status === 'PENDING' ? '#d97706' : application.status === 'REJECTED' ? '#ef4444' : '#10b981'
+                    }}>
+                      {application.status === 'PENDING' ? '⏳ 심사 대기 중' : application.status === 'REJECTED' ? '❌ 반려됨' : '✅ 승인됨'}
+                    </span>
+                  </div>
+                )}
+                {application?.status === 'REJECTED' && (role === 'USER' || role === 'BUYER') && (
+                  <div className="rejection-reason-container" style={{ backgroundColor: '#fef2f2', border: '1px solid #fee2e2', borderRadius: '8px', padding: '1rem', marginTop: '0.8rem' }}>
+                    <div style={{ color: '#ef4444', fontWeight: 'bold', fontSize: '0.9rem', marginBottom: '0.3rem' }}>반려 사유</div>
+                    <div style={{ color: '#991b1b', fontSize: '0.85rem', lineHeight: '1.4' }}>
+                      {application.rejectionReason || '사유가 기재되지 않았습니다.'}
+                    </div>
+                  </div>
+                )}
+                
+                <div style={{ marginTop: '2rem', borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem', display: 'flex', justifyContent: 'flex-end' }}>
+                  <button 
+                    onClick={handleWithdraw}
+                    style={{ 
+                      backgroundColor: 'transparent', 
+                      color: '#ef4444', 
+                      border: '1px solid #fee2e2', 
+                      padding: '0.6rem 1.2rem', 
+                      borderRadius: '8px', 
+                      cursor: 'pointer',
+                      fontSize: '0.85rem',
+                      fontWeight: 'bold',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#fef2f2'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                  >
+                    회원 탈퇴
+                  </button>
                 </div>
               </div>
             </div>

@@ -1188,6 +1188,11 @@ main {
   background: #FEE500;
   border-color: #FEE500;
 }
+.social-btn.naver {
+  background: #03C75A;
+  border-color: #03C75A;
+  color: white;
+}
 .social-btn.apple {
   background: #000000;
   border-color: #000000;
@@ -1263,6 +1268,10 @@ main {
   font-weight: 700;
   color: var(--primary-color);
 }
+.admin-table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
 .admin-table {
   width: 100%;
   border-collapse: collapse;
@@ -1327,6 +1336,28 @@ main {
   font-weight: 800;
   margin-bottom: 0.4rem;
   color: #111;
+}
+
+/* -----------------------------
+   Post Meta (Responsive)
+----------------------------- */
+.post-meta {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 1rem;
+  color: #666;
+  font-size: 0.95rem;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .post-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+  }
 }
 
 .role-badge {
@@ -1437,10 +1468,14 @@ main {
 @media (max-width: 768px) {
   .mypage-content-wrapper {
     flex-direction: column;
+    align-items: stretch;
   }
   .mypage-sidebar {
     width: 100%;
     flex: auto;
+  }
+  .mypage-main-content {
+    width: 100%;
   }
   .mypage-banner {
     padding: 2rem;

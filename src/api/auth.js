@@ -6,4 +6,19 @@ export const authApi = {
 
   signup: (data) => 
     api.post(`/auth/signup`, data),
+
+  oauth2Onboarding: (data) =>
+    api.post(`/auth/oauth2/onboarding`, data),
+
+  withdraw: () =>
+    api.delete(`/auth/withdraw`),
+
+  me: () =>
+    api.get(`/auth/me`),
+
+  checkUsername: (username) =>
+    api.get(`/auth/check-username?username=${username}`),
+
+  checkNickname: (nickname) =>
+    api.get(`/auth/check-nickname?nickname=${nickname}`),
 };

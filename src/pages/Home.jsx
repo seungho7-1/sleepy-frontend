@@ -59,7 +59,7 @@ export default function Home() {
     try {
       if (reset) setLoading(true)
       const keyword = searchQuery === '전체' ? '' : searchQuery;
-      const data = await productApi.getProducts(keyword, pageNumber, 8);
+      const data = await productApi.getProducts(keyword, pageNumber, 20);
       
       if (data && data.content) {
         setProducts(prev => reset ? data.content : [...prev, ...data.content])

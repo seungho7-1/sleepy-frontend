@@ -32,13 +32,18 @@ export default function AdminApprovalPage() {
   };
 
   const handleReject = async (id) => {
-    if (!window.confirm('이 셀러를 거절하시겠습니까?')) return;
+    const reason = window.prompt('반려 사유를 입력해 주세요:');
+    if (reason === null) return;
+    if (!reason.trim()) {
+      alert('반려 사유는 필수 입력 사항입니다.');
+      return;
+    }
     try {
-      await adminApi.rejectApplication(id);
-      alert('거절되었습니다.');
+      await adminApi.rejectApplication(id, reason);
+      alert('반려 처리되었습니다.');
       fetchApplications();
     } catch (error) {
-      alert(error.message || '거절 처리 중 오류가 발생했습니다.');
+      alert(error.message || '반려 처리 중 오류가 발생했습니다.');
     }
   };
 

@@ -105,7 +105,7 @@ export default function PostDetail() {
   if (!post) return <div className="empty-state">로딩 중...</div>
 
   return (
-    <div className="detail-container" style={{ maxWidth: '800px', margin: '2rem auto' }}>
+    <div className="detail-container" style={{ maxWidth: '1000px', margin: '2rem auto', padding: '0 1rem' }}>
       <button className="back-btn" onClick={() => navigate(-1)}>← 목록으로</button>
       
       <div style={{ background: 'white', padding: '2rem', borderRadius: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.05)', marginTop: '1rem' }}>
@@ -114,9 +114,9 @@ export default function PostDetail() {
         </div>
         <h1 style={{ margin: '1rem 0' }}>{post.title}</h1>
         
-        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #eee', paddingBottom: '1rem', color: '#666' }}>
+        <div className="post-meta">
           <div>작성자: <strong>{post.nickname}</strong></div>
-          <div>{new Date(post.createdAt).toLocaleString()} | 조회 {post.viewCount} | 좋아요 {post.likeCount}</div>
+          <div>{new Date(post.createdAt).toLocaleString()} <span style={{ color: '#ccc', margin: '0 4px' }}>|</span> 조회 {post.viewCount} <span style={{ color: '#ccc', margin: '0 4px' }}>|</span> 좋아요 {post.likeCount}</div>
         </div>
         
         {post.imageUrl && (
