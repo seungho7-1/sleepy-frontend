@@ -25,7 +25,7 @@ export default function Login() {
   }, [location, login, navigate])
 
   const getBackendUrl = () => {
-    return window.location.hostname === 'localhost' ? 'http://localhost:8383' : '';
+    return window.location.hostname === 'localhost' ? 'http://localhost:8383' : 'https://api.sleepyslime.p-e.kr';
   }
 
   const handleLogin = async (e) => {
@@ -124,6 +124,10 @@ export default function Login() {
                 )}
               </button>
             </div>
+          </div>
+
+          <div style={{ textAlign: 'right', marginTop: '0.4rem', marginBottom: '1.5rem' }}>
+            <Link to="/find-password" style={{ fontSize: '0.75rem', color: 'var(--text-sub)', textDecoration: 'none' }}>비밀번호를 잊으셨나요?</Link>
           </div>
 
           <button type="submit" className="submit-btn" disabled={loading}>

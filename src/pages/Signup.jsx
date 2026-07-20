@@ -14,7 +14,9 @@ export default function Signup() {
     role: 'BUYER'
   })
   const [sellerInfo, setSellerInfo] = useState({
-    siteUrl: '',
+    shopName: '',
+    shopUrl: '',
+    snsUrls: [''],
     introduction: ''
   })
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -25,7 +27,7 @@ export default function Signup() {
   const navigate = useNavigate()
 
   const getBackendUrl = () => {
-    return window.location.hostname === 'localhost' ? 'http://localhost:8383' : '';
+    return window.location.hostname === 'localhost' ? 'http://localhost:8383' : 'https://api.sleepyslime.p-e.kr';
   }
 
   const handleChange = (e) => {
@@ -36,6 +38,25 @@ export default function Signup() {
 
   const handleSellerChange = (e) => {
     setSellerInfo({ ...sellerInfo, [e.target.name]: e.target.value })
+  }
+
+  const handleSnsUrlChange = (index, value) => {
+    const newSnsUrls = [...sellerInfo.snsUrls]
+    newSnsUrls[index] = value
+    setSellerInfo({ ...sellerInfo, snsUrls: newSnsUrls })
+  }
+
+  const handleAddSnsUrl = () => {
+    if (sellerInfo.snsUrls.length >= 5) {
+      alert('SNS 주소는 최대 5개까지 등록할 수 있습니다.')
+      return
+    }
+    setSellerInfo({ ...sellerInfo, snsUrls: [...sellerInfo.snsUrls, ''] })
+  }
+
+  const handleRemoveSnsUrl = (index) => {
+    const newSnsUrls = sellerInfo.snsUrls.filter((_, i) => i !== index)
+    setSellerInfo({ ...sellerInfo, snsUrls: newSnsUrls })
   }
 
   const handleRoleSelect = (role) => {
@@ -135,7 +156,9 @@ export default function Signup() {
         });
         useAuthStore.getState().login(loginData.accessToken, loginData.role, loginData.nickname);
         await sellerApi.apply({
-          siteUrl: sellerInfo.siteUrl,
+          shopName: sellerInfo.shopName,
+          siteUrl: sellerInfo.shopUrl,
+          snsUrls: sellerInfo.snsUrls.filter(url => url.trim() !== '').join(','),
           introduction: sellerInfo.introduction
         });
         alert('회원가입 및 판매자 신청이 완료되었습니다! 관리자 승인 후 판매자 센터를 이용하실 수 있습니다.');
@@ -416,12 +439,14 @@ export default function Signup() {
             <div className="auth-form" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
               
               <div className="auth-form-group">
-                <label style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>프로필 닉네임</label>
+                <label style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>
+                  {formData.role === 'SELLER' ? '마켓명' : '프로필 닉네임'}
+                </label>
                 <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.4rem' }}>
                   <input 
                     type="text" 
                     name="nickname"
-                    placeholder="귀여운 닉네임을 적어주세요 (예: 말랑이)" 
+                    placeholder={formData.role === 'SELLER' ? "사용할 마켓명을 적어주세요 (예: 슬리피마켓)" : "귀여운 닉네임을 적어주세요 (예: 말랑이)"} 
                     required 
                     value={formData.nickname}
                     onChange={handleChange}
@@ -500,20 +525,62 @@ export default function Signup() {
         {step === 4 && formData.role === 'SELLER' && (
           <div className="fade-in">
             <h2 style={{ fontSize: '1.15rem', fontWeight: '800', color: 'var(--text-main)', marginBottom: '0.5rem', textAlign: 'center', letterSpacing: '-0.02em' }}>판매자 심사 요청</h2>
-            <p style={{ textAlign: 'center', color: 'var(--text-sub)', fontSize: '0.75rem', marginBottom: '1.5rem' }}>샵 개설을 위해 필요한 간단한 기본 정보입니다.</p>
+            <p style={{ textAlign: 'center', color: 'var(--text-sub)', fontSize: '0.75rem', marginBottom: '1.5rem', lineHeight: '1.4' }}>샵 개설을 위해 필요한 간단한 기본 정보입니다.<br/><span style={{ color: 'var(--primary-color)', fontWeight: 'bold' }}>*심사 완료까지 영업일 기준 1~2일 소요됩니다.</span></p>
             <div className="auth-form" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
               
               <div className="auth-form-group">
-                <label style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>쇼핑몰/SNS URL</label>
+                <label style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>스토어명 (필수)</label>
                 <input 
-                  type="url" 
-                  name="siteUrl"
-                  placeholder="https://smartstore.naver.com/..." 
+                  type="text" 
+                  name="shopName"
+                  placeholder="예: 슬라임 팩토리" 
                   required 
-                  value={sellerInfo.siteUrl}
+                  value={sellerInfo.shopName}
                   onChange={handleSellerChange}
                   style={{ width: '100%', padding: '0.75rem 0.9rem', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.85rem', outline: 'none', marginTop: '0.4rem', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-main)' }}
                 />
+              </div>
+
+              <div className="auth-form-group">
+                <label style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>쇼핑몰 주소 (필수)</label>
+                <input 
+                  type="url" 
+                  name="shopUrl"
+                  placeholder="https://smartstore.naver.com/..." 
+                  required 
+                  value={sellerInfo.shopUrl}
+                  onChange={handleSellerChange}
+                  style={{ width: '100%', padding: '0.75rem 0.9rem', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.85rem', outline: 'none', marginTop: '0.4rem', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-main)' }}
+                />
+              </div>
+
+              <div className="auth-form-group">
+                <label style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>
+                  SNS 주소 (선택)
+                </label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '0.4rem' }}>
+                  {sellerInfo.snsUrls.map((snsUrl, index) => (
+                    <div key={index} style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                      <input 
+                        type="url" 
+                        placeholder="인스타그램, 유튜브 등 주소 입력" 
+                        value={snsUrl}
+                        onChange={(e) => handleSnsUrlChange(index, e.target.value)}
+                        style={{ flex: 1, padding: '0.75rem 0.9rem', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.85rem', outline: 'none', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-main)' }}
+                      />
+                      {sellerInfo.snsUrls.length > 1 && (
+                        <button type="button" onClick={() => handleRemoveSnsUrl(index)} style={{ width: '42px', height: '42px', borderRadius: '12px', border: 'none', backgroundColor: '#ffe5e5', color: '#ff4d4d', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  {sellerInfo.snsUrls.length < 5 && (
+                    <button type="button" onClick={handleAddSnsUrl} style={{ width: '100%', padding: '0.75rem', borderRadius: '12px', border: '1px dashed var(--border-color)', backgroundColor: 'transparent', color: 'var(--text-sub)', fontSize: '0.85rem', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', marginTop: '0.2rem' }}>
+                      + SNS 주소 추가하기
+                    </button>
+                  )}
+                </div>
               </div>
 
               <div className="auth-form-group">
@@ -534,16 +601,16 @@ export default function Signup() {
                 <button 
                   type="button" 
                   onClick={handleSignup}
-                  disabled={!sellerInfo.siteUrl || !sellerInfo.introduction || loading}
+                  disabled={!sellerInfo.shopName || !sellerInfo.shopUrl || !sellerInfo.introduction || loading}
                   style={{ 
                     flex: 2, 
                     padding: '0.8rem', 
                     borderRadius: '12px', 
                     border: 'none', 
-                    backgroundColor: (!sellerInfo.siteUrl || !sellerInfo.introduction || loading) ? 'var(--border-color)' : 'var(--primary-color)', 
+                    backgroundColor: (!sellerInfo.shopName || !sellerInfo.shopUrl || !sellerInfo.introduction || loading) ? 'var(--border-color)' : 'var(--primary-color)', 
                     color: '#fff', 
                     fontWeight: 'bold', 
-                    cursor: (!sellerInfo.siteUrl || !sellerInfo.introduction || loading) ? 'not-allowed' : 'pointer',
+                    cursor: (!sellerInfo.shopName || !sellerInfo.shopUrl || !sellerInfo.introduction || loading) ? 'not-allowed' : 'pointer',
                     fontSize: '0.85rem'
                   }}
                 >
