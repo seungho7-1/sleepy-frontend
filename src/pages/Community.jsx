@@ -16,15 +16,18 @@ const SORT_OPTIONS = [
 export default function Community({ mode = 'all' }) {
   const [searchParams] = useSearchParams()
   const [posts, setPosts] = useState([])
+  const tab = searchParams.get('tab')
   
   // mode에 따라 기본 게시판 타입 설정
-  const defaultBoardType = mode === 'gallery' ? 'MEDIA' : (mode === 'lounge' ? 'NOTICE' : (searchParams.get('tab') || 'FREE'))
+  const defaultBoardType = mode === 'gallery' ? 'MEDIA' : (mode === 'lounge' ? (tab || 'NOTICE') : (tab || 'FREE'))
   const [boardType, setBoardType] = useState(defaultBoardType)
 
   // Pagination state (공지/자유/질문 전용)
   const [page, setPage] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
   const [totalElements, setTotalElements] = useState(0)
+  const [searchInput, setSearchInput] = useState('')
+  const [keyword, setKeyword] = useState('')
 
   // Sort state
   const [sortBy, setSortBy] = useState('createdAt,desc')
@@ -38,26 +41,27 @@ export default function Community({ mode = 'all' }) {
   // 모드가 변경되면 탭도 강제 변경
   useEffect(() => {
     if (mode === 'gallery') setBoardType('MEDIA')
-    if (mode === 'lounge') setBoardType('NOTICE')
-  }, [mode])
+    if (mode === 'lounge') setBoardType(tab || 'NOTICE')
+  }, [mode, tab])
 
   useEffect(() => {
     fetchPosts()
-  }, [boardType, page, sortBy])
+  }, [boardType, page, sortBy, keyword])
 
   const fetchPosts = async () => {
     try {
       const isMedia = boardType === 'MEDIA'
       const data = await boardApi.getPosts(
         boardType,
+        keyword,
         isMedia ? 0 : page,
         isMedia ? 50 : PAGE_SIZE,
         sortBy
       )
       setPosts(data.content || [])
+      setTotalElements(data.totalElements || 0)
       if (!isMedia) {
         setTotalPages(data.totalPages || 0)
-        setTotalElements(data.totalElements || 0)
       }
     } catch (err) {
       console.error(err)
@@ -93,21 +97,39 @@ export default function Community({ mode = 'all' }) {
         {mode !== 'gallery' && (
           <>
             <button 
-              className={`nav-btn ${boardType === 'NOTICE' ? 'admin-btn' : ''}`}
+              className={`nav-btn`}
               onClick={() => setBoardType('NOTICE')}
+              style={{
+                background: boardType === 'NOTICE' ? 'var(--primary-color)' : 'white',
+                color: boardType === 'NOTICE' ? 'white' : 'var(--text-main)',
+                border: boardType === 'NOTICE' ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
+                fontWeight: boardType === 'NOTICE' ? '700' : '500'
+              }}
             >
               공지사항
             </button>
             <button 
-              className={`nav-btn ${boardType === 'QNA' ? 'admin-btn' : ''}`}
+              className={`nav-btn`}
               onClick={() => setBoardType('QNA')}
+              style={{
+                background: boardType === 'QNA' ? 'var(--primary-color)' : 'white',
+                color: boardType === 'QNA' ? 'white' : 'var(--text-main)',
+                border: boardType === 'QNA' ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
+                fontWeight: boardType === 'QNA' ? '700' : '500'
+              }}
             >
               질문게시판
             </button>
             {mode === 'all' && (
               <button 
-                className={`nav-btn ${boardType === 'FREE' ? 'admin-btn' : ''}`}
+                className={`nav-btn`}
                 onClick={() => setBoardType('FREE')}
+                style={{
+                  background: boardType === 'FREE' ? 'var(--primary-color)' : 'white',
+                  color: boardType === 'FREE' ? 'white' : 'var(--text-main)',
+                  border: boardType === 'FREE' ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
+                  fontWeight: boardType === 'FREE' ? '700' : '500'
+                }}
               >
                 자유게시판
               </button>
@@ -117,9 +139,14 @@ export default function Community({ mode = 'all' }) {
         
         {mode !== 'lounge' && (
           <button 
-            className={`nav-btn ${boardType === 'MEDIA' ? 'admin-btn' : ''}`}
+            className={`nav-btn`}
             onClick={() => setBoardType('MEDIA')}
-            style={{ background: boardType === 'MEDIA' ? 'linear-gradient(135deg, #ff6b8b, #ff8da1)' : '', color: boardType === 'MEDIA' ? 'white' : '' }}
+            style={{ 
+              background: boardType === 'MEDIA' ? 'linear-gradient(135deg, #ff6b8b, #ff8da1)' : 'white', 
+              color: boardType === 'MEDIA' ? 'white' : 'var(--text-main)',
+              border: boardType === 'MEDIA' ? 'none' : '1px solid var(--border-color)',
+              fontWeight: boardType === 'MEDIA' ? '700' : '500'
+            }}
           >
             미디어(자랑)
           </button>
@@ -127,10 +154,88 @@ export default function Community({ mode = 'all' }) {
       </div>
 
       <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 1rem' }}>
-        {/* 상단 툴바: 정렬 + 글쓰기 */}
+        
+        {/* 검색창 */}
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', marginBottom: '1.5rem', marginTop: '1rem' }}>
+          <input 
+            type="text" 
+            placeholder="게시글 제목, 내용을 검색해보세요" 
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                setKeyword(searchInput)
+                setPage(0)
+              }
+            }}
+            style={{
+              width: '100%',
+              padding: '0.85rem 1.2rem',
+              paddingRight: searchInput ? '4.5rem' : '3rem',
+              fontSize: '0.95rem',
+              border: '1px solid var(--border-color)',
+              borderRadius: '12px',
+              background: 'var(--bg-secondary)',
+              outline: 'none',
+              transition: 'all 0.2s',
+            }}
+            onFocus={(e) => { e.target.style.borderColor = 'var(--text-main)'; e.target.style.background = 'var(--bg-color)'; }}
+            onBlur={(e) => { e.target.style.borderColor = 'var(--border-color)'; e.target.style.background = 'var(--bg-secondary)'; }}
+          />
+          {searchInput && (
+            <button 
+              type="button" 
+              onClick={() => {
+                setSearchInput('');
+                setKeyword('');
+                setPage(0);
+              }}
+              style={{
+                position: 'absolute',
+                right: '2.5rem',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                color: '#aaa',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                padding: '4px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+              title="검색어 지우기"
+            >
+              ✖
+            </button>
+          )}
+          <button 
+            onClick={() => {
+              setKeyword(searchInput)
+              setPage(0)
+            }}
+            style={{
+              position: 'absolute',
+              right: '0.5rem',
+              width: '36px',
+              height: '36px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.1rem',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            🔍
+          </button>
+        </div>
+
+        {/* 상단 툴바: 정렬 + 총 게시글 + 글쓰기 */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          {/* 정렬 필터 (모든 탭) */}
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <select
               value={sortBy}
               onChange={(e) => handleSortChange(e.target.value)}
@@ -157,11 +262,36 @@ export default function Community({ mode = 'all' }) {
                 </option>
               ))}
             </select>
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-sub)' }}>
+              총 <strong style={{ color: 'var(--primary-color)' }}>{totalElements}</strong>개
+            </div>
           </div>
 
-          <Link to={`/community/create?boardType=${boardType}`} className="submit-btn" style={{ textDecoration: 'none', padding: '0.5rem 1rem', width: 'auto', flexShrink: 0 }}>
-            글쓰기
-          </Link>
+          <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
+            {boardType === 'MEDIA' && (
+              <Link 
+                to="/shorts"
+                style={{
+                  padding: '0.5rem 1rem',
+                  background: 'linear-gradient(135deg, #ff6b8b, #ff8da1)',
+                  color: 'white',
+                  borderRadius: '20px',
+                  textDecoration: 'none',
+                  fontWeight: 'bold',
+                  fontSize: '0.9rem',
+                  boxShadow: '0 4px 12px rgba(255, 32, 112, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                📱 숏폼 뷰로 보기
+              </Link>
+            )}
+            <Link to={`/community/create?boardType=${boardType}`} className="submit-btn" style={{ textDecoration: 'none', padding: '0.5rem 1rem', width: 'auto', flexShrink: 0 }}>
+              글쓰기
+            </Link>
+          </div>
         </div>
 
         {posts.length === 0 ? (
@@ -174,29 +304,17 @@ export default function Community({ mode = 'all' }) {
           </div>
         ) : (
           <>
-            {/* 게시글 수 표시 */}
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-sub)', marginBottom: '0.8rem' }}>
-              총 <strong style={{ color: 'var(--primary-color)' }}>{totalElements}</strong>개의 게시글
-            </div>
 
-            <div className="admin-table-container">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>번호</th>
-                    <th>제목</th>
-                    <th>작성자</th>
-                    <th>조회</th>
-                    <th>좋아요</th>
-                    <th>작성일</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {posts.map(post => (
-                    <PostItem key={post.id} post={post} />
-                  ))}
-                </tbody>
-              </table>
+            <div style={{ 
+              borderTop: '2px solid var(--text-main)', 
+              borderBottom: '1px solid var(--border-color)',
+              background: 'white',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
+              borderRadius: '4px'
+            }}>
+              {posts.map(post => (
+                <PostItem key={post.id} post={post} />
+              ))}
             </div>
 
             {/* Pagination UI */}

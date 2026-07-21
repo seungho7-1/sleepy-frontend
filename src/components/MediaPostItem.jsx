@@ -2,15 +2,13 @@ import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import { formatDate } from '../utils/formatDate'
 import { isVideo } from '../utils/media'
+import Avatar from './Avatar'
 
 export default function MediaPostItem({ post }) {
   const [isHovered, setIsHovered] = useState(false)
 
   // Use a default placeholder if no imageUrl is present
   const imageUrl = post.imageUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500'
-
-  // Generate a cute custom avatar based on nickname
-  const avatarUrl = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(post.nickname || 'slime')}`
 
   return (
     <Link 
@@ -29,8 +27,8 @@ export default function MediaPostItem({ post }) {
           transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
           display: 'flex',
           flexDirection: 'column',
-          boxShadow: isHovered ? '0 10px 20px rgba(255, 32, 112, 0.08)' : '0 2px 8px rgba(0, 0, 0, 0.04)',
-          border: '1px solid #ffeef2'
+          boxShadow: isHovered ? '0 10px 20px rgba(0, 0, 0, 0.08)' : '0 2px 8px rgba(0, 0, 0, 0.04)',
+          border: '1px solid #f1f1f1'
         }}
       >
         {/* 3:4 비율 이미지 영역 */}
@@ -67,7 +65,6 @@ export default function MediaPostItem({ post }) {
             />
           )}
 
-          {/* Ohouse 스타일 북마크/찜 오버레이 버튼 */}
           <div 
             style={{
               position: 'absolute',
@@ -110,25 +107,20 @@ export default function MediaPostItem({ post }) {
           }}>
             {post.title}
           </h4>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <img 
-                src={avatarUrl} 
-                alt={post.nickname} 
-                style={{ 
-                  width: '22px', 
-                  height: '22px', 
-                  borderRadius: '50%', 
-                  background: '#ffeef2',
-                  border: '1px solid #ffd6e0',
-                  objectFit: 'cover'
-                }}
-              />
-              <span style={{ fontWeight: '600', color: '#555' }}>{post.nickname}</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', gap: '4px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, flex: 1 }}>
+              <Avatar name={post.nickname || 'slime'} imageUrl={post.profileImageUrl} size={22} />
+              <span style={{ fontWeight: '600', color: '#555', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{post.nickname}</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#ff2070', fontWeight: 'bold' }}>
-              <span>❤️</span>
-              <span>{post.likeCount}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#666', fontWeight: 'bold', fontSize: '0.8rem' }}>
+                <span>👁️</span>
+                <span>{post.viewCount || 0}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#ff2070', fontWeight: 'bold' }}>
+                <span>❤️</span>
+                <span>{post.likeCount}</span>
+              </div>
             </div>
           </div>
         </div>

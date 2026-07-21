@@ -4,8 +4,9 @@ import ProductCard from '../components/ProductCard'
 import { productApi } from '../api/products'
 import { boardApi } from '../api/board'
 import { isVideo } from '../utils/media'
+import Avatar from '../components/Avatar'
 
-const CATEGORIES = ['전체', '크런키', '클리어', '샤베트', '버터']
+const CATEGORIES = ['전체', '슬라임', '슬랑이', '말랑이', '스퀴시']
 const FEED_MAX = 10 // 자랑피드 최대 표시 개수
 
 export default function Home() {
@@ -25,14 +26,16 @@ export default function Home() {
   useEffect(() => {
     const cat = searchParams.get('category')
     const search = searchParams.get('search')
+    
     if (cat && CATEGORIES.includes(cat)) {
       setActiveCategory(cat)
-      setSearchQuery(cat === '전체' ? '' : cat)
-    } else if (search) {
-      setActiveCategory('전체')
-      setSearchQuery(search)
     } else {
       setActiveCategory('전체')
+    }
+
+    if (search) {
+      setSearchQuery(search)
+    } else {
       setSearchQuery('')
     }
   }, [searchParams])
@@ -40,7 +43,7 @@ export default function Home() {
   useEffect(() => {
     fetchProducts(0, true)
     // eslint-disable-next-line
-  }, [searchQuery])
+  }, [searchQuery, activeCategory])
 
   useEffect(() => {
     fetchLatestPosts()
@@ -48,7 +51,7 @@ export default function Home() {
 
   const fetchLatestPosts = async () => {
     try {
-      const data = await boardApi.getPosts('MEDIA', 0, FEED_MAX)
+      const data = await boardApi.getPosts('MEDIA', '', 0, FEED_MAX)
       setLatestPosts((data.content || []).slice(0, FEED_MAX))
     } catch (error) {
       console.error('Failed to fetch latest posts:', error)
@@ -58,8 +61,15 @@ export default function Home() {
   const fetchProducts = async (pageNumber = 0, reset = false) => {
     try {
       if (reset) setLoading(true)
-      const keyword = searchQuery === '전체' ? '' : searchQuery;
-      const data = await productApi.getProducts(keyword, pageNumber, 20);
+      
+      let categoryApiValue = '';
+      if (activeCategory === '슬라임') categoryApiValue = 'SLIME';
+      else if (activeCategory === '슬랑이') categoryApiValue = 'SLANGY';
+      else if (activeCategory === '말랑이') categoryApiValue = 'MALLANGI';
+      else if (activeCategory === '스퀴시') categoryApiValue = 'SQUISHY';
+
+      const keyword = searchQuery;
+      const data = await productApi.getProducts(categoryApiValue, keyword, pageNumber, 20);
       
       if (data && data.content) {
         setProducts(prev => reset ? data.content : [...prev, ...data.content])
@@ -109,7 +119,32 @@ export default function Home() {
             placeholder="상품명 또는 스토어명 검색" 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            style={{ paddingRight: searchQuery ? '4.5rem' : '3rem' }}
           />
+          {searchQuery && (
+            <button 
+              type="button" 
+              onClick={() => { setSearchQuery(''); fetchProducts(0, true); }}
+              style={{
+                position: 'absolute',
+                right: '3rem',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                color: '#aaa',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                padding: '4px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+              title="검색어 지우기"
+            >
+              ✖
+            </button>
+          )}
           <button type="submit" className="search-btn">🔍</button>
         </form>
       </div>
@@ -192,8 +227,8 @@ export default function Home() {
                     boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
                   }}>
                     {post.imageUrl ? (
-                      post.imageUrl.match(/\.(mp4|webm)$/i) ? (
-                        <video src={post.imageUrl} muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      post.imageUrl.match(/\.(mp4|webm|mov)$/i) ? (
+                        <video src={post.imageUrl} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       ) : (
                         <img src={post.imageUrl} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
                       )
@@ -214,11 +249,7 @@ export default function Home() {
                       alignItems: 'center'
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        <img 
-                          src={`https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(post.nickname || 'slime')}`} 
-                          alt={post.nickname} 
-                          style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'white', border: '1px solid #ffd6e0' }}
-                        />
+                        <Avatar name={post.nickname} size={18} style={{ border: '1px solid #ffd6e0' }} />
                         <span style={{ 
                           fontSize: '0.72rem', 
                           fontWeight: '600', 
@@ -231,9 +262,15 @@ export default function Home() {
                           {post.nickname}
                         </span>
                       </div>
-                      <div style={{ color: '#ff5b94', textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '2px' }}>
-                        <span>♥</span>
-                        <span style={{ fontSize: '0.7rem', color: 'white' }}>{post.likeCount}</span>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
+                        <div style={{ color: '#ff5b94', textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '2px' }}>
+                          <span>♥</span>
+                          <span style={{ fontSize: '0.7rem', color: 'white' }}>{post.likeCount}</span>
+                        </div>
+                        <div style={{ color: '#eaeaea', textShadow: '0 1px 2px rgba(0,0,0,0.6)', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '2px' }}>
+                          <span style={{ fontSize: '0.7rem' }}>👁</span>
+                          <span style={{ fontSize: '0.65rem', color: 'white' }}>{post.viewCount}</span>
+                        </div>
                       </div>
                     </div>
                   </div>

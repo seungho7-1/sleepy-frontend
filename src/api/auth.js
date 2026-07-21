@@ -16,9 +16,24 @@ export const authApi = {
   me: () =>
     api.get(`/auth/me`),
 
+  updateProfile: (data) =>
+    api.put(`/auth/me`, data),
+
   checkUsername: (username) =>
     api.get(`/auth/check-username?username=${username}`),
 
+  checkEmail: (email) =>
+    api.get(`/auth/check-email?email=${email}`),
+
   checkNickname: (nickname) =>
     api.get(`/auth/check-nickname?nickname=${nickname}`),
+
+  sendPasswordResetCode: (data) =>
+    api.post(`/auth/password/send-code`, data),
+
+  verifyPasswordResetCode: (data) =>
+    api.post(`/auth/password/verify-code`, data),
+
+  resetPassword: (data) =>
+    api.post(`/auth/password/reset`, data),
 };

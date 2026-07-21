@@ -1,9 +1,9 @@
 import api from './index';
 
 export const productApi = {
-  // 전체 목록 및 검색
-  getProducts: (keyword = '', page = 0, size = 8) => 
-    api.get(`/products/list`, { params: { keyword, page, size } }),
+  // 전체 목록 및 검색 (카테고리 필터링 지원)
+  getProducts: (category = '', keyword = '', page = 0, size = 8) => 
+    api.get(`/products/list`, { params: { category, keyword, page, size } }),
 
   // 상품 상세
   getProductDetail: (id) => 

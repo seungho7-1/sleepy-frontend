@@ -1,13 +1,39 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useAuthStore } from '../store'
+import { Camera, House, LogOut, UserRound, Bell, LayoutDashboard, Store } from 'lucide-react';
+import NotificationDropdown from './NotificationDropdown';
+import { notificationApi } from '../api/notification';
+import { db } from '../firebase';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import Avatar from './Avatar';
+
+import { authApi } from '../api/auth'
 
 export default function Navbar() {
-  const { token, role, nickname, logout } = useAuthStore()
+  const { token, role, nickname, profileImageUrl, setProfileImageUrl, setRole, setNickname, logout } = useAuthStore()
   const navigate = useNavigate()
   const location = useLocation()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [isCategoryOpen, setIsCategoryOpen] = useState(true) // 기본으로 카테고리 아코디언 열어둠
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
+
+  // 안 읽은 알림 개수 주기적 조회 (혹은 마운트 시 1회) -> Firebase 실시간 연동
+  useEffect(() => {
+    if (token && nickname) {
+      const q = query(
+        collection(db, "notifications", nickname, "userNotifications"),
+        where("isRead", "==", false)
+      );
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        setUnreadCount(snapshot.size);
+      });
+      return () => unsubscribe();
+    } else {
+      setUnreadCount(0);
+    }
+  }, [token, nickname]);
 
   const handleLogout = () => {
     logout()
@@ -15,16 +41,44 @@ export default function Navbar() {
     navigate('/')
   }
 
+  const fetchUnreadCount = async () => {
+    try {
+      const res = await notificationApi.getUnreadCount();
+      setUnreadCount(res.unreadCount !== undefined ? res.unreadCount : res);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   // 페이지 이동 시 드로어 자동 닫기
   useEffect(() => {
     setIsDrawerOpen(false)
   }, [location])
 
+  // 로그인 시 프로필 및 권한 정보 최신화
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (token) {
+        try {
+          const data = await authApi.me()
+          if (data) {
+            if (data.profileImageUrl) setProfileImageUrl(data.profileImageUrl)
+            if (data.role) setRole(data.role)
+            if (data.nickname) setNickname(data.nickname)
+          }
+        } catch (err) {
+          console.error('사용자 정보 로드 실패:', err)
+        }
+      }
+    }
+    fetchProfile()
+  }, [token, setProfileImageUrl, setRole, setNickname])
+
   const isActive = (path) => {
     return location.pathname === path
   }
 
-  const categories = ['전체', '크런키', '클리어', '샤베트', '버터']
+  const categories = ['전체', '슬라임', '슬랑이', '말랑이', '스퀴시']
 
   return (
     <>
@@ -46,25 +100,42 @@ export default function Navbar() {
           </Link>
         </div>
 
+        {/* 모바일용 알림 버튼 (900px 이하에서만 표시) */}
+        {token && (
+          <div className="mobile-notification-wrapper">
+            <button 
+              className="nav-btn notification-btn" 
+              onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+            >
+              <Bell size={22} strokeWidth={2.2} />
+              {unreadCount > 0 && <span className="notification-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>}
+            </button>
+            {isNotificationOpen && <NotificationDropdown onClose={(wasRead) => { 
+              setIsNotificationOpen(false); 
+              if (wasRead) fetchUnreadCount(); 
+            }} />}
+          </div>
+        )}
+
         {/* 데스크톱 네비게이션 링크 */}
         <nav className="nav-links">
           <Link 
             to="/" 
             className={`nav-btn ${isActive('/') ? 'active' : ''}`}
           >
-            🏠 쇼핑홈
+            <House size={18} strokeWidth={2.2} />마켓홈
           </Link>
           <Link 
             to="/gallery" 
             className={`nav-btn ${isActive('/gallery') ? 'active' : ''}`}
           >
-            ✨ 슬라임 갤러리
+            <Camera size={18} strokeWidth={2.2} />슬라임 갤러리
           </Link>
           <Link 
             to="/lounge" 
             className={`nav-btn ${isActive('/lounge') ? 'active' : ''}`}
           >
-            💬 Q&A 라운지
+            Q&A 라운지
           </Link>
           
           <div className="nav-divider">|</div>
@@ -75,6 +146,21 @@ export default function Navbar() {
                 <span className="dot"></span>
                 {nickname}님
               </span>
+              
+              <div className="notification-wrapper" style={{ position: 'relative' }}>
+                <button 
+                  className="nav-btn notification-btn" 
+                  onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+                >
+                  <Bell size={20} strokeWidth={2.2} />
+                  {unreadCount > 0 && <span className="notification-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>}
+                </button>
+                {isNotificationOpen && <NotificationDropdown onClose={(wasRead) => { 
+                  setIsNotificationOpen(false); 
+                  if (wasRead) fetchUnreadCount(); 
+                }} />}
+              </div>
+
               <Link 
                 to="/mypage" 
                 className={`nav-btn mypage-btn ${isActive('/mypage') ? 'active' : ''}`}
@@ -92,6 +178,7 @@ export default function Navbar() {
                 </Link>
               )}
               <button onClick={handleLogout} className="nav-btn logout-btn">
+                <LogOut size={16} strokeWidth={2.5} />
                 로그아웃
               </button>
             </div>
@@ -131,14 +218,20 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* 유저 정보 (오늘의집 모바일 버전처럼 가볍고 심플하게) */}
+        {/* 유저 정보 */}
         <div className="drawer-profile-section">
           {token ? (
             <div className="profile-logged-in">
-              <div className="profile-avatar">👤</div>
+              <div className="profile-avatar" style={{ overflow: 'hidden', border: 'none', background: 'none' }}>
+                {profileImageUrl ? (
+                  <img src={profileImageUrl} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                ) : (
+                  <Avatar name={nickname} size={38} />
+                )}
+              </div>
               <div className="profile-info">
                 <div className="profile-nickname">{nickname}</div>
-                <div className="profile-welcome">반가워요! 🫧</div>
+                <div className="profile-welcome">반가워요!</div>
               </div>
             </div>
           ) : (
@@ -155,7 +248,7 @@ export default function Navbar() {
         {/* 메뉴 목록 */}
         <div className="drawer-menu-list">
           <Link to="/" className={`drawer-menu-item ${isActive('/') ? 'active' : ''}`}>
-            쇼핑 홈
+            마켓 홈
           </Link>
           
           {/* 상품 카테고리 목록 (드로어 내부 아코디언) */}
@@ -164,7 +257,7 @@ export default function Navbar() {
               className="accordion-header" 
               onClick={() => setIsCategoryOpen(!isCategoryOpen)}
             >
-              <span>쇼핑 카테고리</span>
+              <span>마켓 카테고리</span>
               <span className={`arrow ${isCategoryOpen ? 'open' : ''}`}>▼</span>
             </button>
             
@@ -177,7 +270,7 @@ export default function Navbar() {
                     className="category-sub-item"
                     onClick={() => setIsDrawerOpen(false)}
                   >
-                    {cat} 슬라임
+                    {cat}
                   </Link>
                 ))}
               </div>
@@ -213,8 +306,9 @@ export default function Navbar() {
                   </Link>
                 )}
                 {token && (
-                  <button onClick={handleLogout} className="drawer-menu-item logout-btn">
-                    로그아웃
+                  <button onClick={handleLogout} className="drawer-menu-item logout-btn" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <LogOut size={16} strokeWidth={2.5} />
+                     로그아웃
                   </button>
                 )}
               </div>

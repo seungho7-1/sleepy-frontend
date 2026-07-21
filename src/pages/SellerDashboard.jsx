@@ -3,6 +3,7 @@ import { useAuthStore } from '../store'
 import { Link, useNavigate } from 'react-router-dom'
 import { productApi } from '../api/products'
 import { boardApi } from '../api/board'
+import ProductCard from '../components/ProductCard'
 
 export default function SellerDashboard() {
   const { token, role, nickname } = useAuthStore()
@@ -30,15 +31,13 @@ export default function SellerDashboard() {
     price: '',
     capacity: '',
     texture: '',
-    scent: '',
-    color: '',
-    releaseDate: '',
     description: '',
     shopName: '',
     purchaseUrl: '',
     tags: '',
     videoUrl: '',
-    videoType: 'NONE'
+    videoType: 'NONE',
+    category: 'SLIME'
   })
 
   useEffect(() => {
@@ -66,7 +65,7 @@ export default function SellerDashboard() {
   const handleToggleForm = () => {
     if (showForm) {
       // Clear form on close
-      setFormData({ name: '', price: '', capacity: '', texture: '', scent: '', color: '', releaseDate: '', description: '', shopName: '', purchaseUrl: '', tags: '', videoUrl: '', videoType: 'NONE' });
+      setFormData({ name: '', price: '', capacity: '', texture: '', description: '', shopName: '', purchaseUrl: '', tags: '', videoUrl: '', videoType: 'NONE', category: 'SLIME' });
       setImageUrls([]);
       setDescriptionImageUrls([]);
       setMediaOption('NONE');
@@ -82,15 +81,13 @@ export default function SellerDashboard() {
       price: p.price ? p.price.toString() : '',
       capacity: p.capacity ? p.capacity.toString() : '',
       texture: p.texture || '',
-      scent: p.scent || '',
-      color: p.color || '',
-      releaseDate: p.releaseDate || '',
       description: p.description || '',
       shopName: p.shopName || '',
       purchaseUrl: p.purchaseUrl || '',
       tags: p.tags ? p.tags.join(', ') : '',
       videoUrl: p.videoUrl || '',
-      videoType: p.videoType || 'NONE'
+      videoType: p.videoType || 'NONE',
+      category: p.category || 'SLIME'
     });
     setImageUrls(p.imageUrls && p.imageUrls.length > 0 ? p.imageUrls : [p.imageUrl]);
     setDescriptionImageUrls(p.descriptionImageUrls || []);
@@ -218,8 +215,8 @@ export default function SellerDashboard() {
         videoType: finalVideoType,
         price: parseInt(formData.price) || 0,
         capacity: parseInt(formData.capacity) || 0,
-        releaseDate: formData.releaseDate ? formData.releaseDate : null,
-        tags: formData.tags ? formData.tags.split(',').map(t => t.trim()).filter(t => t) : []
+        tags: formData.tags ? formData.tags.split(',').map(t => t.trim()).filter(t => t) : [],
+        category: formData.category || 'SLIME'
       };
 
       if (editingProductId) {
@@ -230,7 +227,7 @@ export default function SellerDashboard() {
         alert('상품이 성공적으로 등록되었습니다. 🎉');
       }
 
-      setFormData({ name: '', price: '', capacity: '', texture: '', scent: '', color: '', releaseDate: '', description: '', shopName: '', purchaseUrl: '', tags: '', videoUrl: '', videoType: 'NONE' });
+      setFormData({ name: '', price: '', capacity: '', texture: '', description: '', shopName: '', purchaseUrl: '', tags: '', videoUrl: '', videoType: 'NONE', category: 'SLIME' });
       setImageUrls([]);
       setDescriptionImageUrls([]);
       setMediaOption('NONE');
@@ -275,277 +272,221 @@ export default function SellerDashboard() {
               {editingProductId ? '상품 정보 수정 ✏️' : '새 상품 등록 (SlimeHub 전용)'}
             </h3>
             
-            {/* 1. URL 자동 완성 (Jsoup 기반 메타데이터 파서 - 등록 모드일 때만 노출) */}
-            {!editingProductId && (
-              <div style={{ marginBottom: '1.8rem', padding: '1.2rem', background: '#fff0f3', borderRadius: '12px', border: '1px solid #ffd6e0' }}>
-                <label style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--primary-color)', display: 'block', marginBottom: '8px' }}>
-                  🔗 스토어 주소로 정보 가져오기 (자동완성)
-                </label>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <input 
-                    type="text" 
-                    placeholder="네이버 스마트스토어, 카페24 등의 상품 주소 URL을 입력해 보세요!" 
-                    value={crawlUrl}
-                    onChange={(e) => setCrawlUrl(e.target.value)}
-                    style={{ flex: 1, padding: '10px 14px', borderRadius: '10px', border: '1px solid #ffd6e0', outline: 'none' }}
-                  />
-                  <button 
-                    type="button" 
-                    className="submit-btn" 
-                    onClick={handleCrawl}
-                    disabled={isCrawling}
-                    style={{ width: '120px', padding: '10px', marginTop: 0 }}
-                  >
-                    {isCrawling ? '가져오는 중...' : '정보 가져오기'}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* 2. 상품 수동 상세 작성 및 업로드 */}
-            <form onSubmit={handleAddProduct} className="product-form" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <div>
-                  <label style={{ fontSize: '0.85rem', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>상품명 *</label>
-                  <input type="text" name="name" placeholder="예: 구름 슬라임" required value={formData.name} onChange={handleInputChange} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }} />
-                </div>
-                <div>
-                  <label style={{ fontSize: '0.85rem', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>스토어명 *</label>
-                  <input type="text" name="shopName" placeholder="예: 슬라임 팩토리" required value={formData.shopName} onChange={handleInputChange} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }} />
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <div>
-                  <label style={{ fontSize: '0.85rem', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>판매가 (원)</label>
-                  <input type="number" name="price" placeholder="가격 입력" value={formData.price} onChange={handleInputChange} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }} />
-                </div>
-                <div>
-                  <label style={{ fontSize: '0.85rem', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>용량 (ml)</label>
-                  <input type="number" name="capacity" placeholder="용량 입력" value={formData.capacity} onChange={handleInputChange} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }} />
-                </div>
-              </div>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
-                <div>
-                  <label style={{ fontSize: '0.85rem', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>질감</label>
-                  <input type="text" name="texture" placeholder="예: 크런치" value={formData.texture} onChange={handleInputChange} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }} />
-                </div>
-                <div>
-                  <label style={{ fontSize: '0.85rem', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>향</label>
-                  <input type="text" name="scent" placeholder="예: 초콜릿향" value={formData.scent} onChange={handleInputChange} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }} />
-                </div>
-                <div>
-                  <label style={{ fontSize: '0.85rem', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>색상</label>
-                  <input type="text" name="color" placeholder="예: 화이트" value={formData.color} onChange={handleInputChange} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }} />
-                </div>
-              </div>
-
-              <div>
-                <label style={{ fontSize: '0.85rem', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>출시일</label>
-                <input type="date" name="releaseDate" value={formData.releaseDate} onChange={handleInputChange} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }} />
-              </div>
-
-              {/* 3. 이미지 미디어 설정 (수동 주소입력 및 다중 파일 업로드 - 최대 5개) */}
-              <div style={{ padding: '1.2rem', background: '#fafafa', borderRadius: '12px', border: '1px solid #eee' }}>
-                <label style={{ fontSize: '0.85rem', fontWeight: 'bold', display: 'block', marginBottom: '10px' }}>🖼️ 대표 이미지 등록 (최대 5개)</label>
-                
-                {/* 현재 등록된 이미지 목록 미리보기 카드 그리드 */}
-                {imageUrls.length > 0 && (
-                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '1rem' }}>
-                    {imageUrls.map((url, index) => (
-                      <div key={index} style={{ position: 'relative', width: '100px', height: '100px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #ddd' }}>
-                        <img src={url} alt={`preview-${index}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        <button 
-                          type="button" 
-                          onClick={() => setImageUrls(prev => prev.filter((_, i) => i !== index))}
-                          style={{ position: 'absolute', top: '4px', right: '4px', width: '20px', height: '20px', borderRadius: '50%', background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontWeight: 'bold' }}
-                        >
-                          X
-                        </button>
-                        <div style={{ position: 'absolute', bottom: '0', width: '100%', background: 'rgba(255,255,255,0.8)', fontSize: '9px', textAlign: 'center', fontWeight: 'bold', color: 'var(--primary-color)' }}>
-                          {index === 0 ? '대표' : `${index + 1}번`}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <div style={{ display: 'flex', gap: '0.5rem', flexDirection: 'column' }}>
-                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      multiple
-                      onChange={handleImageUpload} 
-                      style={{ display: 'none' }} 
-                      id="image-file-input"
-                      disabled={imageUrls.length >= 5}
-                    />
-                    <label htmlFor="image-file-input" className="submit-btn" style={{ width: 'auto', padding: '8px 16px', background: imageUrls.length >= 5 ? '#eee' : '#fff', border: '1px solid #ffd6e0', color: imageUrls.length >= 5 ? '#999' : 'var(--primary-color)', margin: 0, display: 'inline-block', cursor: imageUrls.length >= 5 ? 'not-allowed' : 'pointer', borderRadius: '8px', fontWeight: 'bold' }}>
-                      {uploadingImg ? '업로드 중...' : '📷 PC에서 이미지 추가 (다중 선택 가능)'}
-                    </label>
-                    <span style={{ fontSize: '0.8rem', color: '#666' }}>
-                      ({imageUrls.length}/5개 등록 완료)
-                    </span>
-                  </div>
-
-                  {/* 수동 URL 입력창 */}
-                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: '4px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+              {/* 1. URL 자동 완성 */}
+              {!editingProductId && (
+                <div style={{ padding: '1.5rem', background: 'var(--bg-secondary)', borderRadius: '16px', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <label style={{ fontSize: '1rem', fontWeight: 'bold', color: 'var(--text-main)' }}>
+                    🔗 스토어 주소로 상품 정보 불러오기
+                  </label>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-sub)', margin: 0 }}>네이버 스마트스토어 등 기존 판매처의 URL을 입력하면 상품 정보가 자동으로 채워집니다.</p>
+                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
                     <input 
                       type="text" 
-                      id="manual-image-url-input"
-                      placeholder="혹은 이미지 웹 URL 주소를 적고 추가 버튼을 누르세요." 
-                      style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }} 
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          const val = e.target.value.trim();
-                          if (val) {
-                            if (imageUrls.length >= 5) {
-                              alert('대표 이미지는 최대 5개까지만 등록할 수 있습니다.');
-                              return;
-                            }
-                            setImageUrls(prev => [...prev, val]);
-                            e.target.value = '';
-                          }
-                        }
-                      }}
+                      placeholder="상품 주소 URL을 입력해 주세요." 
+                      value={crawlUrl}
+                      onChange={(e) => setCrawlUrl(e.target.value)}
+                      style={{ flex: 1, padding: '0.8rem 1rem', borderRadius: '12px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem' }}
                     />
-                    <button
-                      type="button"
-                      style={{ width: '80px', padding: '10px', background: '#fff', border: '1px solid #ffd6e0', color: 'var(--primary-color)', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
-                      onClick={() => {
-                        const input = document.getElementById('manual-image-url-input');
-                        const val = input.value.trim();
-                        if (val) {
-                          if (imageUrls.length >= 5) {
-                            alert('대표 이미지는 최대 5개까지만 등록할 수 있습니다.');
-                            return;
-                          }
-                          setImageUrls(prev => [...prev, val]);
-                          input.value = '';
-                        } else {
-                          alert('URL 주소를 입력해주세요.');
-                        }
-                      }}
+                    <button 
+                      type="button" 
+                      className="nav-btn admin-btn" 
+                      onClick={handleCrawl}
+                      disabled={isCrawling}
+                      style={{ padding: '0 1.5rem', margin: 0, height: 'auto' }}
                     >
-                      추가
+                      {isCrawling ? '가져오는 중...' : '자동 완성하기'}
                     </button>
                   </div>
                 </div>
-              </div>
+              )}
 
-              {/* 4. 동영상 미디어 설정 (업로드 vs 유튜브/인스타 링크) */}
-              <div style={{ padding: '1.2rem', background: '#fafafa', borderRadius: '12px', border: '1px solid #eee' }}>
-                <label style={{ fontSize: '0.85rem', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>📹 촉감 동영상 추가 (선택사항)</label>
-                <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', cursor: 'pointer' }}>
-                    <input type="radio" checked={mediaOption === 'NONE'} onChange={() => { setMediaOption('NONE'); setFormData(prev => ({ ...prev, videoUrl: '', videoType: 'NONE' })) }} />
-                    영상 등록 안함
-                  </label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', cursor: 'pointer' }}>
-                    <input type="radio" checked={mediaOption === 'FILE'} onChange={() => setMediaOption('FILE')} />
-                    짧은 영상 파일 직접 업로드
-                  </label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', cursor: 'pointer' }}>
-                    <input type="radio" checked={mediaOption === 'LINK'} onChange={() => setMediaOption('LINK')} />
-                    외부 영상 링크 첨부 (유튜브/인스타)
-                  </label>
-                </div>
-
-                {mediaOption === 'FILE' && (
-                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '10px' }}>
-                    <input 
-                      type="file" 
-                      accept="video/*" 
-                      onChange={handleVideoUpload} 
-                      style={{ display: 'none' }} 
-                      id="video-file-input"
-                    />
-                    <label htmlFor="video-file-input" className="submit-btn" style={{ width: 'auto', padding: '8px 16px', background: '#fff', border: '1px solid #ffd6e0', color: 'var(--primary-color)', margin: 0, display: 'inline-block', cursor: 'pointer', borderRadius: '8px', fontWeight: 'bold' }}>
-                      {uploadingVid ? '동영상 업로드 중...' : '🎥 짧은 비디오 선택 (15MB 이하)'}
-                    </label>
-                    {formData.videoUrl && <span style={{ fontSize: '0.8rem', color: 'green', fontWeight: 'bold' }}>✓ 동영상 등록 완료!</span>}
-                  </div>
-                )}
-
-                {mediaOption === 'LINK' && (
-                  <input 
-                    type="text" 
-                    name="videoUrl" 
-                    placeholder="유튜브 영상 주소 또는 인스타그램 게시글 주소를 여기에 붙여넣어 주세요." 
-                    value={formData.videoUrl} 
-                    onChange={handleInputChange} 
-                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', marginTop: '10px' }} 
-                  />
-                )}
-              </div>
-
-              <div>
-                <label style={{ fontSize: '0.85rem', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>공식 스토어 구매 링크 URL (네이버 쇼핑 등) *</label>
-                <input type="text" name="purchaseUrl" placeholder="예: https://smartstore.naver.com/..." required value={formData.purchaseUrl} onChange={handleInputChange} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }} />
-              </div>
-
-              <div>
-                <label style={{ fontSize: '0.85rem', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>태그</label>
-                <input type="text" name="tags" placeholder="쉼표로 구분. 예: 촉촉함, 기포소리대박, 초보자용" value={formData.tags} onChange={handleInputChange} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }} />
-              </div>
-
-              <div>
-                <label style={{ fontSize: '0.85rem', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>상세 설명</label>
-                <textarea name="description" placeholder="플레이 촉감이나 슬라임 특성을 자세히 설명해 주세요." value={formData.description} onChange={handleInputChange} style={{ width: '100%', minHeight: '120px', padding: '12px', borderRadius: '8px', border: '1px solid #ddd', fontFamily: 'inherit' }} />
-              </div>
-
-              {/* 상세 설명 이미지 파일 업로드 */}
-              <div style={{ padding: '1.2rem', background: '#fafafa', borderRadius: '12px', border: '1px solid #eee' }}>
-                <label style={{ fontSize: '0.85rem', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>📄 상세 설명 이미지 등록 (최대 5개, 선택사항)</label>
+              {/* 2. 상품 수동 상세 작성 및 업로드 */}
+              <form onSubmit={handleAddProduct} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                 
-                {/* 현재 등록된 상세 이미지 목록 미리보기 카드 그리드 */}
-                {descriptionImageUrls.length > 0 && (
-                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '1rem' }}>
-                    {descriptionImageUrls.map((url, index) => (
-                      <div key={index} style={{ position: 'relative', width: '100px', height: '100px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #ddd' }}>
-                        <img src={url} alt={`preview-desc-${index}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        <button 
-                          type="button" 
-                          onClick={() => setDescriptionImageUrls(prev => prev.filter((_, i) => i !== index))}
-                          style={{ position: 'absolute', top: '4px', right: '4px', width: '20px', height: '20px', borderRadius: '50%', background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontWeight: 'bold' }}
-                        >
-                          X
-                        </button>
-                        <div style={{ position: 'absolute', bottom: '0', width: '100%', background: 'rgba(255,255,255,0.8)', fontSize: '9px', textAlign: 'center', fontWeight: 'bold', color: 'var(--primary-color)' }}>
-                          {`${index + 1}번 상세`}
-                        </div>
-                      </div>
-                    ))}
+                {/* --- 기본 정보 섹션 --- */}
+                <div style={{ padding: '1.5rem', background: '#fff', borderRadius: '16px', border: '1px solid var(--border-color)', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+                  <h4 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '1.5rem', color: 'var(--text-main)' }}>📦 기본 정보</h4>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
+                    <div>
+                      <label style={{ fontSize: '0.85rem', fontWeight: '600', display: 'block', marginBottom: '8px', color: 'var(--text-main)' }}>상품명 *</label>
+                      <input type="text" name="name" placeholder="예: 몽글몽글 구름 슬라임" required value={formData.name} onChange={handleInputChange} style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '10px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem' }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.85rem', fontWeight: '600', display: 'block', marginBottom: '8px', color: 'var(--text-main)' }}>카테고리 *</label>
+                      <select 
+                        name="category" 
+                        value={formData.category} 
+                        onChange={handleInputChange} 
+                        required 
+                        style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '10px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem', backgroundColor: '#fff' }}
+                      >
+                        <option value="SLIME">🫧 슬라임</option>
+                        <option value="SLANGY">🧸 슬랑이</option>
+                        <option value="MALLANGI">🧸 말랑이</option>
+                        <option value="SQUISHY">🧸 스퀴시</option>
+                      </select>
+                    </div>
                   </div>
-                )}
 
-                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    multiple
-                    onChange={handleDescImageUpload} 
-                    style={{ display: 'none' }} 
-                    id="desc-image-file-input"
-                    disabled={descriptionImageUrls.length >= 5}
-                  />
-                  <label htmlFor="desc-image-file-input" className="submit-btn" style={{ width: 'auto', padding: '8px 16px', background: descriptionImageUrls.length >= 5 ? '#eee' : '#fff', border: '1px solid #ffd6e0', color: descriptionImageUrls.length >= 5 ? '#999' : 'var(--primary-color)', margin: 0, display: 'inline-block', cursor: descriptionImageUrls.length >= 5 ? 'not-allowed' : 'pointer', borderRadius: '8px', fontWeight: 'bold' }}>
-                    {uploadingDescImg ? '업로드 중...' : '📷 PC에서 상세 이미지 추가 (다중 선택 가능)'}
-                  </label>
-                  <span style={{ fontSize: '0.8rem', color: '#666' }}>
-                    ({descriptionImageUrls.length}/5개 등록 완료)
-                  </span>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.5rem' }}>
+                    <div>
+                      <label style={{ fontSize: '0.85rem', fontWeight: '600', display: 'block', marginBottom: '8px', color: 'var(--text-main)' }}>판매가 (원)</label>
+                      <input type="number" name="price" placeholder="숫자만 입력" value={formData.price} onChange={handleInputChange} style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '10px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem' }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.85rem', fontWeight: '600', display: 'block', marginBottom: '8px', color: 'var(--text-main)' }}>용량 (ml)</label>
+                      <input type="number" name="capacity" placeholder="숫자만 입력" value={formData.capacity} onChange={handleInputChange} style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '10px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem' }} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '0.85rem', fontWeight: '600', display: 'block', marginBottom: '8px', color: 'var(--text-main)' }}>질감</label>
+                      <input type="text" name="texture" placeholder="예: 크런치, 클리어" value={formData.texture} onChange={handleInputChange} style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '10px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem' }} />
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              <button type="submit" className="submit-btn" disabled={uploadingImg || uploadingVid || uploadingDescImg} style={{ padding: '14px', fontSize: '1rem', marginTop: '1rem' }}>
-                {uploadingImg || uploadingVid ? '미디어 업로드 중...' : editingProductId ? '상품 정보 수정 완료하기' : '상품 등록하기'}
-              </button>
-            </form>
+                {/* --- 상세 정보 섹션 --- */}
+                <div style={{ padding: '1.5rem', background: '#fff', borderRadius: '16px', border: '1px solid var(--border-color)', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+                  <h4 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '1.5rem', color: 'var(--text-main)' }}>📝 상세 정보</h4>
+                  
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <label style={{ fontSize: '0.85rem', fontWeight: '600', display: 'block', marginBottom: '8px', color: 'var(--text-main)' }}>공식 스토어 구매 링크 URL *</label>
+                    <input type="text" name="purchaseUrl" placeholder="실제 구매가 이루어지는 웹사이트 주소" required value={formData.purchaseUrl} onChange={handleInputChange} style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '10px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem' }} />
+                  </div>
+
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <label style={{ fontSize: '0.85rem', fontWeight: '600', display: 'block', marginBottom: '8px', color: 'var(--text-main)' }}>검색 태그</label>
+                    <input type="text" name="tags" placeholder="쉼표(,)로 구분해 주세요. 예: 기포소리, 폼슬라임, 초보자용" value={formData.tags} onChange={handleInputChange} style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '10px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem' }} />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.85rem', fontWeight: '600', display: 'block', marginBottom: '8px', color: 'var(--text-main)' }}>상세 설명</label>
+                    <textarea name="description" placeholder="플레이 촉감이나 슬라임 특성을 자유롭게 설명해 주세요." value={formData.description} onChange={handleInputChange} style={{ width: '100%', minHeight: '150px', padding: '1rem', borderRadius: '10px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem', fontFamily: 'inherit', resize: 'vertical' }} />
+                  </div>
+                </div>
+
+                {/* --- 미디어 등록 섹션 --- */}
+                <div style={{ padding: '1.5rem', background: '#fff', borderRadius: '16px', border: '1px solid var(--border-color)', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+                  <h4 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '1.5rem', color: 'var(--text-main)' }}>🖼️ 미디어 등록</h4>
+                  
+                  {/* 대표 이미지 */}
+                  <div style={{ marginBottom: '2rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                      <label style={{ fontSize: '0.95rem', fontWeight: 'bold', color: 'var(--text-main)' }}>대표 이미지 (최대 5개) *</label>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-sub)' }}>{imageUrls.length}/5개 등록됨</span>
+                    </div>
+                    
+                    {imageUrls.length > 0 && (
+                      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '1rem' }}>
+                        {imageUrls.map((url, index) => (
+                          <div key={index} style={{ position: 'relative', width: '100px', height: '100px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+                            <img src={url} alt={`preview-${index}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <button type="button" onClick={() => setImageUrls(prev => prev.filter((_, i) => i !== index))} style={{ position: 'absolute', top: '6px', right: '6px', width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(0,0,0,0.5)', color: '#fff', border: 'none', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>✕</button>
+                            {index === 0 && <div style={{ position: 'absolute', bottom: '0', width: '100%', background: 'var(--primary-color)', color: '#fff', fontSize: '10px', textAlign: 'center', padding: '2px 0', fontWeight: 'bold' }}>대표</div>}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      <input type="file" accept="image/*" multiple onChange={handleImageUpload} style={{ display: 'none' }} id="image-file-input" disabled={imageUrls.length >= 5} />
+                      <label htmlFor="image-file-input" style={{ padding: '0.8rem 1.2rem', background: imageUrls.length >= 5 ? 'var(--bg-secondary)' : '#fff', border: `1px solid ${imageUrls.length >= 5 ? 'var(--border-color)' : 'var(--primary-color)'}`, color: imageUrls.length >= 5 ? 'var(--text-sub)' : 'var(--primary-color)', borderRadius: '10px', fontWeight: '600', cursor: imageUrls.length >= 5 ? 'not-allowed' : 'pointer', fontSize: '0.9rem', transition: 'all 0.2s' }}>
+                        {uploadingImg ? '업로드 중...' : 'PC에서 추가하기'}
+                      </label>
+                      <div style={{ display: 'flex', flex: 1, minWidth: '250px' }}>
+                        <input type="text" id="manual-image-url-input" placeholder="이미지 웹 주소(URL)로 직접 추가" style={{ flex: 1, padding: '0.8rem 1rem', borderTopLeftRadius: '10px', borderBottomLeftRadius: '10px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem' }} />
+                        <button type="button" onClick={() => {
+                            const input = document.getElementById('manual-image-url-input');
+                            const val = input.value.trim();
+                            if (val) {
+                              if (imageUrls.length >= 5) { alert('대표 이미지는 최대 5개까지만 등록할 수 있습니다.'); return; }
+                              setImageUrls(prev => [...prev, val]);
+                              input.value = '';
+                            }
+                          }}
+                          style={{ padding: '0 1.2rem', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderLeft: 'none', borderTopRightRadius: '10px', borderBottomRightRadius: '10px', color: 'var(--text-main)', fontWeight: '600', cursor: 'pointer' }}>
+                          추가
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 상세 이미지 */}
+                  <div style={{ marginBottom: '2rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                      <label style={{ fontSize: '0.95rem', fontWeight: 'bold', color: 'var(--text-main)' }}>상세 설명 이미지 (최대 5개, 선택)</label>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-sub)' }}>{descriptionImageUrls.length}/5개 등록됨</span>
+                    </div>
+                    
+                    {descriptionImageUrls.length > 0 && (
+                      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '1rem' }}>
+                        {descriptionImageUrls.map((url, index) => (
+                          <div key={index} style={{ position: 'relative', width: '100px', height: '100px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+                            <img src={url} alt={`preview-desc-${index}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <button type="button" onClick={() => setDescriptionImageUrls(prev => prev.filter((_, i) => i !== index))} style={{ position: 'absolute', top: '6px', right: '6px', width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(0,0,0,0.5)', color: '#fff', border: 'none', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>✕</button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div>
+                      <input type="file" accept="image/*" multiple onChange={handleDescImageUpload} style={{ display: 'none' }} id="desc-image-file-input" disabled={descriptionImageUrls.length >= 5} />
+                      <label htmlFor="desc-image-file-input" style={{ padding: '0.8rem 1.2rem', background: descriptionImageUrls.length >= 5 ? 'var(--bg-secondary)' : '#fff', border: `1px solid ${descriptionImageUrls.length >= 5 ? 'var(--border-color)' : 'var(--primary-color)'}`, color: descriptionImageUrls.length >= 5 ? 'var(--text-sub)' : 'var(--primary-color)', borderRadius: '10px', fontWeight: '600', cursor: descriptionImageUrls.length >= 5 ? 'not-allowed' : 'pointer', fontSize: '0.9rem', display: 'inline-block' }}>
+                        {uploadingDescImg ? '업로드 중...' : '상세 이미지 첨부하기'}
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* 동영상 설정 */}
+                  <div>
+                    <label style={{ fontSize: '0.95rem', fontWeight: 'bold', color: 'var(--text-main)', display: 'block', marginBottom: '12px' }}>📹 촉감 동영상 추가 (선택)</label>
+                    
+                    <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', cursor: 'pointer', padding: '0.6rem 1rem', background: mediaOption === 'NONE' ? 'var(--bg-secondary)' : '#fff', border: `1px solid ${mediaOption === 'NONE' ? 'var(--primary-color)' : 'var(--border-color)'}`, borderRadius: '10px', color: mediaOption === 'NONE' ? 'var(--primary-color)' : 'var(--text-main)', fontWeight: mediaOption === 'NONE' ? '600' : 'normal' }}>
+                        <input type="radio" checked={mediaOption === 'NONE'} onChange={() => { setMediaOption('NONE'); setFormData(prev => ({ ...prev, videoUrl: '', videoType: 'NONE' })) }} style={{ display: 'none' }} />
+                        사용 안 함
+                      </label>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', cursor: 'pointer', padding: '0.6rem 1rem', background: mediaOption === 'FILE' ? 'var(--bg-secondary)' : '#fff', border: `1px solid ${mediaOption === 'FILE' ? 'var(--primary-color)' : 'var(--border-color)'}`, borderRadius: '10px', color: mediaOption === 'FILE' ? 'var(--primary-color)' : 'var(--text-main)', fontWeight: mediaOption === 'FILE' ? '600' : 'normal' }}>
+                        <input type="radio" checked={mediaOption === 'FILE'} onChange={() => setMediaOption('FILE')} style={{ display: 'none' }} />
+                        파일 업로드
+                      </label>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', cursor: 'pointer', padding: '0.6rem 1rem', background: mediaOption === 'LINK' ? 'var(--bg-secondary)' : '#fff', border: `1px solid ${mediaOption === 'LINK' ? 'var(--primary-color)' : 'var(--border-color)'}`, borderRadius: '10px', color: mediaOption === 'LINK' ? 'var(--primary-color)' : 'var(--text-main)', fontWeight: mediaOption === 'LINK' ? '600' : 'normal' }}>
+                        <input type="radio" checked={mediaOption === 'LINK'} onChange={() => setMediaOption('LINK')} style={{ display: 'none' }} />
+                        외부 링크 (유튜브/인스타)
+                      </label>
+                    </div>
+
+                    {mediaOption === 'FILE' && (
+                      <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <input type="file" accept="video/*" onChange={handleVideoUpload} style={{ display: 'none' }} id="video-file-input" />
+                        <label htmlFor="video-file-input" style={{ padding: '0.8rem 1.2rem', background: '#fff', border: '1px solid var(--border-color)', color: 'var(--text-main)', borderRadius: '10px', fontWeight: '600', cursor: 'pointer', fontSize: '0.9rem' }}>
+                          {uploadingVid ? '업로드 중...' : '동영상 선택 (15MB 이하)'}
+                        </label>
+                        {formData.videoUrl && <span style={{ fontSize: '0.9rem', color: 'var(--primary-color)', fontWeight: 'bold' }}>✓ 첨부 완료</span>}
+                      </div>
+                    )}
+
+                    {mediaOption === 'LINK' && (
+                      <input 
+                        type="text" 
+                        name="videoUrl" 
+                        placeholder="유튜브 또는 인스타그램 영상 주소를 입력하세요" 
+                        value={formData.videoUrl} 
+                        onChange={handleInputChange} 
+                        style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '10px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem' }} 
+                      />
+                    )}
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
+                  <button type="submit" className="submit-btn" disabled={uploadingImg || uploadingVid || uploadingDescImg} style={{ padding: '1rem 3rem', fontSize: '1.1rem', borderRadius: '12px', boxShadow: '0 4px 16px rgba(255,107,158,0.25)' }}>
+                    {uploadingImg || uploadingVid ? '미디어 업로드 중...' : editingProductId ? '수정 완료하기' : '상품 등록 완료'}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         )}
 

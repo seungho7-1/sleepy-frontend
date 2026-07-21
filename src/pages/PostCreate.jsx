@@ -1,22 +1,62 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuthStore } from '../store'
 import { boardApi } from '../api/board'
 
 export default function PostCreate() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { token, role } = useAuthStore()
+  
+  const initialBoardType = searchParams.get('boardType') || 'QNA'
+  
+  const editId = searchParams.get('edit')
   
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
-  const [boardType, setBoardType] = useState('FREE')
+  const [boardType, setBoardType] = useState(initialBoardType)
   const [file, setFile] = useState(null)
   const [previewUrl, setPreviewUrl] = useState(null)
   const [isUploading, setIsUploading] = useState(false)
+  const [isEditMode, setIsEditMode] = useState(false)
+
+  // 수정 모드일 때 기존 게시글 데이터 불러오기
+  useEffect(() => {
+    if (editId) {
+      setIsEditMode(true)
+      const fetchPost = async () => {
+        try {
+          const postData = await boardApi.getPostDetail(editId);
+          setTitle(postData.title);
+          setContent(postData.content);
+          setBoardType(postData.boardType);
+          if (postData.imageUrl) {
+            setPreviewUrl(postData.imageUrl);
+          }
+        } catch (err) {
+          console.error(err);
+          alert('게시글을 불러올 수 없습니다.');
+          navigate(-1);
+        }
+      }
+      fetchPost();
+    }
+  }, [editId])
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0]
     if (selectedFile) {
+      // 🚨 파일 용량 제한 검사 로직 추가 🚨
+      const isVideo = selectedFile.type.startsWith('video/');
+      const maxSizeMB = isVideo ? 20 : 5; // 영상은 최대 20MB, 사진은 5MB로 안전하게 제한
+      const maxSizeBytes = maxSizeMB * 1024 * 1024;
+
+      if (selectedFile.size > maxSizeBytes) {
+        alert(`파일 용량이 너무 큽니다!\n${isVideo ? '영상은 최대 20MB' : '사진은 최대 5MB'}까지만 업로드 가능합니다.\n\n현재 파일 크기: ${(selectedFile.size / 1024 / 1024).toFixed(1)}MB`);
+        e.target.value = ''; // 입력창 초기화
+        return;
+      }
+
       setFile(selectedFile)
       setPreviewUrl(URL.createObjectURL(selectedFile))
     }
@@ -39,16 +79,21 @@ export default function PostCreate() {
 
     try {
       setIsUploading(true)
-      let imageUrl = null;
+      let finalImageUrl = previewUrl; // 새로 업로드 안했으면 기존 URL 유지
       if (file) {
-        // Axios가 자동으로 boundary를 설정할 수 있도록 Content-Type 헤더가 제거된 파일 업로드 호출
         const uploadRes = await boardApi.uploadFile(file, 'post');
-        imageUrl = uploadRes.url;
+        finalImageUrl = uploadRes.url;
       }
 
-      await boardApi.createPost({ title, content, boardType, imageUrl });
-      alert('게시글이 등록되었습니다.');
-      navigate(boardType === 'MEDIA' ? '/gallery' : '/lounge');
+      if (isEditMode) {
+        await boardApi.updatePost(editId, { title, content, boardType, imageUrl: finalImageUrl });
+        alert('게시글이 수정되었습니다.');
+        navigate(`/community/post/${editId}`);
+      } else {
+        await boardApi.createPost({ title, content, boardType, imageUrl: finalImageUrl });
+        alert('게시글이 등록되었습니다.');
+        navigate(boardType === 'MEDIA' ? '/gallery' : `/lounge?tab=${boardType}`);
+      }
     } catch (err) {
       alert(err.message || '게시글 등록에 실패했습니다.');
     } finally {
@@ -58,93 +103,11 @@ export default function PostCreate() {
 
   return (
     <div className="post-create-container" style={{ maxWidth: '600px', margin: '2rem auto', padding: '0 1.2rem 80px' }}>
-      <h2 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '1.8rem', color: 'var(--text-main)' }}>새 게시글 작성 ✍️</h2>
+      <h2 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '1.8rem', color: 'var(--text-main)' }}>
+        {isEditMode ? '✍️ 게시글 수정하기' : boardType === 'MEDIA' ? '✨ 슬라임 자랑하기' : boardType === 'NOTICE' ? '📢 공지사항 작성' : '💬 질문 남기기'}
+      </h2>
       
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
-        
-        {/* 게시판 카테고리 선택 버튼그룹 */}
-        <div style={{ marginBottom: '1.5rem' }}>
-          <label style={{ display: 'block', marginBottom: '0.6rem', fontWeight: '700', fontSize: '0.9rem', color: 'var(--text-main)' }}>
-            게시판 선택
-          </label>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <button
-              type="button"
-              onClick={() => setBoardType('FREE')}
-              style={{
-                flex: 1,
-                minWidth: '90px',
-                padding: '10px 8px',
-                borderRadius: '10px',
-                fontSize: '0.85rem',
-                fontWeight: '600',
-                transition: 'all 0.2s',
-                border: '1px solid ' + (boardType === 'FREE' ? 'var(--primary-color)' : 'var(--border-color)'),
-                backgroundColor: boardType === 'FREE' ? 'var(--primary-color)' : 'white',
-                color: boardType === 'FREE' ? 'white' : 'var(--text-sub)'
-              }}
-            >
-              자유게시판
-            </button>
-            <button
-              type="button"
-              onClick={() => setBoardType('QNA')}
-              style={{
-                flex: 1,
-                minWidth: '90px',
-                padding: '10px 8px',
-                borderRadius: '10px',
-                fontSize: '0.85rem',
-                fontWeight: '600',
-                transition: 'all 0.2s',
-                border: '1px solid ' + (boardType === 'QNA' ? 'var(--primary-color)' : 'var(--border-color)'),
-                backgroundColor: boardType === 'QNA' ? 'var(--primary-color)' : 'white',
-                color: boardType === 'QNA' ? 'white' : 'var(--text-sub)'
-              }}
-            >
-              질문게시판
-            </button>
-            <button
-              type="button"
-              onClick={() => setBoardType('MEDIA')}
-              style={{
-                flex: 1,
-                minWidth: '90px',
-                padding: '10px 8px',
-                borderRadius: '10px',
-                fontSize: '0.85rem',
-                fontWeight: '600',
-                transition: 'all 0.2s',
-                border: '1px solid ' + (boardType === 'MEDIA' ? 'var(--primary-color)' : 'var(--border-color)'),
-                backgroundColor: boardType === 'MEDIA' ? 'var(--primary-color)' : 'white',
-                color: boardType === 'MEDIA' ? 'white' : 'var(--text-sub)'
-              }}
-            >
-              📷 자랑피드
-            </button>
-            {role === 'ADMIN' && (
-              <button
-                type="button"
-                onClick={() => setBoardType('NOTICE')}
-                style={{
-                  flex: 1,
-                  minWidth: '90px',
-                  padding: '10px 8px',
-                  borderRadius: '10px',
-                  fontSize: '0.85rem',
-                  fontWeight: '600',
-                  transition: 'all 0.2s',
-                  border: '1px solid ' + (boardType === 'NOTICE' ? 'var(--primary-color)' : 'var(--border-color)'),
-                  backgroundColor: boardType === 'NOTICE' ? 'var(--primary-color)' : 'white',
-                  color: boardType === 'NOTICE' ? 'white' : 'var(--text-sub)'
-                }}
-              >
-                공지사항
-              </button>
-            )}
-          </div>
-        </div>
-
         {/* 제목 입력 필드 */}
         <div style={{ marginBottom: '1.2rem' }}>
           <label style={{ display: 'block', marginBottom: '0.6rem', fontWeight: '700', fontSize: '0.9rem', color: 'var(--text-main)' }}>
@@ -288,7 +251,7 @@ export default function PostCreate() {
               cursor: isUploading ? 'not-allowed' : 'pointer'
             }}
           >
-            {isUploading ? '업로드 중...' : '등록하기'}
+            {isUploading ? '업로드 중...' : isEditMode ? '수정하기' : '등록하기'}
           </button>
         </div>
       </form>

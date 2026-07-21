@@ -21,9 +21,13 @@ export default function Signup() {
   })
   const [confirmPassword, setConfirmPassword] = useState('')
   const [isUsernameChecked, setIsUsernameChecked] = useState(false)
+  const [isEmailChecked, setIsEmailChecked] = useState(false)
   const [isNicknameChecked, setIsNicknameChecked] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [agreedTerms, setAgreedTerms] = useState(false)
+  const [agreedPrivacy, setAgreedPrivacy] = useState(false)
+  const [isOver14, setIsOver14] = useState(false)
   const navigate = useNavigate()
 
   const getBackendUrl = () => {
@@ -32,6 +36,7 @@ export default function Signup() {
 
   const handleChange = (e) => {
     if (e.target.name === 'username') setIsUsernameChecked(false)
+    if (e.target.name === 'email') setIsEmailChecked(false)
     if (e.target.name === 'nickname') setIsNicknameChecked(false)
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
@@ -82,6 +87,25 @@ export default function Signup() {
     }
   }
 
+  const handleCheckEmail = async () => {
+    if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      alert('올바른 이메일 형식을 입력해 주세요.');
+      return;
+    }
+    try {
+      const response = await authApi.checkEmail(formData.email);
+      if (response.exists) {
+        alert('이미 가입된 이메일입니다. 🥲');
+        setIsEmailChecked(false);
+      } else {
+        alert('사용 가능한 이메일입니다! 👍');
+        setIsEmailChecked(true);
+      }
+    } catch (err) {
+      alert(err.message || '이메일 확인 중 오류가 발생했습니다.');
+    }
+  }
+
   const handleCheckNickname = async () => {
     if (formData.nickname.trim().length < 2) {
       alert('닉네임은 최소 2글자 이상이어야 합니다.');
@@ -111,8 +135,12 @@ export default function Signup() {
         alert('아이디 중복 확인을 진행해 주세요.');
         return;
       }
-      if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-        alert('올바른 이메일 주소 형식을 입력해 주세요 (또는 비워두세요).');
+      if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+        alert('올바른 이메일 주소를 필수로 입력해 주세요.');
+        return;
+      }
+      if (!isEmailChecked) {
+        alert('이메일 중복 확인을 진행해 주세요.');
         return;
       }
       if (formData.password.length < 8) {
@@ -356,17 +384,38 @@ export default function Signup() {
                 </div>
               </div>
 
-              {/* Email (Optional) Input */}
+              {/* Email Input */}
               <div className="auth-form-group">
-                <label style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>이메일 주소 (선택)</label>
-                <input 
-                  type="email" 
-                  name="email"
-                  placeholder="example@sleepy.com" 
-                  value={formData.email}
-                  onChange={handleChange}
-                  style={{ width: '100%', padding: '0.75rem 0.9rem', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.85rem', outline: 'none', marginTop: '0.4rem', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-main)' }}
-                />
+                <label style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>이메일 주소 (필수)</label>
+                <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.4rem' }}>
+                  <input 
+                    type="email" 
+                    name="email"
+                    placeholder="이메일을 입력하세요 (필수)" 
+                    required
+                    value={formData.email}
+                    onChange={handleChange}
+                    style={{ flex: 1, padding: '0.75rem 0.9rem', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.85rem', outline: 'none', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-main)' }}
+                  />
+                  <button 
+                    type="button" 
+                    onClick={handleCheckEmail}
+                    style={{ 
+                      padding: '0 0.8rem', 
+                      borderRadius: '12px', 
+                      border: isEmailChecked ? '1px solid #10b981' : '1px solid var(--primary-color)', 
+                      backgroundColor: isEmailChecked ? '#10b981' : 'transparent', 
+                      color: isEmailChecked ? '#fff' : 'var(--primary-color)', 
+                      fontWeight: 'bold', 
+                      cursor: 'pointer',
+                      fontSize: '0.75rem',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    {isEmailChecked ? '✓ 완료' : '중복 확인'}
+                  </button>
+                </div>
               </div>
 
               {/* Password Input */}
@@ -405,21 +454,69 @@ export default function Signup() {
                 />
               </div>
 
+              {/* Terms and Privacy Checkboxes */}
+              <div style={{ display: 'flex', flexDirection: 'column', marginTop: '0.5rem', padding: '1.2rem', backgroundColor: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', fontSize: '0.9rem', color: '#111', fontWeight: 'bold', paddingBottom: '0.8rem', borderBottom: '1px solid #e2e8f0', marginBottom: '0.8rem' }}>
+                  <input 
+                    type="checkbox" 
+                    checked={isOver14 && agreedTerms && agreedPrivacy}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      setIsOver14(checked);
+                      setAgreedTerms(checked);
+                      setAgreedPrivacy(checked);
+                    }}
+                    style={{ width: '18px', height: '18px', accentColor: 'var(--primary-color)', cursor: 'pointer', margin: 0 }}
+                  />
+                  <span>약관 전체 동의</span>
+                </label>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', fontSize: '0.85rem', color: '#4b5563' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={isOver14}
+                      onChange={(e) => setIsOver14(e.target.checked)}
+                      style={{ width: '16px', height: '16px', accentColor: 'var(--primary-color)', cursor: 'pointer', margin: 0 }}
+                    />
+                    <span>[필수] 만 14세 이상입니다.</span>
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', fontSize: '0.85rem', color: '#4b5563' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={agreedTerms}
+                      onChange={(e) => setAgreedTerms(e.target.checked)}
+                      style={{ width: '16px', height: '16px', accentColor: 'var(--primary-color)', cursor: 'pointer', margin: 0 }}
+                    />
+                    <span>[필수] <Link to="/terms" target="_blank" style={{ color: 'var(--primary-color)', textDecoration: 'none', fontWeight: '600' }}>서비스 이용약관</Link> 동의</span>
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', fontSize: '0.85rem', color: '#4b5563' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={agreedPrivacy}
+                      onChange={(e) => setAgreedPrivacy(e.target.checked)}
+                      style={{ width: '16px', height: '16px', accentColor: 'var(--primary-color)', cursor: 'pointer', margin: 0 }}
+                    />
+                    <span>[필수] <Link to="/privacy" target="_blank" style={{ color: 'var(--primary-color)', textDecoration: 'none', fontWeight: '600' }}>개인정보 수집 및 이용</Link> 동의</span>
+                  </label>
+                </div>
+              </div>
+
               <div style={{ display: 'flex', gap: '0.6rem', marginTop: '1.2rem' }}>
                 <button type="button" onClick={handlePrevStep} style={{ flex: 1, padding: '0.8rem', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-color)', color: 'var(--text-sub)', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.85rem' }}>이전</button>
                 <button 
                   type="button" 
                   onClick={handleNextStep}
-                  disabled={!formData.username || !isUsernameChecked || !formData.password || !confirmPassword}
+                  disabled={!formData.username || !isUsernameChecked || !formData.password || !confirmPassword || !formData.email || !isEmailChecked || !agreedTerms || !agreedPrivacy || !isOver14}
                   style={{ 
                     flex: 2, 
                     padding: '0.8rem', 
                     borderRadius: '12px', 
                     border: 'none', 
-                    backgroundColor: (!formData.username || !isUsernameChecked || !formData.password || !confirmPassword) ? 'var(--border-color)' : 'var(--primary-color)', 
+                    backgroundColor: (!formData.username || !isUsernameChecked || !formData.password || !confirmPassword || !formData.email || !isEmailChecked || !agreedTerms || !agreedPrivacy || !isOver14) ? 'var(--border-color)' : 'var(--primary-color)', 
                     color: '#fff', 
                     fontWeight: 'bold', 
-                    cursor: (!formData.username || !isUsernameChecked || !formData.password || !confirmPassword) ? 'not-allowed' : 'pointer',
+                    cursor: (!formData.username || !isUsernameChecked || !formData.password || !confirmPassword || !formData.email || !isEmailChecked || !agreedTerms || !agreedPrivacy || !isOver14) ? 'not-allowed' : 'pointer',
                     transition: 'all 0.2s',
                     fontSize: '0.85rem'
                   }}

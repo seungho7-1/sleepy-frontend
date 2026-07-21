@@ -7,10 +7,15 @@ export default function OAuth2Onboarding() {
   const [nickname, setNickname] = useState('')
   const [isNicknameChecked, setIsNicknameChecked] = useState(false)
   const [role, setRole] = useState('BUYER') // BUYER, SELLER
-  const [siteUrl, setSiteUrl] = useState('')
+  const [shopName, setShopName] = useState('')
+  const [shopUrl, setShopUrl] = useState('')
+  const [snsUrls, setSnsUrls] = useState([''])
   const [introduction, setIntroduction] = useState('')
   const [token, setToken] = useState('')
   const [loading, setLoading] = useState(false)
+  const [agreedTerms, setAgreedTerms] = useState(false)
+  const [agreedPrivacy, setAgreedPrivacy] = useState(false)
+  const [isOver14, setIsOver14] = useState(false)
   
   const navigate = useNavigate()
   const location = useLocation()
@@ -32,6 +37,24 @@ export default function OAuth2Onboarding() {
       setNickname(decodeURIComponent(urlNickname))
     }
   }, [location, navigate])
+
+  const handleAddSnsUrl = () => {
+    if (snsUrls.length >= 5) {
+      alert('SNS 주소는 최대 5개까지 등록할 수 있습니다.')
+      return
+    }
+    setSnsUrls([...snsUrls, ''])
+  }
+
+  const handleRemoveSnsUrl = (index) => {
+    setSnsUrls(snsUrls.filter((_, i) => i !== index))
+  }
+
+  const handleSnsUrlChange = (index, value) => {
+    const newSnsUrls = [...snsUrls]
+    newSnsUrls[index] = value
+    setSnsUrls(newSnsUrls)
+  }
 
   const handleCheckNickname = async () => {
     if (nickname.trim().length < 2) {
@@ -67,8 +90,17 @@ export default function OAuth2Onboarding() {
       return
     }
 
+    if (!isOver14 || !agreedTerms || !agreedPrivacy) {
+      alert('필수 약관에 모두 동의해 주세요.')
+      return
+    }
+
     if (role === 'SELLER') {
-      if (!siteUrl.trim()) {
+      if (!shopName.trim()) {
+        alert('스토어명을 입력해 주세요!')
+        return
+      }
+      if (!shopUrl.trim()) {
         alert('쇼핑몰 URL을 입력해 주세요!')
         return
       }
@@ -87,7 +119,9 @@ export default function OAuth2Onboarding() {
       const response = await authApi.oauth2Onboarding({
         nickname,
         role,
-        siteUrl: role === 'SELLER' ? siteUrl : null,
+        shopName: role === 'SELLER' ? shopName : null,
+        siteUrl: role === 'SELLER' ? shopUrl : null,
+        snsUrls: role === 'SELLER' ? snsUrls.filter(url => url.trim() !== '').join(',') : null,
         introduction: role === 'SELLER' ? introduction : null
       })
 
@@ -119,15 +153,20 @@ export default function OAuth2Onboarding() {
         </div>
 
         <h2 style={{ fontSize: '1.15rem', fontWeight: '800', color: 'var(--text-main)', marginBottom: '1.2rem', textAlign: 'center', letterSpacing: '-0.02em' }}>반갑습니다!</h2>
-        <p style={{ textAlign: 'center', color: 'var(--text-sub)', marginBottom: '1.5rem', fontSize: '0.8rem' }}>
+        <p style={{ textAlign: 'center', color: 'var(--text-sub)', marginBottom: '1.5rem', fontSize: '0.8rem', lineHeight: '1.4' }}>
           서비스 이용을 위해 닉네임과 가입 유형을 선택해 주세요.
+          {role === 'SELLER' && (
+            <><br/><span style={{ color: 'var(--primary-color)', fontWeight: 'bold' }}>*심사 완료까지 영업일 기준 1~2일 소요됩니다.</span></>
+          )}
         </p>
 
         <form onSubmit={handleSubmit} className="auth-form" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
           {/* Nickname Input */}
           <div className="auth-form-group">
-            <label htmlFor="nickname" style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>닉네임</label>
-            <div className="input-wrapper" style={{ display: 'flex', gap: '0.4rem', marginTop: '0.4rem' }}>
+            <label htmlFor="nickname" style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>
+              {role === 'SELLER' ? '마켓명' : '닉네임'}
+            </label>
+            <div className="input-wrapper" style={{ display: 'flex', gap: '0.4rem', marginTop: '0.4rem', alignItems: 'stretch' }}>
               <div style={{ flex: 1, position: 'relative' }}>
                 <span className="input-icon" style={{ position: 'absolute', left: '0.9rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-sub)', display: 'flex', alignItems: 'center' }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -138,7 +177,7 @@ export default function OAuth2Onboarding() {
                 <input 
                   id="nickname"
                   type="text" 
-                  placeholder="사용할 닉네임" 
+                  placeholder={role === 'SELLER' ? "사용할 마켓명" : "사용할 닉네임"} 
                   required 
                   value={nickname}
                   onChange={(e) => {
@@ -216,7 +255,22 @@ export default function OAuth2Onboarding() {
           {role === 'SELLER' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '0.5rem', animation: 'fadeIn 0.3s ease' }}>
               <div className="auth-form-group">
-                <label htmlFor="siteUrl" style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>쇼핑몰 주소 (URL)</label>
+                <label htmlFor="shopName" style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>스토어명 (필수)</label>
+                <div className="input-wrapper" style={{ position: 'relative', marginTop: '0.4rem' }}>
+                  <input
+                    id="shopName"
+                    type="text"
+                    placeholder="예: 슬라임 팩토리"
+                    required={role === 'SELLER'}
+                    value={shopName}
+                    onChange={(e) => setShopName(e.target.value)}
+                    style={{ width: '100%', padding: '0.75rem 0.9rem', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.85rem', outline: 'none', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-main)' }}
+                  />
+                </div>
+              </div>
+
+              <div className="auth-form-group">
+                <label htmlFor="shopUrl" style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>쇼핑몰 주소 (필수)</label>
                 <div className="input-wrapper" style={{ position: 'relative', marginTop: '0.4rem' }}>
                   <span className="input-icon" style={{ position: 'absolute', left: '0.9rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-sub)', display: 'flex', alignItems: 'center' }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -225,14 +279,43 @@ export default function OAuth2Onboarding() {
                     </svg>
                   </span>
                   <input
-                    id="siteUrl"
+                    id="shopUrl"
                     type="url"
                     placeholder="https://smartstore.naver.com/..."
                     required={role === 'SELLER'}
-                    value={siteUrl}
-                    onChange={(e) => setSiteUrl(e.target.value)}
+                    value={shopUrl}
+                    onChange={(e) => setShopUrl(e.target.value)}
                     style={{ width: '100%', padding: '0.75rem 0.9rem 0.75rem 2.4rem', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.85rem', outline: 'none', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-main)' }}
                   />
+                </div>
+              </div>
+
+              <div className="auth-form-group">
+                <label style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>
+                  SNS 주소 (선택)
+                </label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '0.4rem' }}>
+                  {snsUrls.map((snsUrl, index) => (
+                    <div key={index} style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                      <input 
+                        type="url" 
+                        placeholder="인스타그램, 유튜브 등 주소 입력" 
+                        value={snsUrl}
+                        onChange={(e) => handleSnsUrlChange(index, e.target.value)}
+                        style={{ flex: 1, padding: '0.75rem 0.9rem', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.85rem', outline: 'none', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-main)' }}
+                      />
+                      {snsUrls.length > 1 && (
+                        <button type="button" onClick={() => handleRemoveSnsUrl(index)} style={{ width: '42px', height: '42px', borderRadius: '12px', border: 'none', backgroundColor: '#ffe5e5', color: '#ff4d4d', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  {snsUrls.length < 5 && (
+                    <button type="button" onClick={handleAddSnsUrl} style={{ width: '100%', padding: '0.75rem', borderRadius: '12px', border: '1px dashed var(--border-color)', backgroundColor: 'transparent', color: 'var(--text-sub)', fontSize: '0.85rem', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', marginTop: '0.2rem' }}>
+                      + SNS 주소 추가하기
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -263,20 +346,51 @@ export default function OAuth2Onboarding() {
             </div>
           )}
 
+          {/* Terms and Privacy Checkboxes */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginTop: '0.5rem', padding: '1rem', backgroundColor: '#f9f9f9', borderRadius: '12px', border: '1px solid #eee' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.85rem', color: '#333' }}>
+              <input 
+                type="checkbox" 
+                checked={isOver14}
+                onChange={(e) => setIsOver14(e.target.checked)}
+                style={{ width: '16px', height: '16px', accentColor: 'var(--primary-color)', cursor: 'pointer' }}
+              />
+              <span>[필수] 만 14세 이상입니다.</span>
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.85rem', color: '#333' }}>
+              <input 
+                type="checkbox" 
+                checked={agreedTerms}
+                onChange={(e) => setAgreedTerms(e.target.checked)}
+                style={{ width: '16px', height: '16px', accentColor: 'var(--primary-color)', cursor: 'pointer' }}
+              />
+              <span>[필수] <a href="/terms" target="_blank" style={{ color: 'var(--primary-color)', textDecoration: 'underline' }}>서비스 이용약관</a> 동의</span>
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.85rem', color: '#333' }}>
+              <input 
+                type="checkbox" 
+                checked={agreedPrivacy}
+                onChange={(e) => setAgreedPrivacy(e.target.checked)}
+                style={{ width: '16px', height: '16px', accentColor: 'var(--primary-color)', cursor: 'pointer' }}
+              />
+              <span>[필수] <a href="/privacy" target="_blank" style={{ color: 'var(--primary-color)', textDecoration: 'underline' }}>개인정보 수집 및 이용</a> 동의</span>
+            </label>
+          </div>
+
           <button 
             type="submit" 
             className="submit-btn" 
-            disabled={loading || (role === 'SELLER' && (!siteUrl || !introduction)) || !isNicknameChecked} 
+            disabled={loading || (role === 'SELLER' && (!shopName || !shopUrl || !introduction)) || !isNicknameChecked || !isOver14 || !agreedTerms || !agreedPrivacy} 
             style={{ 
-              marginTop: '1.2rem', 
+              marginTop: '0.5rem', 
               width: '100%', 
               padding: '0.8rem', 
               borderRadius: '12px', 
               border: 'none', 
-              backgroundColor: (loading || (role === 'SELLER' && (!siteUrl || !introduction)) || !isNicknameChecked) ? 'var(--border-color)' : 'var(--primary-color)', 
+              backgroundColor: (loading || (role === 'SELLER' && (!shopName || !shopUrl || !introduction)) || !isNicknameChecked || !isOver14 || !agreedTerms || !agreedPrivacy) ? 'var(--border-color)' : 'var(--primary-color)', 
               color: '#fff', 
               fontWeight: 'bold', 
-              cursor: (loading || (role === 'SELLER' && (!siteUrl || !introduction)) || !isNicknameChecked) ? 'not-allowed' : 'pointer',
+              cursor: (loading || (role === 'SELLER' && (!shopName || !shopUrl || !introduction)) || !isNicknameChecked || !isOver14 || !agreedTerms || !agreedPrivacy) ? 'not-allowed' : 'pointer',
               fontSize: '0.85rem'
             }}
           >

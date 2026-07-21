@@ -1,0 +1,220 @@
+.admin-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.admin-header {
+  margin-bottom: 2rem;
+}
+
+.admin-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-main, #111);
+  margin-bottom: 0.5rem;
+}
+
+.admin-subtitle {
+  color: var(--text-sub, #757575);
+  font-size: 0.95rem;
+}
+
+/* Stats Grid */
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.2rem;
+  margin-bottom: 3rem;
+}
+
+.admin-stat-card {
+  background: white;
+  border: 1px solid var(--border-color, #eee);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.admin-stat-card.highlight-card {
+  cursor: pointer;
+}
+.admin-stat-card.highlight-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-color: #ddd;
+}
+
+.admin-stat-label {
+  font-size: 0.9rem;
+  color: var(--text-sub, #757575);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.admin-stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-main, #111);
+}
+
+/* Colors */
+.text-primary { color: var(--primary-color, #ff2070); }
+.text-danger { color: #f03e3e; }
+.text-success { color: #0ca678; }
+.text-muted { color: var(--text-sub, #868e96); }
+.font-semibold { font-weight: 600; }
+.text-sm { font-size: 0.85rem; }
+.text-xs { font-size: 0.75rem; }
+
+/* Preview Grid */
+.admin-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .admin-preview-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-preview-section {
+  background: white;
+  border: 1px solid var(--border-color, #eee);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.admin-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid var(--border-color, #eee);
+  background-color: #f8f9fa;
+}
+
+.admin-preview-header h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main, #111);
+  margin: 0;
+}
+
+.admin-more-btn {
+  font-size: 0.85rem;
+  color: var(--text-sub, #868e96);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+.admin-more-btn:hover {
+  color: var(--text-main, #111);
+}
+
+.admin-preview-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-preview-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color, #f1f3f5);
+}
+.admin-preview-item:last-child {
+  border-bottom: none;
+}
+
+.admin-empty-msg {
+  padding: 2rem;
+  text-align: center;
+  color: #adb5bd;
+  font-size: 0.95rem;
+}
+
+/* Tables for other pages */
+.admin-table-wrapper {
+  background: white;
+  border: 1px solid var(--border-color, #eee);
+  border-radius: 12px;
+  overflow-x: auto;
+}
+
+.admin-table-clean {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table-clean th {
+  background: #f8f9fa;
+  padding: 1rem 1.2rem;
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-sub, #757575);
+  border-bottom: 1px solid var(--border-color, #eee);
+}
+
+.admin-table-clean td {
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid var(--border-color, #eee);
+  font-size: 0.95rem;
+  color: var(--text-main, #111);
+}
+
+.admin-table-clean tr:last-child td {
+  border-bottom: none;
+}
+
+/* Buttons */
+.admin-btn-action {
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.admin-btn-danger {
+  color: #f03e3e;
+  background: #fff5f5;
+  border-color: #ffc9c9;
+}
+.admin-btn-danger:hover {
+  background: #ffe3e3;
+}
+
+.admin-btn-success {
+  color: #0ca678;
+  background: #e6fcf5;
+  border-color: #b2f2bb;
+}
+.admin-btn-success:hover {
+  background: #c3fae8;
+}
+
+.admin-btn-warning {
+  color: #f59f00;
+  background: #fff9db;
+  border-color: #ffec99;
+}
+.admin-btn-warning:hover {
+  background: #fff3bf;
+}
+
+.admin-btn-secondary {
+  color: #495057;
+  background: #f8f9fa;
+  border-color: #e9ecef;
+}
+.admin-btn-secondary:hover {
+  background: #f1f3f5;
+}

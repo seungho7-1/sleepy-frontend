@@ -8,6 +8,27 @@ export default defineConfig({
     proxy: {
       '/oauth2/authorization': 'http://localhost:8383',
       '/login/oauth2': 'http://localhost:8383',
+      '/api': 'http://localhost:8383',
+    }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+              return 'vendor';
+            }
+            if (id.includes('zustand')) {
+              return 'state';
+            }
+            if (id.includes('lucide-react')) {
+              return 'ui';
+            }
+            return 'vendor-other';
+          }
+        }
+      }
     }
   }
 })
