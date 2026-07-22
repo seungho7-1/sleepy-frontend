@@ -148,6 +148,9 @@ export default function ShortsCommentModal({ postId, onClose }) {
 
                 return list.map(c => {
                   const isEditing = editingCommentId === c.id;
+                  const childComments = commentMap[c.id] || [];
+                  const hasChildren = childComments.length > 0;
+                  const isExpanded = expandedReplies[c.id];
                   return (
                     <div key={c.id}>
                       <div style={{ marginLeft: depth > 0 ? '3.4rem' : '0', display: 'flex', gap: '12px', marginBottom: '1rem' }}>
