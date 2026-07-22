@@ -5,11 +5,19 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
+    headers: {
+      'Cross-Origin-Embedder-Policy': 'credentialless',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+    },
     proxy: {
       '/oauth2/authorization': 'http://localhost:8383',
       '/login/oauth2': 'http://localhost:8383',
       '/api': 'http://localhost:8383',
+      '/uploads': 'http://localhost:8383',
     }
+  },
+  optimizeDeps: {
+    exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/util'],
   },
   build: {
     rollupOptions: {

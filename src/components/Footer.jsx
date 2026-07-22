@@ -1,7 +1,12 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 export default function Footer() {
+  const location = useLocation();
+  
+  // 숏폼 페이지에서는 푸터를 숨김
+  if (location.pathname === '/shorts') return null;
+
   return (
     <footer style={{ backgroundColor: '#131127', padding: '4rem 2rem 2rem 2rem', marginTop: 'auto', color: '#8a8e9e', fontFamily: 'Pretendard, -apple-system, sans-serif' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>

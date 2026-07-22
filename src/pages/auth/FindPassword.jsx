@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { authApi } from '../api/auth';
+import { authApi } from '../../api/auth';
 
 export default function FindPassword() {
   const [step, setStep] = useState(1);

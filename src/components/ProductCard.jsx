@@ -17,12 +17,25 @@ export default function ProductCard({ product }) {
         <div 
           className="product-shop" 
           onClick={handleShopClick}
-          style={{ cursor: 'pointer', zIndex: 2 }}
+          style={{ cursor: 'pointer', zIndex: 2, display: 'flex', alignItems: 'center', gap: '6px' }}
         >
+          {product.sellerProfileImageUrl ? (
+            <img src={product.sellerProfileImageUrl} alt="shop profile" style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover' }} />
+          ) : (
+            <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>🏪</div>
+          )}
           {product.shopName}
         </div>
         <h3 className="product-title">{product.name}</h3>
-        <div className="product-price">{product.price.toLocaleString()}원</div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto' }}>
+          <div className="product-price">{product.price.toLocaleString()}원</div>
+          {product.reviewCount > 0 && (
+            <div style={{ fontSize: '0.8rem', color: '#999', display: 'flex', alignItems: 'center', gap: '3px', fontWeight: 'bold' }}>
+              <span style={{ color: '#ffb400' }}>★</span>
+              리뷰 {product.reviewCount}
+            </div>
+          )}
+        </div>
       </div>
     </Link>
   );

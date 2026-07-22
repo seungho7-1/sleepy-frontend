@@ -12,6 +12,8 @@ export default function ShortsItem({ post, index }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likeCount || 0);
   const [showComments, setShowComments] = useState(false);
+  const [commentCount, setCommentCount] = useState('댓글');
+  const [commentsLoaded, setCommentsLoaded] = useState(false);
   const { token } = useAuthStore();
   
   // Default fallback image if no URL
@@ -29,6 +31,13 @@ export default function ShortsItem({ post, index }) {
             }
             // 뷰포트에 들어올 때 조회수 증가 API 호출
             boardApi.incrementViewCount(post.id).catch(e => console.error(e));
+            
+            if (!commentsLoaded) {
+              boardApi.getComments(post.id).then(res => {
+                setCommentCount(res.length);
+                setCommentsLoaded(true);
+              }).catch(console.error);
+            }
           } else {
             // The video has left the viewport
             if (videoRef.current) {
@@ -50,7 +59,7 @@ export default function ShortsItem({ post, index }) {
         observer.unobserve(containerRef.current);
       }
     };
-  }, [post.id]);
+  }, [post.id, commentsLoaded]);
 
   const togglePlay = () => {
     if (videoRef.current) {
@@ -173,7 +182,7 @@ export default function ShortsItem({ post, index }) {
           <div style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(4px)', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
             💬
           </div>
-          <span style={{ fontSize: '0.8rem', textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>댓글</span>
+          <span style={{ fontSize: '0.8rem', textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>{commentCount}</span>
         </button>
         
         <button 

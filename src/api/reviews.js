@@ -12,4 +12,12 @@ export const reviewApi = {
   // 리뷰 삭제
   deleteReview: (reviewId) => 
     api.delete(`/reviews/${reviewId}`),
+
+  // 판매자 리뷰 조회
+  getSellerReviews: () =>
+    api.get(`/reviews/seller`),
+
+  // 리뷰 신고
+  reportReview: (reviewId) =>
+    api.post(`/reviews/${reviewId}/report`),
 };

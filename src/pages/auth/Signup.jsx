@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { authApi } from '../api/auth'
-import { sellerApi } from '../api/seller'
-import { useAuthStore } from '../store'
+import { authApi } from '../../api/auth'
+import { sellerApi } from '../../api/seller'
+import { useAuthStore } from '../../store'
 
 export default function Signup() {
   const [step, setStep] = useState(1)

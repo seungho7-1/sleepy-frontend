@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { boardApi } from '../api/board'
-import PostItem from '../components/PostItem'
-import MediaPostItem from '../components/MediaPostItem'
+import { boardApi } from '../../api/board'
+import PostItem from '../../components/PostItem'
+import MediaPostItem from '../../components/MediaPostItem'
 
 const PAGE_SIZE = 20
 
@@ -14,13 +14,18 @@ const SORT_OPTIONS = [
 ]
 
 export default function Community({ mode = 'all' }) {
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [posts, setPosts] = useState([])
   const tab = searchParams.get('tab')
   
   // mode에 따라 기본 게시판 타입 설정
   const defaultBoardType = mode === 'gallery' ? 'MEDIA' : (mode === 'lounge' ? (tab || 'NOTICE') : (tab || 'FREE'))
   const [boardType, setBoardType] = useState(defaultBoardType)
+
+  const handleTabChange = (type) => {
+    setBoardType(type)
+    setSearchParams({ tab: type })
+  }
 
   // Pagination state (공지/자유/질문 전용)
   const [page, setPage] = useState(0)
@@ -98,7 +103,7 @@ export default function Community({ mode = 'all' }) {
           <>
             <button 
               className={`nav-btn`}
-              onClick={() => setBoardType('NOTICE')}
+              onClick={() => handleTabChange('NOTICE')}
               style={{
                 background: boardType === 'NOTICE' ? 'var(--primary-color)' : 'white',
                 color: boardType === 'NOTICE' ? 'white' : 'var(--text-main)',
@@ -110,7 +115,7 @@ export default function Community({ mode = 'all' }) {
             </button>
             <button 
               className={`nav-btn`}
-              onClick={() => setBoardType('QNA')}
+              onClick={() => handleTabChange('QNA')}
               style={{
                 background: boardType === 'QNA' ? 'var(--primary-color)' : 'white',
                 color: boardType === 'QNA' ? 'white' : 'var(--text-main)',
@@ -123,7 +128,7 @@ export default function Community({ mode = 'all' }) {
             {mode === 'all' && (
               <button 
                 className={`nav-btn`}
-                onClick={() => setBoardType('FREE')}
+                onClick={() => handleTabChange('FREE')}
                 style={{
                   background: boardType === 'FREE' ? 'var(--primary-color)' : 'white',
                   color: boardType === 'FREE' ? 'white' : 'var(--text-main)',

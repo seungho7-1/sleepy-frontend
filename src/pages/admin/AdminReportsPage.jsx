@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { adminApi } from '../api/admin';
+import { adminApi } from '../../api/admin';
 import './AdminDashboard.css';
 
 export default function AdminReportsPage() {
@@ -63,7 +63,18 @@ export default function AdminReportsPage() {
                   <td>
                     <span className="text-danger font-semibold">{report.targetType}</span>
                   </td>
-                  <td className="text-muted">{report.targetId}</td>
+                  <td className="text-muted">
+                    {report.targetId}
+                    <a 
+                      href={report.targetType === 'POST' ? `/community/${report.targetId}` : report.targetType === 'PRODUCT' ? `/product/${report.targetId}` : '#'} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      style={{ marginLeft: '8px', fontSize: '0.85rem', color: '#2563eb', textDecoration: 'underline' }}
+                      title="새 창으로 열기"
+                    >
+                      (바로가기)
+                    </a>
+                  </td>
                   <td className="font-semibold">{report.reason}</td>
                   <td className="text-sm text-muted">{report.createdAt?.replace('T', ' ')}</td>
                   <td style={{ textAlign: 'right', display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>

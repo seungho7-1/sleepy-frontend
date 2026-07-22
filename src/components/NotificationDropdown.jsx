@@ -4,7 +4,7 @@ import { notificationApi } from '../api/notification';
 import { formatDate } from '../utils/formatDate';
 import { useAuthStore } from '../store';
 import { db } from '../firebase';
-import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, updateDoc } from 'firebase/firestore';
 
 export default function NotificationDropdown({ onClose }) {
   const { nickname } = useAuthStore();
@@ -66,8 +66,33 @@ export default function NotificationDropdown({ onClose }) {
   const handleMarkAllAsRead = async (e) => {
     e.stopPropagation();
     try {
+      // 1. 백엔드 DB 전체 읽음 처리
       await notificationApi.markAllAsRead();
-      // Firestore 데이터는 Spring Boot에서 업데이트 처리되므로 onSnapshot에 의해 자동 갱신됩니다.
+    } catch (e) {
+      console.error("Backend DB markAllAsRead failed, continuing to Firebase sync...", e);
+    }
+    
+    // 2. 파이어베이스와 DB의 isRead 상태가 어긋난 경우를 대비하여
+    // 프론트엔드에서 파악된 미읽음 알림들에 대해 개별 읽음 처리(파이어베이스 싱크)를 강제합니다.
+    try {
+      const unreadNotifs = notifications.filter(n => !(n.isRead !== undefined ? n.isRead : n.read));
+      for (const notif of unreadNotifs) {
+        const notifId = notif.id || notif.docId;
+        if (notifId) {
+          try {
+            await notificationApi.markAsRead(notifId);
+          } catch (err) {
+            console.error("Backend DB markAsRead failed for", notifId, err);
+          }
+          // 프론트엔드에서 파이어베이스 직접 업데이트 강제 실행
+          try {
+            const docRef = doc(db, "notifications", nickname, "userNotifications", String(notifId));
+            await updateDoc(docRef, { isRead: true });
+          } catch (fbErr) {
+            console.error("Firebase direct update failed", fbErr);
+          }
+        }
+      }
     } catch (e) {
       console.error("Failed to mark all as read", e);
     }
@@ -78,21 +103,21 @@ export default function NotificationDropdown({ onClose }) {
     const targetUrl = notif.relatedUrl || notif.related_url;
     const notifId = notif.id || notif.docId; // ID 안전하게 가져오기
     
-    // 1. 읽음 처리
+    // 1. 읽음 처리 (비동기로 백그라운드에서 실행, 네비게이션 지연 방지)
     if (!isAlreadyRead && notifId) {
-      try {
-        await notificationApi.markAsRead(notifId);
-      } catch (e) {
-        console.error("Failed to mark as read", e);
-      }
+      notificationApi.markAsRead(notifId).catch(e => console.error("Failed to mark as read", e));
+      const docRef = doc(db, "notifications", nickname, "userNotifications", String(notifId));
+      updateDoc(docRef, { isRead: true }).catch(fbErr => console.error("Firebase direct update failed", fbErr));
     }
     
-    // 2. 창 닫기 (이동 전에 먼저 닫기)
-    onClose(true); 
-    
-    // 3. 페이지 이동
+    // 2. 페이지 이동
     if (targetUrl) {
-      const [path, hash] = targetUrl.split('#');
+      // 구버전 알림 호환성을 위한 경로 강제 변환
+      let finalUrl = targetUrl;
+      if (finalUrl === '/admin/sellers') finalUrl = '/admin/applications';
+      if (finalUrl === '/my/seller-status') finalUrl = '/mypage';
+
+      const [path, hash] = finalUrl.split('#');
       const currentPath = window.location.pathname;
       const currentHash = window.location.hash;
 
@@ -104,11 +129,6 @@ export default function NotificationDropdown({ onClose }) {
             const el = document.getElementById(hash);
             if (el) {
               el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              // 일시적인 하이라이트 효과
-              const originalBg = el.style.backgroundColor;
-              el.style.transition = 'background-color 1s ease';
-              el.style.backgroundColor = '#fff0f2';
-              setTimeout(() => { el.style.backgroundColor = originalBg; }, 2000);
             }
           } else {
             // 해시만 다를 경우 해시 변경 -> hashchange 리스너가 스크롤 수행
@@ -120,11 +140,14 @@ export default function NotificationDropdown({ onClose }) {
         }
       } else {
         // 다른 페이지인 경우 해시를 포함하여 전체 주소로 navigate
-        navigate(targetUrl);
+        navigate(finalUrl);
       }
     } else {
       console.warn("이 알림은 이동할 수 있는 링크 정보가 없습니다.");
     }
+    
+    // 3. 창 닫기 (이동 후에 닫기)
+    onClose(true);
   };
 
   return (

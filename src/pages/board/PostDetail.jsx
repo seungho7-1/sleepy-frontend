@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
-import { useAuthStore } from '../store'
-import { boardApi } from '../api/board'
+import { useAuthStore } from '../../store'
+import { boardApi } from '../../api/board'
 
 export default function PostDetail() {
   const { id } = useParams()
@@ -22,6 +22,8 @@ export default function PostDetail() {
   const [reportReasonOption, setReportReasonOption] = useState('영리목적/홍보성')
   const [customReportReason, setCustomReportReason] = useState('')
   const [submittingReport, setSubmittingReport] = useState(false)
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false)
+  const [isLiking, setIsLiking] = useState(false)
 
   useEffect(() => {
     const fetchPostAndView = async () => {
@@ -68,15 +70,15 @@ export default function PostDetail() {
       const hashId = currentHash.replace('#', '');
       const element = document.getElementById(hashId);
       if (element) {
+        // 첫 시도 (약간의 지연 후)
         setTimeout(() => {
           element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          const originalBg = element.style.backgroundColor;
-          element.style.transition = 'background-color 1s ease';
-          element.style.backgroundColor = '#fff0f2';
-          setTimeout(() => {
-            element.style.backgroundColor = originalBg;
-          }, 2000);
-        }, 100);
+        }, 300);
+        
+        // 이미지 등 비동기 리소스 로딩으로 위치가 밀릴 수 있으므로 1.2초 후 다시 한번 위치 조정
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 1200);
       }
     }
   };
@@ -87,13 +89,16 @@ export default function PostDetail() {
     // 외부에서 window.location.hash 변경 시에도 감지하기 위한 리스너
     window.addEventListener('hashchange', scrollToHash);
     return () => window.removeEventListener('hashchange', scrollToHash);
-  }, [comments, location.hash]);
+  }, [comments, location.hash, post]);
 
   const toggleLike = async () => {
     if (!token) {
       alert('로그인이 필요한 기능입니다.');
       return;
     }
+    if (isLiking) return;
+
+    setIsLiking(true);
     try {
       const res = await boardApi.toggleLike(id, 'POST');
       
@@ -107,6 +112,8 @@ export default function PostDetail() {
       });
     } catch (err) {
       console.error('좋아요 에러:', err);
+    } finally {
+      setIsLiking(false);
     }
   }
 
@@ -116,8 +123,9 @@ export default function PostDetail() {
       alert('로그인이 필요한 기능입니다.');
       return;
     }
-    if (!newComment.trim()) return;
+    if (!newComment.trim() || isSubmittingComment) return;
     
+    setIsSubmittingComment(true);
     try {
       await boardApi.createComment({
         targetId: id,
@@ -131,6 +139,8 @@ export default function PostDetail() {
       fetchComments();
     } catch (err) {
       console.error(err);
+    } finally {
+      setIsSubmittingComment(false);
     }
   }
 

@@ -13,6 +13,7 @@ export default function ShortsCommentModal({ postId, onClose }) {
   const [editingText, setEditingText] = useState('');
   const [replyToId, setReplyToId] = useState(null);
   const [replyNickname, setReplyNickname] = useState('');
+  const [expandedReplies, setExpandedReplies] = useState({});
 
   const { token, nickname } = useAuthStore();
 
@@ -31,6 +32,10 @@ export default function ShortsCommentModal({ postId, onClose }) {
     }
   };
 
+  const toggleReplies = (parentId) => {
+    setExpandedReplies(prev => ({ ...prev, [parentId]: !prev[parentId] }));
+  };
+
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!token) {
@@ -40,11 +45,13 @@ export default function ShortsCommentModal({ postId, onClose }) {
     if (!newComment.trim()) return;
     
     try {
-      if (replyToId) {
-        await boardApi.createComment(postId, { content: newComment, parentId: replyToId });
-      } else {
-        await boardApi.createComment(postId, { content: newComment });
-      }
+      const requestData = {
+        targetId: postId,
+        targetType: 'POST',
+        content: newComment,
+        ...(replyToId && { parentId: replyToId })
+      };
+      await boardApi.createComment(requestData);
       setNewComment('');
       setReplyToId(null);
       setReplyNickname('');
@@ -94,7 +101,8 @@ export default function ShortsCommentModal({ postId, onClose }) {
         style={{
           width: '100%',
           height: '75%',
-          background: 'white',
+          background: '#1a1a1a',
+          color: '#f1f1f1',
           borderTopLeftRadius: '20px',
           borderTopRightRadius: '20px',
           display: 'flex',
@@ -114,17 +122,17 @@ export default function ShortsCommentModal({ postId, onClose }) {
         </style>
         
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', borderBottom: '1px solid #eee' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', borderBottom: '1px solid #333' }}>
           <h3 style={{ margin: 0, fontSize: '1.1rem' }}>댓글 {comments.length}</h3>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#666' }}>✖</button>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#f1f1f1' }}>✖</button>
         </div>
 
         {/* Comment List */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '1rem' }}>
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '2rem', color: '#888' }}>로딩 중...</div>
+            <div style={{ textAlign: 'center', padding: '2rem', color: '#aaa' }}>로딩 중...</div>
           ) : comments.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '2rem', color: '#888' }}>가장 먼저 댓글을 남겨보세요!</div>
+            <div style={{ textAlign: 'center', padding: '2rem', color: '#aaa' }}>가장 먼저 댓글을 남겨보세요!</div>
           ) : (
             (() => {
               const commentMap = {};
@@ -141,8 +149,8 @@ export default function ShortsCommentModal({ postId, onClose }) {
                 return list.map(c => {
                   const isEditing = editingCommentId === c.id;
                   return (
-                    <div key={c.id} style={{ marginBottom: '1.2rem' }}>
-                      <div style={{ marginLeft: depth > 0 ? '3rem' : '0', display: 'flex', gap: '10px' }}>
+                    <div key={c.id}>
+                      <div style={{ marginLeft: depth > 0 ? '3.4rem' : '0', display: 'flex', gap: '12px', marginBottom: '1rem' }}>
                         
                         {/* Avatar */}
                         <div style={{ marginTop: '2px' }}>
@@ -150,12 +158,12 @@ export default function ShortsCommentModal({ postId, onClose }) {
                         </div>
 
                         {/* Content Area */}
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
                           <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                            <span style={{ fontWeight: '600', fontSize: depth > 0 ? '0.85rem' : '0.9rem', color: '#262626' }}>
+                            <span style={{ fontWeight: '600', fontSize: depth > 0 ? '0.85rem' : '0.9rem', color: '#f1f1f1' }}>
                               {c.nickname}
                             </span>
-                            <span style={{ fontSize: '0.75rem', color: '#8e8e8e' }}>
+                            <span style={{ fontSize: '0.75rem', color: '#aaa' }}>
                               {new Date(c.createdAt).toLocaleDateString().slice(5)}
                             </span>
                           </div>
@@ -166,18 +174,18 @@ export default function ShortsCommentModal({ postId, onClose }) {
                               <textarea 
                                 value={editingText} 
                                 onChange={(e) => setEditingText(e.target.value)} 
-                                style={{ width: '100%', minHeight: '60px', padding: '8px', border: '1px solid #dbdbdb', borderRadius: '4px', fontSize: '0.9rem', outline: 'none', resize: 'vertical', fontFamily: 'inherit', background: '#fafafa' }}
+                                style={{ width: '100%', minHeight: '60px', padding: '8px', border: '1px solid #555', borderRadius: '4px', fontSize: '0.9rem', outline: 'none', resize: 'vertical', fontFamily: 'inherit', background: '#333', color: '#fff' }}
                                 required autoFocus
                               />
                               <div style={{ display: 'flex', gap: '0.8rem' }}>
                                 <button type="submit" style={{ background: 'none', border: 'none', color: 'var(--primary-color)', fontWeight: '600', fontSize: '0.8rem', cursor: 'pointer', padding: 0 }}>완료</button>
-                                <button type="button" onClick={() => { setEditingCommentId(null); setEditingText(''); }} style={{ background: 'none', border: 'none', color: '#8e8e8e', fontSize: '0.8rem', cursor: 'pointer', padding: 0 }}>취소</button>
+                                <button type="button" onClick={() => { setEditingCommentId(null); setEditingText(''); }} style={{ background: 'none', border: 'none', color: '#aaa', fontSize: '0.8rem', cursor: 'pointer', padding: 0 }}>취소</button>
                               </div>
                             </form>
                           ) : (
-                            <div style={{ fontSize: '0.95rem', color: '#262626', lineHeight: '1.5', wordBreak: 'break-word', marginTop: '2px', marginBottom: '2px' }}>
+                            <div style={{ fontSize: '0.95rem', color: '#f1f1f1', lineHeight: '1.5', wordBreak: 'break-word', marginTop: '2px', marginBottom: '2px' }}>
                               {depth > 0 && c.parentId && (
-                                <span style={{ color: '#00376b', marginRight: '4px', fontSize: '0.9rem' }}>
+                                <span style={{ color: '#4da6ff', marginRight: '4px', fontSize: '0.9rem' }}>
                                   @{comments.find(p => p.id === c.parentId)?.nickname}
                                 </span>
                               )}
@@ -188,12 +196,12 @@ export default function ShortsCommentModal({ postId, onClose }) {
                           {/* Action Buttons */}
                           <div style={{ display: 'flex', gap: '16px', marginTop: '8px', alignItems: 'center' }}>
                             {token && !isEditing && (
-                              <button type="button" onClick={() => { setReplyToId(c.id); setReplyNickname(c.nickname); setNewComment(''); }} style={{ background: 'none', border: 'none', color: '#8e8e8e', fontSize: '0.75rem', fontWeight: '600', cursor: 'pointer', padding: 0 }}>답글 달기</button>
+                              <button type="button" onClick={() => { setReplyToId(c.id); setReplyNickname(c.nickname); setNewComment(''); }} style={{ background: 'none', border: 'none', color: '#aaa', fontSize: '0.75rem', fontWeight: '600', cursor: 'pointer', padding: 0 }}>답글 달기</button>
                             )}
                             {nickname === c.nickname && !isEditing && (
                               <>
-                                <button type="button" onClick={() => { setEditingCommentId(c.id); setEditingText(c.content); }} style={{ background: 'none', border: 'none', color: '#8e8e8e', fontSize: '0.75rem', fontWeight: '600', cursor: 'pointer', padding: 0 }}>수정</button>
-                                <button type="button" onClick={() => handleCommentDelete(c.id)} style={{ background: 'none', border: 'none', color: '#8e8e8e', fontSize: '0.75rem', fontWeight: '600', cursor: 'pointer', padding: 0 }}>삭제</button>
+                                <button type="button" onClick={() => { setEditingCommentId(c.id); setEditingText(c.content); }} style={{ background: 'none', border: 'none', color: '#aaa', fontSize: '0.75rem', fontWeight: '600', cursor: 'pointer', padding: 0 }}>수정</button>
+                                <button type="button" onClick={() => handleCommentDelete(c.id)} style={{ background: 'none', border: 'none', color: '#aaa', fontSize: '0.75rem', fontWeight: '600', cursor: 'pointer', padding: 0 }}>삭제</button>
                               </>
                             )}
                           </div>
@@ -209,18 +217,57 @@ export default function ShortsCommentModal({ postId, onClose }) {
                                 value={newComment} 
                                 onChange={(e) => setNewComment(e.target.value)} 
                                 placeholder={`@${c.nickname}님에게 답글 남기기...`}
-                                style={{ flex: 1, height: '32px', border: 'none', borderBottom: '1px solid #dbdbdb', fontSize: '0.85rem', outline: 'none', background: 'transparent' }}
+                                style={{ flex: 1, height: '32px', border: 'none', borderBottom: '1px solid #555', fontSize: '0.85rem', outline: 'none', background: 'transparent', color: '#fff' }}
                                 required autoFocus
                               />
                               <button type="submit" style={{ background: 'none', border: 'none', color: 'var(--primary-color)', fontWeight: 'bold', fontSize: '0.85rem', cursor: 'pointer', padding: 0 }}>게시</button>
-                              <button type="button" onClick={() => { setReplyToId(null); setReplyNickname(''); setNewComment(''); }} style={{ background: 'none', border: 'none', color: '#8e8e8e', fontSize: '0.85rem', cursor: 'pointer', padding: 0 }}>✖</button>
+                              <button type="button" onClick={() => { setReplyToId(null); setReplyNickname(''); setNewComment(''); }} style={{ background: 'none', border: 'none', color: '#aaa', fontSize: '0.85rem', cursor: 'pointer', padding: 0 }}>✖</button>
                             </form>
                           )}
                         </div>
                       </div>
 
                       {/* Render children recursively OUTSIDE the flex row */}
-                      {renderCommentTree(c.id, depth + 1)}
+                      {hasChildren && depth === 0 && !isExpanded && (
+                        <div style={{ marginLeft: '3.4rem', marginTop: '-0.5rem', marginBottom: '1rem' }}>
+                          <button 
+                            onClick={() => toggleReplies(c.id)}
+                            style={{ background: 'none', border: 'none', color: '#065fd4', fontWeight: 'bold', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 10px', borderRadius: '16px', background: 'rgba(6,95,212,0.05)' }}
+                          >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                               <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                            답글 {childComments.length}개
+                          </button>
+                        </div>
+                      )}
+
+                      {hasChildren && (depth > 0 || isExpanded) && (
+                        <div style={{ position: 'relative' }}>
+                           {/* YouTube style reply line */}
+                           {depth === 0 && (
+                             <div style={{ position: 'absolute', left: '17px', top: '-1rem', bottom: '1rem', width: '2px', background: '#444', zIndex: 0 }} />
+                           )}
+                           <div style={{ position: 'relative', zIndex: 1 }}>
+                             {renderCommentTree(c.id, depth + 1)}
+                           </div>
+                           
+                           {/* Collapse button at the bottom */}
+                           {depth === 0 && (
+                             <div style={{ marginLeft: '3.4rem', marginBottom: '1rem' }}>
+                               <button 
+                                 onClick={() => toggleReplies(c.id)}
+                                 style={{ background: 'none', border: 'none', color: '#065fd4', fontWeight: 'bold', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 10px', borderRadius: '16px', background: 'rgba(6,95,212,0.05)' }}
+                               >
+                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                    <polyline points="18 15 12 9 6 15"></polyline>
+                                 </svg>
+                                 간략히 보기
+                               </button>
+                             </div>
+                           )}
+                        </div>
+                      )}
                     </div>
                   );
                 });
@@ -233,7 +280,7 @@ export default function ShortsCommentModal({ postId, onClose }) {
 
         {/* Root Comment Input Form (Hidden if replying to someone) */}
         {!replyToId && (
-          <div style={{ padding: '12px 1rem', borderTop: '1px solid #eee', background: 'white', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ padding: '12px 1rem', borderTop: '1px solid #333', background: '#1a1a1a', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <Avatar name={nickname || 'guest'} imageUrl={useAuthStore.getState().profileImageUrl} size={32} />
             <form onSubmit={handleCommentSubmit} style={{ flex: 1, display: 'flex', gap: '10px', alignItems: 'center' }}>
               <input 
@@ -241,7 +288,7 @@ export default function ShortsCommentModal({ postId, onClose }) {
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder={`${nickname || '사용자'}님으로 댓글 달기...`}
-                style={{ flex: 1, border: 'none', outline: 'none', fontSize: '0.95rem', background: 'transparent', height: '36px' }}
+                style={{ flex: 1, border: 'none', outline: 'none', fontSize: '0.95rem', background: 'transparent', height: '36px', color: '#fff' }}
               />
               <button 
                 type="submit" 

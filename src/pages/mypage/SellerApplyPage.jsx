@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { sellerApi } from '../api/seller';
+import { sellerApi } from '../../api/seller';
 
 export default function SellerApplyPage() {
   const [shopName, setShopName] = useState('');

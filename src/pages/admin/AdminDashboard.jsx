@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { useAuthStore } from '../store'
+import { useAuthStore } from '../../store'
 import { useNavigate } from 'react-router-dom'
-import { adminApi } from '../api/admin'
+import { adminApi } from '../../api/admin'
 import './AdminDashboard.css'
 
 export default function AdminDashboard() {
@@ -81,7 +81,18 @@ export default function AdminDashboard() {
             {recentData.reports.length === 0 ? <div className="admin-empty-msg">대기 중인 신고가 없습니다.</div> : 
               recentData.reports.map(r => (
                 <div key={r.id} className="admin-preview-item">
-                  <span className="text-danger font-semibold">[{r.targetType}] {r.reason}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span className="text-danger font-semibold">[{r.targetType}] {r.reason}</span>
+                    <a 
+                      href={r.targetType === 'POST' ? `/community/${r.targetId}` : r.targetType === 'PRODUCT' ? `/product/${r.targetId}` : '#'} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      style={{ fontSize: '0.8rem', color: '#2563eb', textDecoration: 'underline' }}
+                      title="새 창으로 열기"
+                    >
+                      확인하기
+                    </a>
+                  </div>
                   <span className="text-muted text-sm">{r.createdAt?.split('T')[0]}</span>
                 </div>
               ))
@@ -99,8 +110,8 @@ export default function AdminDashboard() {
             {recentData.applications.length === 0 ? <div className="admin-empty-msg">승인 대기 중인 셀러가 없습니다.</div> : 
               recentData.applications.map(a => (
                 <div key={a.id} className="admin-preview-item">
-                  <span className="font-semibold">{a.businessName}</span>
-                  <span className="text-muted text-sm">{a.contactNumber}</span>
+                  <span className="font-semibold">{a.shopName}</span>
+                  <span className="text-muted text-sm">{a.memberNickname} ({a.memberEmail})</span>
                 </div>
               ))
             }

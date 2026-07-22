@@ -1,15 +1,19 @@
 import { useState, useEffect } from 'react'
-import { useAuthStore } from '../store'
+import { useAuthStore } from '../../store'
 import { Link, useNavigate } from 'react-router-dom'
-import { productApi } from '../api/products'
-import { boardApi } from '../api/board'
-import ProductCard from '../components/ProductCard'
+import { productApi } from '../../api/products'
+import { boardApi } from '../../api/board'
+import { reviewApi } from '../../api/reviews'
+import ProductCard from '../../components/ProductCard'
 
 export default function SellerDashboard() {
   const { token, role, nickname } = useAuthStore()
   const navigate = useNavigate()
   
   const [myProducts, setMyProducts] = useState([])
+  const [myReviews, setMyReviews] = useState([])
+  const [activeTab, setActiveTab] = useState('products') // 'products' | 'reviews'
+  
   const [showForm, setShowForm] = useState(false)
   const [crawlUrl, setCrawlUrl] = useState('')
   const [isCrawling, setIsCrawling] = useState(false)
@@ -47,7 +51,17 @@ export default function SellerDashboard() {
       return
     }
     fetchMyProducts()
+    fetchMyReviews()
   }, [role])
+
+  const fetchMyReviews = async () => {
+    try {
+      const { data } = await reviewApi.getSellerReviews();
+      setMyReviews(data);
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   const fetchMyProducts = async () => {
     try {
@@ -141,8 +155,8 @@ export default function SellerDashboard() {
   const handleDescImageUpload = async (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
-    if (descriptionImageUrls.length + files.length > 5) {
-      alert('상세 설명 이미지는 최대 5개까지만 등록할 수 있습니다.');
+    if (descriptionImageUrls.length + files.length > 15) {
+      alert('상세 설명 이미지는 최대 15개까지만 등록할 수 있습니다.');
       return;
     }
     try {
@@ -189,13 +203,17 @@ export default function SellerDashboard() {
     }
   }
 
+  const [isSubmittingProduct, setIsSubmittingProduct] = useState(false);
+
   const handleAddProduct = async (e) => {
     e.preventDefault();
     if (imageUrls.length === 0) {
       alert('최소 1개 이상의 대표 이미지를 등록해야 합니다.');
       return;
     }
+    if (isSubmittingProduct) return;
 
+    setIsSubmittingProduct(true);
     try {
       let finalVideoUrl = formData.videoUrl;
       let finalVideoType = formData.videoType;
@@ -236,6 +254,8 @@ export default function SellerDashboard() {
       fetchMyProducts();
     } catch (err) {
       alert(err.message || '요청 처리에 실패했습니다.');
+    } finally {
+      setIsSubmittingProduct(false);
     }
   }
 
@@ -258,13 +278,30 @@ export default function SellerDashboard() {
       <h2>판매자 센터 🏢</h2>
       <p style={{marginBottom: '2rem'}}>환영합니다, <strong>{nickname}</strong> 사장님! 여기서 등록하신 슬라임들을 관리하세요.</p>
 
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
+        <button 
+          onClick={() => setActiveTab('products')}
+          style={{ flex: 1, padding: '1rem', border: 'none', background: activeTab === 'products' ? 'var(--primary-color)' : '#f0f0f0', color: activeTab === 'products' ? '#fff' : '#666', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', transition: '0.2s' }}
+        >
+          내가 등록한 상품 관리
+        </button>
+        <button 
+          onClick={() => setActiveTab('reviews')}
+          style={{ flex: 1, padding: '1rem', border: 'none', background: activeTab === 'reviews' ? 'var(--primary-color)' : '#f0f0f0', color: activeTab === 'reviews' ? '#fff' : '#666', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', transition: '0.2s' }}
+        >
+          내 상품 리뷰 관리
+        </button>
+      </div>
+
       <div className="seller-section">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-          <h3>내가 등록한 슬라임 관리</h3>
-          <button className="nav-btn admin-btn" onClick={handleToggleForm}>
-            {showForm ? '닫기' : '+ 새 상품 등록'}
-          </button>
-        </div>
+        {activeTab === 'products' ? (
+          <>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h3>내가 등록한 슬라임 관리</h3>
+              <button className="nav-btn admin-btn" onClick={handleToggleForm}>
+                {showForm ? '닫기' : '+ 새 상품 등록'}
+              </button>
+            </div>
 
         {showForm && (
           <div className="product-add-section" style={{ border: '2px solid var(--primary-color)', padding: '2rem', borderRadius: '16px', backgroundColor: '#fffcfd' }}>
@@ -415,8 +452,8 @@ export default function SellerDashboard() {
                   {/* 상세 이미지 */}
                   <div style={{ marginBottom: '2rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                      <label style={{ fontSize: '0.95rem', fontWeight: 'bold', color: 'var(--text-main)' }}>상세 설명 이미지 (최대 5개, 선택)</label>
-                      <span style={{ fontSize: '0.8rem', color: 'var(--text-sub)' }}>{descriptionImageUrls.length}/5개 등록됨</span>
+                      <label style={{ fontSize: '0.95rem', fontWeight: 'bold', color: 'var(--text-main)' }}>상세 설명 이미지 (최대 15개, 선택)</label>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-sub)' }}>{descriptionImageUrls.length}/15개 등록됨</span>
                     </div>
                     
                     {descriptionImageUrls.length > 0 && (
@@ -431,8 +468,8 @@ export default function SellerDashboard() {
                     )}
 
                     <div>
-                      <input type="file" accept="image/*" multiple onChange={handleDescImageUpload} style={{ display: 'none' }} id="desc-image-file-input" disabled={descriptionImageUrls.length >= 5} />
-                      <label htmlFor="desc-image-file-input" style={{ padding: '0.8rem 1.2rem', background: descriptionImageUrls.length >= 5 ? 'var(--bg-secondary)' : '#fff', border: `1px solid ${descriptionImageUrls.length >= 5 ? 'var(--border-color)' : 'var(--primary-color)'}`, color: descriptionImageUrls.length >= 5 ? 'var(--text-sub)' : 'var(--primary-color)', borderRadius: '10px', fontWeight: '600', cursor: descriptionImageUrls.length >= 5 ? 'not-allowed' : 'pointer', fontSize: '0.9rem', display: 'inline-block' }}>
+                      <input type="file" accept="image/*" multiple onChange={handleDescImageUpload} style={{ display: 'none' }} id="desc-image-file-input" disabled={descriptionImageUrls.length >= 15} />
+                      <label htmlFor="desc-image-file-input" style={{ padding: '0.8rem 1.2rem', background: descriptionImageUrls.length >= 15 ? 'var(--bg-secondary)' : '#fff', border: `1px solid ${descriptionImageUrls.length >= 15 ? 'var(--border-color)' : 'var(--primary-color)'}`, color: descriptionImageUrls.length >= 15 ? 'var(--text-sub)' : 'var(--primary-color)', borderRadius: '10px', fontWeight: '600', cursor: descriptionImageUrls.length >= 15 ? 'not-allowed' : 'pointer', fontSize: '0.9rem', display: 'inline-block' }}>
                         {uploadingDescImg ? '업로드 중...' : '상세 이미지 첨부하기'}
                       </label>
                     </div>
@@ -519,6 +556,55 @@ export default function SellerDashboard() {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+          </>
+        ) : (
+          <div>
+            <h3 style={{ marginBottom: '1.5rem' }}>내 상품 리뷰 관리 💬</h3>
+            <p style={{ color: 'var(--text-sub)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+              고객들이 작성한 리뷰를 확인하세요. 누적 신고되어 블라인드 처리된 리뷰도 이곳에서 내용을 확인할 수 있습니다.
+            </p>
+            
+            {myReviews.length === 0 ? (
+              <div className="empty-state">등록된 리뷰가 없습니다.</div>
+            ) : (
+              <div className="admin-table-container" style={{overflowX: 'auto'}}>
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>상품명</th>
+                      <th>별점</th>
+                      <th>리뷰 내용</th>
+                      <th>작성자</th>
+                      <th>상태</th>
+                      <th>신고 누적</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {myReviews.map(r => (
+                      <tr key={r.id}>
+                        <td><Link to={`/product/${r.productId}`}>{r.productName}</Link></td>
+                        <td>{'⭐'.repeat(r.rating)}</td>
+                        <td style={{ maxWidth: '300px', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+                          {r.content}
+                          {r.imageUrl && <div style={{marginTop:'0.5rem'}}><img src={r.imageUrl} alt="review" style={{width:'50px', height:'50px', objectFit:'cover', borderRadius:'8px'}} /></div>}
+                        </td>
+                        <td>{r.nickname}</td>
+                        <td>
+                          {r.isHidden ? (
+                            <span style={{ color: '#ff3b30', fontWeight: 'bold', background: '#ffeef0', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem' }}>블라인드</span>
+                          ) : (
+                            <span style={{ color: '#34c759', fontWeight: 'bold', background: '#e8f8ec', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem' }}>정상</span>
+                          )}
+                        </td>
+                        <td>{r.reportCount}회</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         )}
       </div>

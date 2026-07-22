@@ -22,25 +22,65 @@ export const boardApi = {
   deletePost: (id) => 
     api.delete(`/board/posts/${id}`),
 
-  // 파일 업로드
-  uploadFile: async (file, type = 'general') => {
+  // 파일 업로드 (이미지: 기존 서버 경유 방식, 영상: Presigned URL 직접 업로드 방식)
+  uploadFile: async (file, type = 'general', onProgress = () => {}) => {
     let fileToUpload = file;
 
-    // 이미지 파일인 경우에만 압축 진행
+    // 이미지 파일인 경우에만 압축 진행 (기존 로직 유지)
     if (file.type.startsWith('image/')) {
       const options = {
-        maxSizeMB: 1, // 최대 1MB
-        maxWidthOrHeight: 1920, // 최대 너비/높이
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
         useWebWorker: true,
       };
       try {
         fileToUpload = await imageCompression(file, options);
       } catch (error) {
         console.error('Image compression failed:', error);
-        // 압축 실패 시 원본 파일 사용
       }
     }
 
+    // 🎬 영상 파일인 경우 → Presigned URL로 S3에 직접 업로드 (서버 부담 제로)
+    if (file.type.startsWith('video/')) {
+      // 1단계: 백엔드에서 Presigned URL 발급받기
+      const presignedRes = await api.get('/upload/presigned-url', {
+        params: {
+          fileName: fileToUpload.name,
+          contentType: fileToUpload.type,
+          type: type,
+        },
+      });
+
+      const { presignedUrl, fileUrl } = presignedRes;
+
+      // 2단계: S3에 직접 PUT 업로드 (XMLHttpRequest로 진행률 추적)
+      await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('PUT', presignedUrl, true);
+        xhr.setRequestHeader('Content-Type', fileToUpload.type);
+
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) {
+            onProgress(Math.round((e.loaded / e.total) * 100));
+          }
+        };
+
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve();
+          } else {
+            reject(new Error(`S3 업로드 실패: ${xhr.status}`));
+          }
+        };
+
+        xhr.onerror = () => reject(new Error('S3 업로드 중 네트워크 오류'));
+        xhr.send(fileToUpload);
+      });
+
+      return { url: fileUrl };
+    }
+
+    // 📷 이미지 파일인 경우 → 기존 서버 경유 업로드
     const formData = new FormData();
     formData.append('file', fileToUpload);
     return api.post('/upload', formData, {

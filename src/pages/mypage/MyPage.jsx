@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react'
-import { useAuthStore } from '../store'
+import { collection, query, orderBy, onSnapshot, doc, updateDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
+import { useAuthStore } from '../../store'
 import { Link, useNavigate } from 'react-router-dom'
-import { productApi } from '../api/products'
-import { boardApi } from '../api/board'
-import { sellerApi } from '../api/seller'
-import { authApi } from '../api/auth'
-import { notificationApi } from '../api/notification'
-import ProductCard from '../components/ProductCard'
-import { formatDate } from '../utils/formatDate'
+import { productApi } from '../../api/products'
+import { boardApi } from '../../api/board'
+import { sellerApi } from '../../api/seller'
+import { authApi } from '../../api/auth'
+import { notificationApi } from '../../api/notification'
+import ProductCard from '../../components/ProductCard'
+import { formatDate } from '../../utils/formatDate'
 import { useLocation } from 'react-router-dom'
 
 export default function MyPage() {
@@ -393,6 +395,21 @@ export default function MyPage() {
                     </span>
                   </div>
                 )}
+                {application?.status === 'APPROVED' && (role === 'USER' || role === 'BUYER') && (
+                  <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px' }}>
+                    <p style={{ margin: '0 0 0.8rem 0', color: '#166534', fontSize: '0.85rem', fontWeight: 'bold' }}>🎉 판매자 승인이 완료되었습니다!</p>
+                    <p style={{ margin: '0 0 0.8rem 0', color: '#15803d', fontSize: '0.8rem', lineHeight: '1.4' }}>권한을 업데이트하고 판매자 센터로 이동하려면 다시 로그인해주세요.</p>
+                    <button 
+                      onClick={() => { 
+                        useAuthStore.getState().logout();
+                        navigate('/login');
+                      }}
+                      style={{ padding: '0.5rem 1rem', backgroundColor: '#16a34a', color: 'white', border: 'none', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 'bold', cursor: 'pointer' }}
+                    >
+                      다시 로그인하기
+                    </button>
+                  </div>
+                )}
                 {application?.status === 'REJECTED' && (role === 'USER' || role === 'BUYER') && (
                   <div className="rejection-reason-container" style={{ backgroundColor: '#fef2f2', border: '1px solid #fee2e2', borderRadius: '8px', padding: '1rem', marginTop: '0.8rem' }}>
                     <div style={{ color: '#ef4444', fontWeight: 'bold', fontSize: '0.9rem', marginBottom: '0.3rem' }}>반려 사유</div>
@@ -552,9 +569,30 @@ export default function MyPage() {
                       onClick={async () => {
                         try {
                           await notificationApi.markAllAsRead();
+                        } catch(e) {
+                          console.error("Backend DB markAllAsRead failed, continuing to Firebase sync...", e);
+                        }
+                        
+                        try {
+                          // 파이어베이스 싱크 강제 처리
+                          const unreadNotifs = myNotifications.filter(n => !n.read);
+                          for (const notif of unreadNotifs) {
+                            try {
+                              await notificationApi.markAsRead(notif.id);
+                            } catch (err) {
+                              console.error(err);
+                            }
+                            try {
+                              const docRef = doc(db, "notifications", profile.nickname, "userNotifications", String(notif.id));
+                              await updateDoc(docRef, { isRead: true });
+                            } catch (fbErr) {
+                              console.error("Firebase direct update failed", fbErr);
+                            }
+                          }
+                          
                           fetchMyNotifications(); // 읽음 상태 갱신
                         } catch(e) {
-                          console.error(e);
+                          console.error("Firebase sync failed", e);
                         }
                       }}
                       className="nav-btn" style={{ padding: '4px 12px' }}
@@ -606,7 +644,10 @@ export default function MyPage() {
                                   if (!notif.read) {
                                     notificationApi.markAsRead(notif.id).catch(console.error);
                                   }
-                                  navigate(notif.relatedUrl);
+                                  let finalUrl = notif.relatedUrl;
+                                  if (finalUrl === '/admin/sellers') finalUrl = '/admin/applications';
+                                  if (finalUrl === '/my/seller-status') finalUrl = '/mypage';
+                                  navigate(finalUrl);
                                 }}
                                 style={{ 
                                   background: 'none', border: 'none', padding: 0, 

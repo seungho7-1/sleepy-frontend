@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { adminApi } from '../api/admin';
+import { adminApi } from '../../api/admin';
 
 export default function AdminApprovalPage() {
   const [applications, setApplications] = useState([]);
@@ -64,11 +64,15 @@ export default function AdminApprovalPage() {
           {applications.map((app) => (
             <div key={app.id} style={{ border: '1px solid #e5e7eb', borderRadius: '8px', padding: '1.5rem', backgroundColor: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ flex: 1 }}>
-                <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem' }}>신청자 ID: {app.memberId} (신청번호: {app.id})</h3>
-                <p style={{ margin: '0 0 0.25rem 0', color: '#4b5563' }}><strong>URL:</strong> <a href={app.siteUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb' }}>{app.siteUrl}</a></p>
-                <p style={{ margin: '0 0 0.5rem 0', color: '#4b5563' }}><strong>상태:</strong> {app.status}</p>
-                <div style={{ padding: '0.75rem', backgroundColor: '#f3f4f6', borderRadius: '4px', fontSize: '0.9rem' }}>
-                  {app.introduction}
+                <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.2rem', color: '#111827' }}>
+                  {app.shopName} <span style={{fontSize:'0.9rem', color:'#6b7280', fontWeight:'normal'}}>(신청자: {app.memberNickname} / {app.memberEmail})</span>
+                </h3>
+                <p style={{ margin: '0 0 0.25rem 0', color: '#4b5563', wordBreak: 'break-all' }}><strong>쇼핑몰 URL:</strong> <a href={app.siteUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'none' }}>{app.siteUrl}</a></p>
+                {app.snsUrls && <p style={{ margin: '0 0 0.5rem 0', color: '#4b5563', wordBreak: 'break-all' }}><strong>SNS URL:</strong> <a href={app.snsUrls} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'none' }}>{app.snsUrls}</a></p>}
+                
+                <div style={{ padding: '1rem', backgroundColor: '#f3f4f6', borderRadius: '6px', fontSize: '0.95rem', marginTop: '0.75rem', whiteSpace: 'pre-wrap', color: '#374151', wordBreak: 'break-word' }}>
+                  <strong style={{display: 'block', marginBottom: '0.5rem'}}>📝 소개글</strong>
+                  {app.introduction || '작성된 소개글이 없습니다.'}
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '0.5rem', marginLeft: '1.5rem' }}>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { useAuthStore } from '../store'
-import { authApi } from '../api/auth'
+import { useAuthStore } from '../../store'
+import { authApi } from '../../api/auth'
 
 export default function OAuth2Onboarding() {
   const [nickname, setNickname] = useState('')

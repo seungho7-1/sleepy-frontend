@@ -80,6 +80,9 @@ export default function Navbar() {
 
   const categories = ['전체', '슬라임', '슬랑이', '말랑이', '스퀴시']
 
+  // 숏폼 페이지에서는 네비게이션 바 숨김
+  if (location.pathname === '/shorts') return null;
+
   return (
     <>
       <header className="main-header">
@@ -136,6 +139,12 @@ export default function Navbar() {
             className={`nav-btn ${isActive('/lounge') ? 'active' : ''}`}
           >
             Q&A 라운지
+          </Link>
+          <Link 
+            to="/notice" 
+            className={`nav-btn ${isActive('/notice') ? 'active' : ''}`}
+          >
+            공지사항
           </Link>
           
           <div className="nav-divider">|</div>
@@ -284,6 +293,9 @@ export default function Navbar() {
           </Link>
           <Link to="/lounge" className={`drawer-menu-item ${isActive('/lounge') ? 'active' : ''}`}>
             Q&A 라운지
+          </Link>
+          <Link to="/notice" className={`drawer-menu-item ${isActive('/notice') ? 'active' : ''}`} onClick={() => setIsDrawerOpen(false)}>
+            공지사항
           </Link>
           {token && (
             <Link to="/mypage" className={`drawer-menu-item ${isActive('/mypage') ? 'active' : ''}`}>

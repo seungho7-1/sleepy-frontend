@@ -35,9 +35,10 @@ export default function MediaPostItem({ post }) {
         <div style={{ position: 'relative', width: '100%', aspectRatio: '3 / 4', overflow: 'hidden', background: '#fafafa' }}>
           {isVideo(imageUrl) ? (
             <video 
-              src={imageUrl} 
+              src={`${imageUrl}#t=0.001`} 
               muted 
               playsInline
+              preload="metadata"
               style={{
                 position: 'absolute',
                 top: 0,

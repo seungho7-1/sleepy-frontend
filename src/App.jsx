@@ -4,28 +4,29 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 
 const Home = lazy(() => import('./pages/Home'))
-const ProductDetail = lazy(() => import('./pages/ProductDetail'))
-const Login = lazy(() => import('./pages/Login'))
-const Signup = lazy(() => import('./pages/Signup'))
-const MyPage = lazy(() => import('./pages/MyPage'))
-const SellerDashboard = lazy(() => import('./pages/SellerDashboard'))
-const AdminDashboard = lazy(() => import('./pages/AdminDashboard'))
-const Community = lazy(() => import('./pages/Community'))
-const PostDetail = lazy(() => import('./pages/PostDetail'))
-const PostCreate = lazy(() => import('./pages/PostCreate'))
+const ProductDetail = lazy(() => import('./pages/product/ProductDetail'))
+const Login = lazy(() => import('./pages/auth/Login'))
+const Signup = lazy(() => import('./pages/auth/Signup'))
+const MyPage = lazy(() => import('./pages/mypage/MyPage'))
+const SellerDashboard = lazy(() => import('./pages/mypage/SellerDashboard'))
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
+const Community = lazy(() => import('./pages/board/Community'))
+const PostDetail = lazy(() => import('./pages/board/PostDetail'))
+const PostCreate = lazy(() => import('./pages/board/PostCreate'))
 
-const SellerApplyPage = lazy(() => import('./pages/SellerApplyPage'))
-const AdminApprovalPage = lazy(() => import('./pages/AdminApprovalPage'))
-const OAuth2Onboarding = lazy(() => import('./pages/OAuth2Onboarding'))
-const FindPassword = lazy(() => import('./pages/FindPassword'))
-const ChangePassword = lazy(() => import('./pages/ChangePassword'))
-const ShortsFeed = lazy(() => import('./pages/ShortsFeed'))
-const Terms = lazy(() => import('./pages/Terms'))
-const Privacy = lazy(() => import('./pages/Privacy'))
+const SellerApplyPage = lazy(() => import('./pages/mypage/SellerApplyPage'))
+const AdminApprovalPage = lazy(() => import('./pages/admin/AdminApprovalPage'))
+const OAuth2Onboarding = lazy(() => import('./pages/auth/OAuth2Onboarding'))
+const FindPassword = lazy(() => import('./pages/auth/FindPassword'))
+const ChangePassword = lazy(() => import('./pages/auth/ChangePassword'))
+const ShortsFeed = lazy(() => import('./pages/board/ShortsFeed'))
+const Terms = lazy(() => import('./pages/policy/Terms'))
+const Privacy = lazy(() => import('./pages/policy/Privacy'))
+const Notice = lazy(() => import('./pages/Notice'))
 
-const AdminProductsPage = lazy(() => import('./pages/AdminProductsPage'))
-const AdminMembersPage = lazy(() => import('./pages/AdminMembersPage'))
-const AdminReportsPage = lazy(() => import('./pages/AdminReportsPage'))
+const AdminProductsPage = lazy(() => import('./pages/admin/AdminProductsPage'))
+const AdminMembersPage = lazy(() => import('./pages/admin/AdminMembersPage'))
+const AdminReportsPage = lazy(() => import('./pages/admin/AdminReportsPage'))
 
 function App() {
   return (
@@ -57,6 +58,7 @@ function App() {
           <Route path="/lounge" element={<Community mode="lounge" />} />
           <Route path="/community/create" element={<PostCreate />} />
           <Route path="/community/:id" element={<PostDetail />} />
+          <Route path="/notice" element={<Notice />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
         </Routes>

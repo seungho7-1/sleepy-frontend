@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { boardApi } from '../api/board';
-import ShortsItem from '../components/ShortsItem';
-import { useAuthStore } from '../store';
+import { boardApi } from '../../api/board';
+import ShortsItem from '../../components/ShortsItem';
+import { useAuthStore } from '../../store';
 import { useNavigate } from 'react-router-dom';
 
 export default function ShortsFeed() {
@@ -12,6 +12,21 @@ export default function ShortsFeed() {
 
   useEffect(() => {
     fetchMediaPosts();
+    // 숏폼 피드 접속 시 body 스크롤 방지 및 검은색 배경 설정 (키보드 올라올 때 하얀 바탕 방지)
+    const originalOverflow = document.body.style.overflow;
+    const originalBg = document.body.style.backgroundColor;
+    const rootEl = document.getElementById('root');
+    const originalRootBg = rootEl ? rootEl.style.backgroundColor : '';
+
+    document.body.style.overflow = 'hidden';
+    document.body.style.backgroundColor = 'black';
+    if (rootEl) rootEl.style.backgroundColor = 'black';
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.backgroundColor = originalBg;
+      if (rootEl) rootEl.style.backgroundColor = originalRootBg;
+    };
   }, []);
 
   const fetchMediaPosts = async () => {
@@ -29,7 +44,7 @@ export default function ShortsFeed() {
   return (
     <div style={{
       width: '100%',
-      height: 'calc(100vh - 60px)',
+      height: '100dvh', // Navbar를 숨겼으므로 전체 화면 사용
       background: 'black',
       position: 'relative',
       overflow: 'hidden',

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { adminApi } from '../api/admin';
+import { adminApi } from '../../api/admin';
 import './AdminDashboard.css';
 
 export default function AdminMembersPage() {

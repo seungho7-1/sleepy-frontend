@@ -4,7 +4,7 @@ import { reviewApi } from '../api/reviews';
 import { boardApi } from '../api/board';
 
 export default function ReviewSection({ productId, reviews, fetchReviews }) {
-  const { token } = useAuthStore();
+  const { token, nickname: currentNickname } = useAuthStore();
   const [rating, setRating] = useState(5);
   const [content, setContent] = useState('');
   const [imageUrl, setImageUrl] = useState('');
@@ -26,18 +26,43 @@ export default function ReviewSection({ productId, reviews, fetchReviews }) {
     }
   };
 
+  const [isLiking, setIsLiking] = useState(false);
+
   const toggleReviewLike = async (reviewId) => {
     if (!token) {
       alert('로그인이 필요한 기능입니다.');
       return;
     }
+    if (isLiking) return;
+    
+    setIsLiking(true);
     try {
       await boardApi.toggleLike(reviewId, 'REVIEW');
       fetchReviews();
     } catch (err) {
       console.error(err);
+    } finally {
+      setIsLiking(false);
     }
   };
+
+  const reportReview = async (reviewId) => {
+    if (!token) {
+      alert('로그인이 필요한 기능입니다.');
+      return;
+    }
+    if (window.confirm('이 리뷰를 악성 리뷰로 신고하시겠습니까?')) {
+      try {
+        await reviewApi.reportReview(reviewId);
+        alert('신고가 접수되었습니다.');
+        fetchReviews();
+      } catch (err) {
+        alert(err.response?.data?.message || '신고 처리에 실패했습니다.');
+      }
+    }
+  };
+
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
@@ -49,9 +74,11 @@ export default function ReviewSection({ productId, reviews, fetchReviews }) {
       alert('리뷰 내용을 입력해주세요.');
       return;
     }
+    if (isSubmittingReview) return;
     
+    setIsSubmittingReview(true);
     try {
-      await reviewApi.createReview({ productId, rating, content, imageUrl });
+      await reviewApi.createReview({ productId: Number(productId), rating, content, imageUrl });
       alert('리뷰가 등록되었습니다.');
       setContent('');
       setImageUrl('');
@@ -59,6 +86,8 @@ export default function ReviewSection({ productId, reviews, fetchReviews }) {
       fetchReviews();
     } catch (err) {
       alert(err.message || '리뷰 등록에 실패했습니다.');
+    } finally {
+      setIsSubmittingReview(false);
     }
   };
 
@@ -182,7 +211,7 @@ export default function ReviewSection({ productId, reviews, fetchReviews }) {
           <div className="empty-state" style={{ padding: '4rem 0', background: '#fffbfd', border: '1px solid #ffd6e0', borderRadius: '12px', color: '#888' }}>아직 등록된 리뷰가 없습니다. 첫 리뷰를 작성해보세요!</div>
         ) : (
           reviews.map(review => (
-            <div key={review.id} className="review-item" style={{ borderBottom: '1px solid #ffeef2', padding: '1.5rem 0' }}>
+            <div id={`review-${review.id}`} key={review.id} className="review-item" style={{ borderBottom: '1px solid #ffeef2', padding: '1.5rem 0' }}>
               <div className="review-meta" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span className="review-author" style={{ fontWeight: '800', fontSize: '0.95rem', color: '#111' }}>{review.nickname || review.authorNickname || '익명'}</span>
@@ -190,29 +219,47 @@ export default function ReviewSection({ productId, reviews, fetchReviews }) {
                     {'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}
                   </span>
                 </div>
-                <span className="review-date" style={{ color: '#999', fontSize: '0.85rem' }}>{new Date(review.createdAt).toLocaleDateString()}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span className="review-date" style={{ color: '#999', fontSize: '0.85rem' }}>{new Date(review.createdAt).toLocaleDateString()}</span>
+                  {!review.isHidden && review.nickname !== currentNickname && (
+                    <button 
+                      onClick={() => reportReview(review.id)}
+                      style={{ background: 'none', border: 'none', color: '#ff5b94', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 'bold' }}
+                    >
+                      🚨 신고
+                    </button>
+                  )}
+                </div>
               </div>
               
-              <div className="review-content" style={{ marginTop: '0.5rem', color: '#333', fontSize: '0.95rem', lineHeight: '1.6' }}>{review.content}</div>
-              {review.imageUrl && (
-                <div style={{ marginTop: '1rem' }}>
-                  <img src={review.imageUrl} alt="review" style={{ maxWidth: '240px', maxHeight: '240px', objectFit: 'contain', borderRadius: '8px', border: '1px solid #eee' }} />
+              {review.isHidden ? (
+                <div style={{ padding: '1.5rem', background: '#f5f5f5', borderRadius: '8px', color: '#888', textAlign: 'center', margin: '1rem 0' }}>
+                  🚫 신고 누적으로 인해 블라인드 처리된 리뷰입니다.
                 </div>
+              ) : (
+                <>
+                  <div className="review-content" style={{ marginTop: '0.5rem', color: '#333', fontSize: '0.95rem', lineHeight: '1.6' }}>{review.content}</div>
+                  {review.imageUrl && (
+                    <div style={{ marginTop: '1rem' }}>
+                      <img src={review.imageUrl} alt="review" style={{ maxWidth: '240px', maxHeight: '240px', objectFit: 'contain', borderRadius: '8px', border: '1px solid #eee' }} />
+                    </div>
+                  )}
+                  <div style={{ marginTop: '1.2rem' }}>
+                    <button 
+                      onClick={() => toggleReviewLike(review.id)}
+                      style={{ background: '#fff', border: '1px solid #ffd6e0', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer', fontSize: '0.85rem', color: 'var(--primary-color)', display: 'flex', alignItems: 'center', gap: '4px', transition: 'all 0.2s', fontWeight: 'bold' }}
+                      onMouseEnter={(e) => {
+                        e.target.style.background = '#fff5f7';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.background = '#fff';
+                      }}
+                    >
+                      👍 도움이 됐어요 {review.likeCount || 0}
+                    </button>
+                  </div>
+                </>
               )}
-              <div style={{ marginTop: '1.2rem' }}>
-                <button 
-                  onClick={() => toggleReviewLike(review.id)}
-                  style={{ background: '#fff', border: '1px solid #ffd6e0', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer', fontSize: '0.85rem', color: 'var(--primary-color)', display: 'flex', alignItems: 'center', gap: '4px', transition: 'all 0.2s', fontWeight: 'bold' }}
-                  onMouseEnter={(e) => {
-                    e.target.style.background = '#fff5f7';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.background = '#fff';
-                  }}
-                >
-                  👍 도움이 됐어요 {review.likeCount || 0}
-                </button>
-              </div>
             </div>
           ))
         )}

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useAuthStore } from '../store'
-import { boardApi } from '../api/board'
+import { useAuthStore } from '../../store'
+import { boardApi } from '../../api/board'
+import { compressVideo, needsCompression } from '../../utils/videoCompressor'
 
 export default function PostCreate() {
   const navigate = useNavigate()
@@ -19,6 +20,8 @@ export default function PostCreate() {
   const [previewUrl, setPreviewUrl] = useState(null)
   const [isUploading, setIsUploading] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
+  const [uploadStatus, setUploadStatus] = useState('') // 현재 단계 텍스트
+  const [uploadProgress, setUploadProgress] = useState(0) // 0~100 진행률
 
   // 수정 모드일 때 기존 게시글 데이터 불러오기
   useEffect(() => {
@@ -46,14 +49,14 @@ export default function PostCreate() {
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0]
     if (selectedFile) {
-      // 🚨 파일 용량 제한 검사 로직 추가 🚨
+      // 이미지: 5MB 제한 / 영상: 500MB 제한 (브라우저에서 압축 후 업로드되므로 여유 있게 허용)
       const isVideo = selectedFile.type.startsWith('video/');
-      const maxSizeMB = isVideo ? 20 : 5; // 영상은 최대 20MB, 사진은 5MB로 안전하게 제한
+      const maxSizeMB = isVideo ? 500 : 5;
       const maxSizeBytes = maxSizeMB * 1024 * 1024;
 
       if (selectedFile.size > maxSizeBytes) {
-        alert(`파일 용량이 너무 큽니다!\n${isVideo ? '영상은 최대 20MB' : '사진은 최대 5MB'}까지만 업로드 가능합니다.\n\n현재 파일 크기: ${(selectedFile.size / 1024 / 1024).toFixed(1)}MB`);
-        e.target.value = ''; // 입력창 초기화
+        alert(`파일 용량이 너무 큽니다!\n${isVideo ? '영상은 최대 500MB' : '사진은 최대 5MB'}까지만 업로드 가능합니다.\n\n현재 파일 크기: ${(selectedFile.size / 1024 / 1024).toFixed(1)}MB`);
+        e.target.value = '';
         return;
       }
 
@@ -79,12 +82,37 @@ export default function PostCreate() {
 
     try {
       setIsUploading(true)
-      let finalImageUrl = previewUrl; // 새로 업로드 안했으면 기존 URL 유지
+      setUploadProgress(0)
+      let finalImageUrl = previewUrl;
+      
       if (file) {
-        const uploadRes = await boardApi.uploadFile(file, 'post');
+        let fileToUpload = file;
+        
+        // 🎬 영상이고 20MB를 초과하면 → 브라우저에서 자동 압축
+        if (file.type.startsWith('video/') && needsCompression(file)) {
+          setUploadStatus(`🎬 영상 압축 중... (${(file.size / 1024 / 1024).toFixed(0)}MB → 720p 변환)`);
+          try {
+            fileToUpload = await compressVideo(file, (progress) => {
+              setUploadProgress(progress);
+            });
+            setUploadStatus(`✅ 압축 완료! (${(file.size / 1024 / 1024).toFixed(0)}MB → ${(fileToUpload.size / 1024 / 1024).toFixed(1)}MB)`);
+          } catch (compressErr) {
+            console.error('영상 압축 실패, 원본으로 업로드합니다:', compressErr);
+            // 압축 실패 시 원본 그대로 업로드 시도
+            fileToUpload = file;
+          }
+        }
+        
+        // S3 업로드 단계
+        setUploadStatus('☁️ 서버에 업로드 중...');
+        setUploadProgress(0);
+        const uploadRes = await boardApi.uploadFile(fileToUpload, 'post', (progress) => {
+          setUploadProgress(progress);
+        });
         finalImageUrl = uploadRes.url;
       }
 
+      setUploadStatus('📝 게시글 저장 중...');
       if (isEditMode) {
         await boardApi.updatePost(editId, { title, content, boardType, imageUrl: finalImageUrl });
         alert('게시글이 수정되었습니다.');
@@ -98,6 +126,8 @@ export default function PostCreate() {
       alert(err.message || '게시글 등록에 실패했습니다.');
     } finally {
       setIsUploading(false)
+      setUploadStatus('')
+      setUploadProgress(0)
     }
   }
 
@@ -210,6 +240,27 @@ export default function PostCreate() {
                 >
                   ❌
                 </button>
+              </div>
+            </div>
+          )}
+          
+          {/* 압축/업로드 진행률 표시 */}
+          {isUploading && uploadStatus && (
+            <div style={{ marginTop: '12px', padding: '14px', borderRadius: '10px', backgroundColor: '#f8f0ff', border: '1px solid #e8d5f5' }}>
+              <div style={{ fontSize: '0.82rem', fontWeight: '600', color: '#7c3aed', marginBottom: '8px' }}>
+                {uploadStatus}
+              </div>
+              <div style={{ width: '100%', height: '8px', backgroundColor: '#e8d5f5', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ 
+                  width: `${uploadProgress}%`, 
+                  height: '100%', 
+                  backgroundColor: '#7c3aed', 
+                  borderRadius: '4px',
+                  transition: 'width 0.3s ease',
+                }} />
+              </div>
+              <div style={{ fontSize: '0.72rem', color: '#9ca3af', marginTop: '4px', textAlign: 'right' }}>
+                {uploadProgress}%
               </div>
             </div>
           )}

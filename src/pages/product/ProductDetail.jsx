@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react'
 
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 
-import { useAuthStore } from '../store'
+import { useAuthStore } from '../../store'
 
-import { productApi } from '../api/products'
+import { productApi } from '../../api/products'
 
-import { reviewApi } from '../api/reviews'
+import { reviewApi } from '../../api/reviews'
 
-import { boardApi } from '../api/board'
-import ReviewSection from '../components/ReviewSection'
+import { boardApi } from '../../api/board'
+import ReviewSection from '../../components/ReviewSection'
 
 
 
@@ -62,6 +62,7 @@ export default function ProductDetail() {
   const { id } = useParams()
 
   const navigate = useNavigate()
+  const location = useLocation()
 
   const { token } = useAuthStore()
 
@@ -91,14 +92,32 @@ export default function ProductDetail() {
 
 
   useEffect(() => {
-
     fetchProduct()
-
     fetchReviews()
-
     if (token) checkWishStatus()
-
   }, [id, token])
+
+  const scrollToHash = () => {
+    const currentHash = window.location.hash || location.hash;
+    if (currentHash) {
+      const hashId = currentHash.replace('#', '');
+      const element = document.getElementById(hashId);
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300);
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 1200);
+      }
+    }
+  };
+
+  useEffect(() => {
+    scrollToHash();
+    window.addEventListener('hashchange', scrollToHash);
+    return () => window.removeEventListener('hashchange', scrollToHash);
+  }, [reviews, location.hash, product]);
 
 
 
@@ -654,8 +673,6 @@ export default function ProductDetail() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid var(--primary-color)', paddingBottom: '0.8rem', marginBottom: '1.5rem' }}>
 
                   <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '800', color: '#111' }}>상품 주요 스펙 🫧</h3>
-
-                  <button style={{ border: '1px solid #ffd6e0', background: '#fff5f7', padding: '5px 12px', fontSize: '0.8rem', color: 'var(--primary-color)', cursor: 'pointer', borderRadius: '20px', fontWeight: 'bold' }}>신고하기</button>
 
                 </div>
 
