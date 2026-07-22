@@ -5,6 +5,7 @@ import { productApi } from '../api/products'
 import { boardApi } from '../api/board'
 import { isVideo } from '../utils/media'
 import Avatar from '../components/Avatar'
+import HoverVideo from '../components/HoverVideo'
 
 const CATEGORIES = ['전체', '슬라임', '슬랑이', '말랑이', '스퀴시']
 const FEED_MAX = 10 // 자랑피드 최대 표시 개수
@@ -228,7 +229,7 @@ export default function Home() {
                   }}>
                     {post.imageUrl ? (
                       post.imageUrl.match(/\.(mp4|webm|mov)$/i) ? (
-                        <video src={post.imageUrl} loop muted playsInline preload="metadata" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <HoverVideo src={post.imageUrl} />
                       ) : (
                         <img src={post.imageUrl} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
                       )

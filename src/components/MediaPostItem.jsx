@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { formatDate } from '../utils/formatDate'
 import { isVideo } from '../utils/media'
 import Avatar from './Avatar'
+import HoverVideo from './HoverVideo'
 
 export default function MediaPostItem({ post }) {
   const [isHovered, setIsHovered] = useState(false)
@@ -34,19 +35,9 @@ export default function MediaPostItem({ post }) {
         {/* 3:4 비율 이미지 영역 */}
         <div style={{ position: 'relative', width: '100%', aspectRatio: '3 / 4', overflow: 'hidden', background: '#fafafa' }}>
           {isVideo(imageUrl) ? (
-            <video 
-              src={`${imageUrl}#t=0.001`} 
-              muted 
-              playsInline
-              preload="metadata"
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover'
-              }} 
+            <HoverVideo 
+              src={imageUrl} 
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
             />
           ) : (
             <img 
