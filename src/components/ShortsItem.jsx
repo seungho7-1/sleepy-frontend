@@ -111,7 +111,9 @@ export default function ShortsItem({ post, index }) {
           ref={videoRef}
           src={mediaUrl}
           loop
+          muted
           playsInline
+          preload="none"
           style={{
             width: '100%',
             height: '100%',

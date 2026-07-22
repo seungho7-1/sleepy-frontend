@@ -228,7 +228,7 @@ export default function Home() {
                   }}>
                     {post.imageUrl ? (
                       post.imageUrl.match(/\.(mp4|webm|mov)$/i) ? (
-                        <video src={post.imageUrl} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <video src={post.imageUrl} loop muted playsInline preload="metadata" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       ) : (
                         <img src={post.imageUrl} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
                       )
