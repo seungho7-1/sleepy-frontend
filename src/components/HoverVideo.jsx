@@ -3,7 +3,6 @@ import React, { useRef, useState, useEffect } from 'react';
 export default function HoverVideo({ src, style, className }) {
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const timeoutRef = useRef(null);
 
   // iOS Safari 등에서 첫 프레임을 썸네일로 보여주기 위한 꼼수 (#t=0.001)
   const videoSrc = src.includes('#t=') ? src : `${src}#t=0.001`;
@@ -18,47 +17,29 @@ export default function HoverVideo({ src, style, className }) {
     }
   };
 
-  const pauseVideo = () => {
-    if (videoRef.current && isPlaying) {
+  const pauseAndResetVideo = () => {
+    if (videoRef.current) {
       videoRef.current.pause();
+      videoRef.current.currentTime = 0; // 초기화
       setIsPlaying(false);
     }
   };
 
   const handleMouseEnter = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
     playVideo();
   };
 
   const handleMouseLeave = () => {
-    pauseVideo();
+    pauseAndResetVideo();
   };
 
   const handleTouchStart = () => {
-    // 터치 시 재생하고 5초 뒤 자동 정지
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    
-    if (!isPlaying) {
-      playVideo();
-    }
-    
-    timeoutRef.current = setTimeout(() => {
-      pauseVideo();
-    }, 5000); // 5초간 재생
+    playVideo();
   };
 
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
+  const handleTouchEnd = () => {
+    pauseAndResetVideo();
+  };
 
   return (
     <div 
@@ -67,6 +48,8 @@ export default function HoverVideo({ src, style, className }) {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
     >
       <video
         ref={videoRef}
