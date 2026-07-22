@@ -5,7 +5,7 @@ export default function Notice() {
   return (
     <div className="notice-container" style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem 1rem', paddingBottom: '5rem' }}>
       <header className="notice-header" style={{ textAlign: 'center', marginBottom: '3rem' }}>
-        <h1 style={{ fontSize: '2rem', color: '#333', marginBottom: '0.5rem', fontWeight: '800' }}>📢 공지사항 및 이용 가이드</h1>
+        <h1 style={{ fontSize: '2rem', color: '#333', marginBottom: '0.5rem', fontWeight: '800' }}>📢 슬리피 이용 가이드</h1>
         <p style={{ color: '#666', fontSize: '1rem' }}>슬리피(Sleepy) 플랫폼을 더욱 즐겁고 안전하게 이용하는 방법!</p>
       </header>
 

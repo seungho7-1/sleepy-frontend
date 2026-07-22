@@ -144,7 +144,7 @@ export default function Navbar() {
             to="/notice" 
             className={`nav-btn ${isActive('/notice') ? 'active' : ''}`}
           >
-            공지사항
+            이용 가이드
           </Link>
           
           <div className="nav-divider">|</div>
@@ -295,7 +295,7 @@ export default function Navbar() {
             Q&A 라운지
           </Link>
           <Link to="/notice" className={`drawer-menu-item ${isActive('/notice') ? 'active' : ''}`} onClick={() => setIsDrawerOpen(false)}>
-            공지사항
+            이용 가이드
           </Link>
           {token && (
             <Link to="/mypage" className={`drawer-menu-item ${isActive('/mypage') ? 'active' : ''}`}>
