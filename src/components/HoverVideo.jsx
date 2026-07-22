@@ -60,26 +60,6 @@ export default function HoverVideo({ src, style, className }) {
         preload="metadata"
         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
       />
-      {/* Play Icon Hint (optional, shows a small icon if paused, but let's keep it clean for now) */}
-      {!isPlaying && (
-        <div style={{
-          position: 'absolute',
-          top: '5px',
-          right: '5px',
-          background: 'rgba(0,0,0,0.4)',
-          borderRadius: '50%',
-          width: '20px',
-          height: '20px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'white',
-          fontSize: '0.6rem',
-          pointerEvents: 'none'
-        }}>
-          ▶
-        </div>
-      )}
     </div>
   );
 }

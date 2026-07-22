@@ -132,27 +132,7 @@ export default function ShortsItem({ post, index }) {
         />
       )}
 
-      {/* Play/Pause Overlay Icon (shows briefly on pause/play if desired, but we keep it simple here) */}
-      {!isPlaying && isVideo(mediaUrl) && (
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          background: 'rgba(0,0,0,0.4)',
-          borderRadius: '50%',
-          width: '60px',
-          height: '60px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'white',
-          fontSize: '2rem',
-          pointerEvents: 'none'
-        }}>
-          ▶
-        </div>
-      )}
+
 
       {/* Right Action Bar */}
       <div style={{
