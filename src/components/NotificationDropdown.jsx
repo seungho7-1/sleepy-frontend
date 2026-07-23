@@ -76,7 +76,7 @@ export default function NotificationDropdown({ onClose }) {
     // 프론트엔드에서 파악된 미읽음 알림들에 대해 개별 읽음 처리(파이어베이스 싱크)를 강제합니다.
     try {
       const unreadNotifs = notifications.filter(n => !(n.isRead !== undefined ? n.isRead : n.read));
-      for (const notif of unreadNotifs) {
+      await Promise.all(unreadNotifs.map(async (notif) => {
         const notifId = notif.id || notif.docId;
         if (notifId) {
           try {
@@ -92,7 +92,7 @@ export default function NotificationDropdown({ onClose }) {
             console.error("Firebase direct update failed", fbErr);
           }
         }
-      }
+      }));
     } catch (e) {
       console.error("Failed to mark all as read", e);
     }
@@ -181,7 +181,13 @@ export default function NotificationDropdown({ onClose }) {
               style={{ cursor: 'pointer' }}
               onClick={() => handleNotificationClick(notif)}
             >
-              <div className="notification-icon">
+              <div className="notification-icon" style={{ 
+                background: notif.type === 'NEW_LIKE' ? '#fff0f5' : 
+                            notif.type === 'NEW_COMMENT' ? '#f0f8ff' : 
+                            notif.type === 'NEW_REVIEW' ? '#fffbf0' : 
+                            (notif.type === 'SELLER_APPROVAL' || notif.type === 'NEW_SELLER_APPLICATION') ? '#f0fdf4' : 
+                            (notif.type === 'SELLER_REJECTED' || notif.type === 'NEW_REPORT') ? '#fef2f2' : '#f8f9fa'
+              }}>
                 {notif.type === 'NEW_COMMENT' ? '💬' : 
                  notif.type === 'NEW_LIKE' ? '❤️' : 
                  notif.type === 'NEW_REVIEW' ? '⭐' : 

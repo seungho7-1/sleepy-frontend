@@ -39,17 +39,11 @@ export default function Footer() {
 
             {/* Column 2: 지원 */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <h3 style={{ fontSize: '1rem', fontWeight: 'bold', color: '#fff', margin: '0 0 0.5rem 0' }}>지원</h3>
-              <a href="mailto:support@sleepyslime.com" style={{ color: '#8a8e9e', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s' }} onMouseOver={(e)=>e.target.style.color='#fff'} onMouseOut={(e)=>e.target.style.color='#8a8e9e'}>문의하기</a>
+              <h3 style={{ fontSize: '1rem', fontWeight: 'bold', color: '#fff', margin: '0 0 0.5rem 0' }}>고객 지원</h3>
+              <Link to="/lounge?tab=QNA" style={{ color: '#8a8e9e', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s' }} onMouseOver={(e)=>e.target.style.color='#fff'} onMouseOut={(e)=>e.target.style.color='#8a8e9e'}>1:1 문의하기 (Q&A)</Link>
+              <a href="mailto:sleepyslime.official@gmail.com" style={{ color: '#8a8e9e', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s' }} onMouseOver={(e)=>e.target.style.color='#fff'} onMouseOut={(e)=>e.target.style.color='#8a8e9e'}>이메일 문의</a>
               <Link to="/terms" style={{ color: '#8a8e9e', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s' }} onMouseOver={(e)=>e.target.style.color='#fff'} onMouseOut={(e)=>e.target.style.color='#8a8e9e'}>이용약관</Link>
               <Link to="/privacy" style={{ color: '#8a8e9e', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s' }} onMouseOver={(e)=>e.target.style.color='#fff'} onMouseOut={(e)=>e.target.style.color='#8a8e9e'}>개인정보처리방침</Link>
-            </div>
-
-            {/* Column 3: 개발자 */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <h3 style={{ fontSize: '1rem', fontWeight: 'bold', color: '#fff', margin: '0 0 0.5rem 0' }}>개발자</h3>
-              <a href="#" style={{ color: '#8a8e9e', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s' }} onMouseOver={(e)=>e.target.style.color='#fff'} onMouseOut={(e)=>e.target.style.color='#8a8e9e'}>GitHub</a>
-              <a href="#" style={{ color: '#8a8e9e', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s' }} onMouseOver={(e)=>e.target.style.color='#fff'} onMouseOut={(e)=>e.target.style.color='#8a8e9e'}>API 문서</a>
             </div>
           </div>
         </div>

@@ -11,6 +11,7 @@ import { notificationApi } from '../../api/notification'
 import ProductCard from '../../components/ProductCard'
 import { formatDate } from '../../utils/formatDate'
 import { useLocation } from 'react-router-dom'
+import { inquiryApi } from '../../api/inquiry'
 
 export default function MyPage() {
   const { token, role, nickname, setProfileImageUrl, setRole, setNickname, logout } = useAuthStore()
@@ -30,6 +31,8 @@ export default function MyPage() {
   const [editFormData, setEditFormData] = useState({ nickname: '', email: '', profileImageUrl: '' })
   const [uploadingProfileImg, setUploadingProfileImg] = useState(false)
   const [isAvatarMenuOpen, setIsAvatarMenuOpen] = useState(false)
+  const [myInquiries, setMyInquiries] = useState([])
+  const [inquiryForm, setInquiryForm] = useState({ title: '', content: '' })
 
   useEffect(() => {
     if (!token) {
@@ -46,6 +49,7 @@ export default function MyPage() {
     fetchMyMedia()
     fetchApplicationStatus()
     fetchMyNotifications()
+    fetchMyInquiries()
     
     // URL 파라미터에서 탭 확인 (예: ?tab=notifications)
     const searchParams = new URLSearchParams(location.search);
@@ -201,6 +205,31 @@ export default function MyPage() {
     }
   }
 
+  const fetchMyInquiries = async () => {
+    try {
+      const data = await inquiryApi.getMyInquiries();
+      setMyInquiries(data);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  const handleInquirySubmit = async (e) => {
+    e.preventDefault();
+    if (!inquiryForm.title.trim() || !inquiryForm.content.trim()) {
+      alert('제목과 내용을 모두 입력해주세요.');
+      return;
+    }
+    try {
+      await inquiryApi.create(inquiryForm);
+      alert('문의가 등록되었습니다.');
+      setInquiryForm({ title: '', content: '' });
+      fetchMyInquiries();
+    } catch (err) {
+      alert('문의 등록 중 오류가 발생했습니다.');
+    }
+  }
+
   const handleWithdraw = async () => {
     const confirmWithdraw = window.confirm(
       '정말로 회원 탈퇴를 진행하시겠습니까?\n계정과 등록된 모든 정보가 영구 삭제되며 소셜 로그인 연동이 해제됩니다.'
@@ -221,8 +250,8 @@ export default function MyPage() {
     <div className="mypage-container">
       {/* 미니멀 프로필 영역 */}
       <div className="mypage-banner">
-        <div className="mypage-banner-content">
-          <div className="profile-avatar-container" style={{ position: 'relative', display: 'inline-block', width: '80px', height: '80px', margin: '0 auto' }}>
+        <div className="mypage-banner-content" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '1.5rem', textAlign: 'left', padding: '1rem 0' }}>
+          <div className="profile-avatar-container" style={{ position: 'relative', display: 'inline-block', width: '85px', height: '85px', flexShrink: 0 }}>
             <div className="profile-avatar" style={{ overflow: 'hidden', position: 'relative', width: '100%', height: '100%', borderRadius: '50%', border: '3px solid #fff', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f3f4f6', color: '#9ca3af', fontSize: '2rem', fontWeight: 'bold' }}>
               {profile?.profileImageUrl ? (
                 <img src={profile.profileImageUrl} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -269,11 +298,14 @@ export default function MyPage() {
               </>
             )}
           </div>
-          <div className="profile-info-header">
-            <h2>{nickname}님</h2>
-            <p className="role-badge">
-              {(role === 'USER' || role === 'BUYER') ? '일반 구매자' : role === 'SELLER' ? '슬라임 판매자' : '관리자'}
-            </p>
+          <div className="profile-info-header" style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+            <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: '800' }}>{nickname}님</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <span className="role-badge" style={{ margin: 0, display: 'inline-block' }}>
+                {(role === 'USER' || role === 'BUYER') ? '일반 구매자' : role === 'SELLER' ? '슬라임 판매자' : '관리자'}
+              </span>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-sub)' }}>{profile?.email || '이메일 없음'}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -316,6 +348,12 @@ export default function MyPage() {
             onClick={() => setActiveTab('notifications')}
           >
             내 알림 내역 ({myNotifications.length})
+          </button>
+          <button 
+            className={`mypage-nav-btn ${activeTab === 'inquiries' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('inquiries')}
+          >
+            1:1 문의 내역
           </button>
           {(role === 'USER' || role === 'BUYER') && (
             <>
@@ -713,6 +751,67 @@ export default function MyPage() {
               </div>
             );
           })()}
+
+          {activeTab === 'inquiries' && (
+            <div className="glass-card fade-in">
+              <h3 style={{ fontSize: '1.1rem', fontWeight: '700', marginBottom: '1.5rem' }}>1:1 문의 내역</h3>
+              <div style={{ marginBottom: '2rem', padding: '1rem', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                <h4 style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '1rem', marginTop: 0 }}>새 문의 등록하기</h4>
+                <form onSubmit={handleInquirySubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <input 
+                    type="text" 
+                    placeholder="제목" 
+                    value={inquiryForm.title}
+                    onChange={(e) => setInquiryForm({...inquiryForm, title: e.target.value})}
+                    style={{ padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}
+                  />
+                  <textarea 
+                    placeholder="문의 내용을 입력하세요" 
+                    value={inquiryForm.content}
+                    onChange={(e) => setInquiryForm({...inquiryForm, content: e.target.value})}
+                    rows={4}
+                    style={{ padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--border-color)', resize: 'vertical' }}
+                  ></textarea>
+                  <button type="submit" className="nav-btn" style={{ padding: '0.8rem', backgroundColor: 'var(--primary-color)', color: 'white', fontWeight: 'bold' }}>문의하기</button>
+                </form>
+              </div>
+
+              <h4 style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '1rem' }}>나의 문의 내역</h4>
+              {myInquiries.length === 0 ? (
+                <div className="empty-state">문의 내역이 없습니다.</div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  {myInquiries.map(inquiry => (
+                    <div key={inquiry.id} style={{ padding: '1rem', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                        <h5 style={{ margin: 0, fontWeight: 'bold', fontSize: '1rem' }}>{inquiry.title}</h5>
+                        <span style={{ 
+                          fontSize: '0.8rem', 
+                          fontWeight: 'bold', 
+                          color: inquiry.status === 'PENDING' ? '#d97706' : '#10b981',
+                          padding: '0.2rem 0.6rem',
+                          backgroundColor: inquiry.status === 'PENDING' ? '#fef3c7' : '#d1fae5',
+                          borderRadius: '12px'
+                        }}>
+                          {inquiry.status === 'PENDING' ? '답변 대기' : '답변 완료'}
+                        </span>
+                      </div>
+                      <p style={{ margin: '0 0 1rem 0', fontSize: '0.9rem', color: 'var(--text-main)', whiteSpace: 'pre-wrap' }}>
+                        {inquiry.content}
+                      </p>
+                      
+                      {inquiry.reply && (
+                        <div style={{ padding: '1rem', backgroundColor: '#f9fafb', borderLeft: '3px solid var(--primary-color)', borderRadius: '4px' }}>
+                          <div style={{ fontWeight: 'bold', fontSize: '0.85rem', color: 'var(--primary-color)', marginBottom: '0.5rem' }}>관리자 답변</div>
+                          <p style={{ margin: 0, fontSize: '0.9rem', color: '#374151', whiteSpace: 'pre-wrap' }}>{inquiry.reply}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

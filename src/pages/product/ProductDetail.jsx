@@ -442,13 +442,6 @@ export default function ProductDetail() {
 
 
 
-          {/* 러블리 버블 데코레이션 */}
-
-          <div style={{ position: 'absolute', top: '12px', left: '12px', background: 'rgba(255, 255, 255, 0.85)', padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--primary-color)', backdropFilter: 'blur(4px)', border: '1.5px solid #ffd6e0', zIndex: 10 }}>
-
-            🫧 SLIME
-
-          </div>
 
         </div>
 
