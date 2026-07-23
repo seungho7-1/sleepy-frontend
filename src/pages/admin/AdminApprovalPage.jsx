@@ -67,6 +67,7 @@ export default function AdminApprovalPage() {
                 <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.2rem', color: '#111827' }}>
                   {app.shopName} <span style={{fontSize:'0.9rem', color:'#6b7280', fontWeight:'normal'}}>(신청자: {app.memberNickname} / {app.memberEmail})</span>
                 </h3>
+                <p style={{ margin: '0 0 0.25rem 0', color: '#4b5563', wordBreak: 'break-all' }}><strong>사업자등록번호:</strong> <span style={{ color: '#10b981', fontWeight: 'bold' }}>{app.businessNumber} (인증됨)</span></p>
                 <p style={{ margin: '0 0 0.25rem 0', color: '#4b5563', wordBreak: 'break-all' }}><strong>쇼핑몰 URL:</strong> <a href={app.siteUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'none' }}>{app.siteUrl}</a></p>
                 {app.snsUrls && <p style={{ margin: '0 0 0.5rem 0', color: '#4b5563', wordBreak: 'break-all' }}><strong>SNS URL:</strong> <a href={app.snsUrls} target="_blank" rel="noopener noreferrer" style={{ color: '#2563eb', textDecoration: 'none' }}>{app.snsUrls}</a></p>}
                 

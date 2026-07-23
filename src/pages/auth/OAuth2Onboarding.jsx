@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '../../store'
 import { authApi } from '../../api/auth'
+import { sellerApi } from '../../api/seller'
 
 export default function OAuth2Onboarding() {
   const [nickname, setNickname] = useState('')
@@ -11,6 +12,9 @@ export default function OAuth2Onboarding() {
   const [shopUrl, setShopUrl] = useState('')
   const [snsUrls, setSnsUrls] = useState([''])
   const [introduction, setIntroduction] = useState('')
+  const [businessNumber, setBusinessNumber] = useState('')
+  const [isBusinessVerified, setIsBusinessVerified] = useState(false)
+  const [isVerifyingBusiness, setIsVerifyingBusiness] = useState(false)
   const [token, setToken] = useState('')
   const [loading, setLoading] = useState(false)
   const [agreedTerms, setAgreedTerms] = useState(false)
@@ -108,6 +112,10 @@ export default function OAuth2Onboarding() {
         alert('소개글을 입력해 주세요!')
         return
       }
+      if (businessNumber.trim() && !isBusinessVerified) {
+        alert('입력하신 사업자등록번호 인증을 완료해 주세요! (또는 빈칸으로 남겨주세요)');
+        return
+      }
     }
 
     setLoading(true)
@@ -122,7 +130,8 @@ export default function OAuth2Onboarding() {
         shopName: role === 'SELLER' ? shopName : null,
         siteUrl: role === 'SELLER' ? shopUrl : null,
         snsUrls: role === 'SELLER' ? snsUrls.filter(url => url.trim() !== '').join(',') : null,
-        introduction: role === 'SELLER' ? introduction : null
+        introduction: role === 'SELLER' ? introduction : null,
+        businessNumber: role === 'SELLER' && businessNumber ? businessNumber.replace(/-/g, '') : null
       })
 
       // 3. Save the finalized user role and nickname returned by the API
@@ -270,6 +279,61 @@ export default function OAuth2Onboarding() {
               </div>
 
               <div className="auth-form-group">
+                <label style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>사업자등록번호 (선택 - 추후 필수 전환)</label>
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.4rem' }}>
+                  <input 
+                    type="text" 
+                    value={businessNumber}
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/[^0-9]/g, '');
+                      let formatted = v;
+                      if (v.length > 3 && v.length <= 5) formatted = v.slice(0,3) + '-' + v.slice(3);
+                      else if (v.length > 5) formatted = v.slice(0,3) + '-' + v.slice(3,5) + '-' + v.slice(5,10);
+                      
+                      setBusinessNumber(formatted);
+                      setIsBusinessVerified(false);
+                    }}
+                    maxLength={12}
+                    placeholder="123-45-67890 (입력 시 인증 필수)" 
+                    readOnly={isBusinessVerified || isVerifyingBusiness}
+                    style={{ flex: 1, padding: '0.75rem 0.9rem', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.85rem', outline: 'none', backgroundColor: isBusinessVerified ? '#f3f4f6' : 'var(--bg-secondary)', color: 'var(--text-main)' }}
+                  />
+                  <button 
+                    type="button"
+                    onClick={async () => {
+                      if (!businessNumber.trim()) {
+                        alert('사업자등록번호를 입력해주세요.');
+                        return;
+                      }
+                      const cleanNumber = businessNumber.replace(/-/g, '');
+                      if (cleanNumber.length !== 10) {
+                        alert('사업자등록번호 10자리를 정확히 입력해주세요.');
+                        return;
+                      }
+                      setIsVerifyingBusiness(true);
+                      try {
+                        const res = await sellerApi.verifyBusinessNumber(cleanNumber);
+                        if (res.isValid) {
+                          alert('정상 영업중인 사업자로 확인되었습니다.');
+                          setIsBusinessVerified(true);
+                        } else {
+                          alert('유효하지 않거나 휴/폐업 상태인 사업자등록번호입니다.');
+                        }
+                      } catch (err) {
+                        alert('검증 중 오류가 발생했습니다.');
+                      } finally {
+                        setIsVerifyingBusiness(false);
+                      }
+                    }}
+                    disabled={isBusinessVerified || isVerifyingBusiness}
+                    style={{ padding: '0 1rem', borderRadius: '12px', border: 'none', backgroundColor: isBusinessVerified ? '#10b981' : 'var(--primary-color)', color: 'white', fontWeight: 'bold', cursor: (isBusinessVerified || isVerifyingBusiness) ? 'default' : 'pointer', fontSize: '0.8rem', whiteSpace: 'nowrap' }}
+                  >
+                    {isVerifyingBusiness ? '인증 중...' : isBusinessVerified ? '✓ 인증완료' : '인증하기'}
+                  </button>
+                </div>
+              </div>
+
+              <div className="auth-form-group">
                 <label htmlFor="shopUrl" style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>쇼핑몰 주소 (필수)</label>
                 <div className="input-wrapper" style={{ position: 'relative', marginTop: '0.4rem' }}>
                   <span className="input-icon" style={{ position: 'absolute', left: '0.9rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-sub)', display: 'flex', alignItems: 'center' }}>
@@ -373,7 +437,7 @@ export default function OAuth2Onboarding() {
                 onChange={(e) => setAgreedPrivacy(e.target.checked)}
                 style={{ width: '16px', height: '16px', accentColor: 'var(--primary-color)', cursor: 'pointer' }}
               />
-              <span>[필수] <a href="/privacy" target="_blank" style={{ color: 'var(--primary-color)', textDecoration: 'underline' }}>개인정보 수집 및 이용</a> 동의</span>
+              <span>[필수] <a href="/privacy" target="_blank" style={{ color: 'var(--primary-color)', textDecoration: 'underline' }}>개인정보 수집 및 이용</a> 동의 {role === 'SELLER' && '(사업자등록번호 포함)'}</span>
             </label>
           </div>
 

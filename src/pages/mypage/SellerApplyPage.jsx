@@ -7,6 +7,9 @@ export default function SellerApplyPage() {
   const [siteUrl, setSiteUrl] = useState('');
   const [snsUrls, setSnsUrls] = useState(['']);
   const [introduction, setIntroduction] = useState('');
+  const [businessNumber, setBusinessNumber] = useState('');
+  const [isVerified, setIsVerified] = useState(false);
+  const [isVerifyingBusiness, setIsVerifyingBusiness] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -30,8 +33,12 @@ export default function SellerApplyPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!shopName.trim() || !siteUrl.trim() || !introduction.trim()) {
-      alert('필수 정보를 모두 입력해주세요.');
+    if (!shopName || !siteUrl || !introduction) {
+      alert('필수 항목을 모두 입력해주세요.');
+      return;
+    }
+    if (businessNumber.trim() && !isVerified) {
+      alert('입력하신 사업자등록번호 인증을 완료해주세요. (또는 빈칸으로 남겨주세요)');
       return;
     }
     setLoading(true);
@@ -40,7 +47,8 @@ export default function SellerApplyPage() {
         shopName, 
         siteUrl, 
         snsUrls: snsUrls.filter(url => url.trim() !== '').join(','),
-        introduction 
+        introduction,
+        businessNumber: businessNumber ? businessNumber.replace(/-/g, '') : null
       });
       alert('셀러 신청이 완료되었습니다. 관리자 승인을 기다려주세요.');
       navigate('/mypage');
@@ -71,6 +79,63 @@ export default function SellerApplyPage() {
               required 
               style={{ width: '100%', padding: '0.75rem 0.9rem', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.85rem', outline: 'none', marginTop: '0.4rem', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-main)' }}
             />
+          </div>
+
+          <div className="auth-form-group">
+            <div className="form-group">
+              <label style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>사업자등록번호 (선택 - 추후 필수 전환)</label>
+              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.4rem' }}>
+                <input 
+                  type="text" 
+                  value={businessNumber}
+                  onChange={(e) => {
+                    const v = e.target.value.replace(/[^0-9]/g, '');
+                    let formatted = v;
+                    if (v.length > 3 && v.length <= 5) formatted = v.slice(0,3) + '-' + v.slice(3);
+                    else if (v.length > 5) formatted = v.slice(0,3) + '-' + v.slice(3,5) + '-' + v.slice(5,10);
+                    
+                    setBusinessNumber(formatted);
+                    setIsVerified(false);
+                  }}
+                  maxLength={12}
+                  placeholder="123-45-67890 (입력 시 인증 필수)" 
+                  readOnly={isVerified || isVerifyingBusiness}
+                  style={{ flex: 1, padding: '0.75rem 0.9rem', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.85rem', outline: 'none', backgroundColor: isVerified ? '#f3f4f6' : 'var(--bg-secondary)', color: 'var(--text-main)' }}
+                />
+                <button 
+                  type="button"
+                  onClick={async () => {
+                    if (!businessNumber.trim()) {
+                      alert('사업자등록번호를 입력해주세요.');
+                      return;
+                    }
+                    const cleanNumber = businessNumber.replace(/-/g, '');
+                    if (cleanNumber.length !== 10) {
+                      alert('사업자등록번호 10자리를 정확히 입력해주세요.');
+                      return;
+                    }
+                    setIsVerifyingBusiness(true);
+                    try {
+                      const res = await sellerApi.verifyBusinessNumber(cleanNumber);
+                    if (res.isValid) {
+                      alert('정상 영업중인 사업자로 확인되었습니다.');
+                      setIsVerified(true);
+                    } else {
+                      alert('유효하지 않거나 휴/폐업 상태인 사업자등록번호입니다.');
+                    }
+                    } catch (err) {
+                      alert('검증 중 오류가 발생했습니다.');
+                    } finally {
+                      setIsVerifyingBusiness(false);
+                    }
+                  }}
+                  disabled={isVerified || isVerifyingBusiness}
+                  style={{ padding: '0 1rem', borderRadius: '12px', border: 'none', backgroundColor: isVerified ? '#10b981' : 'var(--primary-color)', color: 'white', fontWeight: 'bold', cursor: (isVerified || isVerifyingBusiness) ? 'default' : 'pointer', fontSize: '0.8rem', whiteSpace: 'nowrap' }}
+                >
+                  {isVerifyingBusiness ? '인증 중...' : isVerified ? '✓ 인증완료' : '인증하기'}
+                </button>
+            </div>
+          </div>
           </div>
 
           <div className="auth-form-group">

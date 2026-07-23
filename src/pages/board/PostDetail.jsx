@@ -216,7 +216,30 @@ export default function PostDetail() {
   return (
     <div className="board-container" style={{ margin: '2rem auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <button className="back-btn" onClick={() => navigate(-1)}>← 목록으로</button>
+        <button 
+          onClick={() => navigate(-1)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            fontSize: '0.9rem',
+            color: '#666',
+            fontWeight: '600',
+            padding: '4px 8px',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'color 0.2s',
+          }}
+          onMouseEnter={(e) => e.target.style.color = 'var(--primary-color)'}
+          onMouseLeave={(e) => e.target.style.color = '#666'}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          목록으로 가기
+        </button>
 
       </div>
       

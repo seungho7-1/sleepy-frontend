@@ -17,8 +17,11 @@ export default function Signup() {
     shopName: '',
     shopUrl: '',
     snsUrls: [''],
-    introduction: ''
+    introduction: '',
+    businessNumber: ''
   })
+  const [isBusinessVerified, setIsBusinessVerified] = useState(false)
+  const [isVerifyingBusiness, setIsVerifyingBusiness] = useState(false)
   const [confirmPassword, setConfirmPassword] = useState('')
   const [isUsernameChecked, setIsUsernameChecked] = useState(false)
   const [isEmailChecked, setIsEmailChecked] = useState(false)
@@ -28,6 +31,11 @@ export default function Signup() {
   const [agreedTerms, setAgreedTerms] = useState(false)
   const [agreedPrivacy, setAgreedPrivacy] = useState(false)
   const [isOver14, setIsOver14] = useState(false)
+  
+  // Validation state
+  const [usernameError, setUsernameError] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+
   const navigate = useNavigate()
 
   const getBackendUrl = () => {
@@ -35,10 +43,27 @@ export default function Signup() {
   }
 
   const handleChange = (e) => {
-    if (e.target.name === 'username') setIsUsernameChecked(false)
-    if (e.target.name === 'email') setIsEmailChecked(false)
-    if (e.target.name === 'nickname') setIsNicknameChecked(false)
-    setFormData({ ...formData, [e.target.name]: e.target.value })
+    const { name, value } = e.target
+    if (name === 'username') {
+      setIsUsernameChecked(false)
+      if (value.length > 0 && !/^[a-zA-Z0-9]+$/.test(value)) {
+        setUsernameError('영문과 숫자만 사용 가능합니다. (한글/특수문자 불가)')
+      } else if (value.length > 0 && (value.length < 3 || value.length > 20)) {
+        setUsernameError('3자 이상 20자 이하로 입력해 주세요.')
+      } else {
+        setUsernameError('')
+      }
+    }
+    if (name === 'password') {
+      if (value.length > 0 && !/^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/.test(value)) {
+        setPasswordError('영문, 숫자 포함 8자 이상 입력해주세요.')
+      } else {
+        setPasswordError('')
+      }
+    }
+    if (name === 'email') setIsEmailChecked(false)
+    if (name === 'nickname') setIsNicknameChecked(false)
+    setFormData({ ...formData, [name]: value })
   }
 
   const handleSellerChange = (e) => {
@@ -69,6 +94,10 @@ export default function Signup() {
   }
 
   const handleCheckUsername = async () => {
+    if (usernameError || formData.username.trim().length === 0) {
+      alert('아이디 형식을 확인해 주세요.');
+      return;
+    }
     if (formData.username.trim().length < 3) {
       alert('아이디는 최소 3글자 이상이어야 합니다.');
       return;
@@ -147,6 +176,10 @@ export default function Signup() {
         alert('비밀번호는 최소 8글자 이상 입력해 주세요. (보안 정책)');
         return;
       }
+      if (passwordError) {
+        alert('비밀번호 형식을 확인해 주세요.');
+        return;
+      }
       if (formData.password !== confirmPassword) {
         alert('비밀번호가 일치하지 않습니다.');
         return;
@@ -169,6 +202,12 @@ export default function Signup() {
       alert('닉네임 중복 확인을 진행해 주세요.');
       return;
     }
+    if (formData.role === 'SELLER') {
+      if (sellerInfo.businessNumber.trim() && !isBusinessVerified) {
+        alert('입력하신 사업자등록번호 인증을 완료해 주세요! (또는 빈칸으로 남겨주세요)');
+        return;
+      }
+    }
     setLoading(true)
     try {
       const signupData = {
@@ -187,7 +226,8 @@ export default function Signup() {
           shopName: sellerInfo.shopName,
           siteUrl: sellerInfo.shopUrl,
           snsUrls: sellerInfo.snsUrls.filter(url => url.trim() !== '').join(','),
-          introduction: sellerInfo.introduction
+          introduction: sellerInfo.introduction,
+          businessNumber: sellerInfo.businessNumber.replace(/-/g, '')
         });
         alert('회원가입 및 판매자 신청이 완료되었습니다! 관리자 승인 후 판매자 센터를 이용하실 수 있습니다.');
         navigate('/');
@@ -382,6 +422,7 @@ export default function Signup() {
                     {isUsernameChecked ? '✓ 완료' : '중복 확인'}
                   </button>
                 </div>
+                {usernameError && <div style={{ color: '#ff4d4d', fontSize: '0.75rem', marginTop: '0.4rem', marginLeft: '0.2rem' }}>{usernameError}</div>}
               </div>
 
               {/* Email Input */}
@@ -439,6 +480,7 @@ export default function Signup() {
                     {showPassword ? '숨김' : '표시'}
                   </button>
                 </div>
+                {passwordError && <div style={{ color: '#ff4d4d', fontSize: '0.75rem', marginTop: '0.4rem', marginLeft: '0.2rem' }}>{passwordError}</div>}
               </div>
 
               {/* Confirm Password Input */}
@@ -507,16 +549,16 @@ export default function Signup() {
                 <button 
                   type="button" 
                   onClick={handleNextStep}
-                  disabled={!formData.username || !isUsernameChecked || !formData.password || !confirmPassword || !formData.email || !isEmailChecked || !agreedTerms || !agreedPrivacy || !isOver14}
+                  disabled={!formData.username || !isUsernameChecked || !!usernameError || !formData.password || !!passwordError || !confirmPassword || !formData.email || !isEmailChecked || !agreedTerms || !agreedPrivacy || !isOver14}
                   style={{ 
                     flex: 2, 
                     padding: '0.8rem', 
                     borderRadius: '12px', 
                     border: 'none', 
-                    backgroundColor: (!formData.username || !isUsernameChecked || !formData.password || !confirmPassword || !formData.email || !isEmailChecked || !agreedTerms || !agreedPrivacy || !isOver14) ? 'var(--border-color)' : 'var(--primary-color)', 
+                    backgroundColor: (!formData.username || !isUsernameChecked || !!usernameError || !formData.password || !!passwordError || !confirmPassword || !formData.email || !isEmailChecked || !agreedTerms || !agreedPrivacy || !isOver14) ? 'var(--border-color)' : 'var(--primary-color)', 
                     color: '#fff', 
                     fontWeight: 'bold', 
-                    cursor: (!formData.username || !isUsernameChecked || !formData.password || !confirmPassword || !formData.email || !isEmailChecked || !agreedTerms || !agreedPrivacy || !isOver14) ? 'not-allowed' : 'pointer',
+                    cursor: (!formData.username || !isUsernameChecked || !!usernameError || !formData.password || !!passwordError || !confirmPassword || !formData.email || !isEmailChecked || !agreedTerms || !agreedPrivacy || !isOver14) ? 'not-allowed' : 'pointer',
                     transition: 'all 0.2s',
                     fontSize: '0.85rem'
                   }}
@@ -636,6 +678,61 @@ export default function Signup() {
                   onChange={handleSellerChange}
                   style={{ width: '100%', padding: '0.75rem 0.9rem', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.85rem', outline: 'none', marginTop: '0.4rem', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-main)' }}
                 />
+              </div>
+
+              <div className="auth-form-group">
+                <label style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>사업자등록번호 (선택 - 추후 필수 전환)</label>
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.4rem' }}>
+                  <input 
+                    type="text" 
+                    value={sellerInfo.businessNumber}
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/[^0-9]/g, '');
+                      let formatted = v;
+                      if (v.length > 3 && v.length <= 5) formatted = v.slice(0,3) + '-' + v.slice(3);
+                      else if (v.length > 5) formatted = v.slice(0,3) + '-' + v.slice(3,5) + '-' + v.slice(5,10);
+                      
+                      setSellerInfo({ ...sellerInfo, businessNumber: formatted });
+                      setIsBusinessVerified(false);
+                    }}
+                    maxLength={12}
+                    placeholder="123-45-67890 (입력 시 인증 필수)" 
+                    readOnly={isBusinessVerified || isVerifyingBusiness}
+                    style={{ flex: 1, padding: '0.75rem 0.9rem', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.85rem', outline: 'none', backgroundColor: isBusinessVerified ? '#f3f4f6' : 'var(--bg-secondary)', color: 'var(--text-main)' }}
+                  />
+                  <button 
+                    type="button"
+                    onClick={async () => {
+                      if (!sellerInfo.businessNumber.trim()) {
+                        alert('사업자등록번호를 입력해주세요.');
+                        return;
+                      }
+                      const cleanNumber = sellerInfo.businessNumber.replace(/-/g, '');
+                      if (cleanNumber.length !== 10) {
+                        alert('사업자등록번호 10자리를 정확히 입력해주세요.');
+                        return;
+                      }
+                      setIsVerifyingBusiness(true);
+                      try {
+                        const res = await sellerApi.verifyBusinessNumber(cleanNumber);
+                        if (res.isValid) {
+                          alert('정상 영업중인 사업자로 확인되었습니다.');
+                          setIsBusinessVerified(true);
+                        } else {
+                          alert('유효하지 않거나 휴/폐업 상태인 사업자등록번호입니다.');
+                        }
+                      } catch (err) {
+                        alert('검증 중 오류가 발생했습니다.');
+                      } finally {
+                        setIsVerifyingBusiness(false);
+                      }
+                    }}
+                    disabled={isBusinessVerified || isVerifyingBusiness}
+                    style={{ padding: '0 1rem', borderRadius: '12px', border: 'none', backgroundColor: isBusinessVerified ? '#10b981' : 'var(--primary-color)', color: 'white', fontWeight: 'bold', cursor: (isBusinessVerified || isVerifyingBusiness) ? 'default' : 'pointer', fontSize: '0.8rem', whiteSpace: 'nowrap' }}
+                  >
+                    {isVerifyingBusiness ? '인증 중...' : isBusinessVerified ? '✓ 인증완료' : '인증하기'}
+                  </button>
+                </div>
               </div>
 
               <div className="auth-form-group">

@@ -4,12 +4,13 @@ import { useAuthStore } from '../store';
 import { isVideo } from '../utils/media';
 import ShortsCommentModal from './ShortsCommentModal';
 import Avatar from './Avatar';
-import { Heart } from 'lucide-react';
+import { Heart, Volume2, VolumeX } from 'lucide-react';
 
 export default function ShortsItem({ post, index }) {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   const [likeCount, setLikeCount] = useState(post.likeCount || 0);
   const [showComments, setShowComments] = useState(false);
   const [commentCount, setCommentCount] = useState('댓글');
@@ -111,7 +112,7 @@ export default function ShortsItem({ post, index }) {
           ref={videoRef}
           src={mediaUrl}
           loop
-          muted
+          muted={isMuted}
           playsInline
           preload="none"
           style={{
@@ -180,6 +181,23 @@ export default function ShortsItem({ post, index }) {
           </div>
           <span style={{ fontSize: '0.8rem', textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>공유</span>
         </button>
+
+        {isVideo(mediaUrl) && (
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsMuted(!isMuted);
+            }}
+            style={{ background: 'none', border: 'none', color: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer' }}
+          >
+            <div style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(4px)', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {isMuted ? <VolumeX size={20} color="white" /> : <Volume2 size={20} color="white" />}
+            </div>
+            <span style={{ fontSize: '0.8rem', textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>
+              {isMuted ? '음소거' : '소리 켬'}
+            </span>
+          </button>
+        )}
       </div>
 
       {/* Bottom Info Bar */}

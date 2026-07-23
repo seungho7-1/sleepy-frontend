@@ -93,73 +93,71 @@ export default function Community({ mode = 'all' }) {
 
   return (
     <div className="home-container">
-      <div className="hero-section" style={{ padding: '2rem 1rem', marginBottom: '2rem' }}>
-        <h2>{mode === 'gallery' ? '슬라임 갤러리 ✨' : mode === 'lounge' ? 'Q&A 라운지 💬' : 'Sleepy 커뮤니티'}</h2>
-        <p>{mode === 'gallery' ? '여러분의 예쁜 슬라임을 마음껏 자랑해보세요!' : '공지사항을 확인하고 자유롭게 질문과 답변을 나누세요.'}</p>
-      </div>
+      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 1rem' }}>
+        <div className="hero-section" style={{ padding: '2rem 0', marginBottom: '1.5rem' }}>
+          <h2>{mode === 'gallery' ? '슬라임 갤러리 ✨' : mode === 'lounge' ? 'Q&A 라운지 💬' : 'Sleepy 커뮤니티'}</h2>
+          <p>{mode === 'gallery' ? '여러분의 예쁜 슬라임을 마음껏 자랑해보세요!' : '공지사항을 확인하고 자유롭게 질문과 답변을 나누세요.'}</p>
+        </div>
 
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', justifyContent: 'center' }}>
-        {mode !== 'gallery' && (
-          <>
-            <button 
-              className={`nav-btn`}
-              onClick={() => handleTabChange('NOTICE')}
-              style={{
-                background: boardType === 'NOTICE' ? 'var(--primary-color)' : 'white',
-                color: boardType === 'NOTICE' ? 'white' : 'var(--text-main)',
-                border: boardType === 'NOTICE' ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
-                fontWeight: boardType === 'NOTICE' ? '700' : '500'
-              }}
-            >
-              공지사항
-            </button>
-            <button 
-              className={`nav-btn`}
-              onClick={() => handleTabChange('QNA')}
-              style={{
-                background: boardType === 'QNA' ? 'var(--primary-color)' : 'white',
-                color: boardType === 'QNA' ? 'white' : 'var(--text-main)',
-                border: boardType === 'QNA' ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
-                fontWeight: boardType === 'QNA' ? '700' : '500'
-              }}
-            >
-              질문게시판
-            </button>
-            {mode === 'all' && (
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
+          {mode !== 'gallery' && (
+            <>
               <button 
                 className={`nav-btn`}
-                onClick={() => handleTabChange('FREE')}
+                onClick={() => handleTabChange('NOTICE')}
                 style={{
-                  background: boardType === 'FREE' ? 'var(--primary-color)' : 'white',
-                  color: boardType === 'FREE' ? 'white' : 'var(--text-main)',
-                  border: boardType === 'FREE' ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
-                  fontWeight: boardType === 'FREE' ? '700' : '500'
+                  background: boardType === 'NOTICE' ? 'var(--primary-color)' : 'white',
+                  color: boardType === 'NOTICE' ? 'white' : 'var(--text-main)',
+                  border: boardType === 'NOTICE' ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
+                  fontWeight: boardType === 'NOTICE' ? '700' : '500'
                 }}
               >
-                자유게시판
+                공지사항
               </button>
-            )}
-          </>
-        )}
-        
-        {mode !== 'lounge' && (
-          <button 
-            className={`nav-btn`}
-            onClick={() => setBoardType('MEDIA')}
-            style={{ 
-              background: boardType === 'MEDIA' ? 'linear-gradient(135deg, #ff6b8b, #ff8da1)' : 'white', 
-              color: boardType === 'MEDIA' ? 'white' : 'var(--text-main)',
-              border: boardType === 'MEDIA' ? 'none' : '1px solid var(--border-color)',
-              fontWeight: boardType === 'MEDIA' ? '700' : '500'
-            }}
-          >
-            미디어(자랑)
-          </button>
-        )}
-      </div>
-
-      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 1rem' }}>
-        
+              <button 
+                className={`nav-btn`}
+                onClick={() => handleTabChange('QNA')}
+                style={{
+                  background: boardType === 'QNA' ? 'var(--primary-color)' : 'white',
+                  color: boardType === 'QNA' ? 'white' : 'var(--text-main)',
+                  border: boardType === 'QNA' ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
+                  fontWeight: boardType === 'QNA' ? '700' : '500'
+                }}
+              >
+                질문게시판
+              </button>
+              {mode === 'all' && (
+                <button 
+                  className={`nav-btn`}
+                  onClick={() => handleTabChange('FREE')}
+                  style={{
+                    background: boardType === 'FREE' ? 'var(--primary-color)' : 'white',
+                    color: boardType === 'FREE' ? 'white' : 'var(--text-main)',
+                    border: boardType === 'FREE' ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
+                    fontWeight: boardType === 'FREE' ? '700' : '500'
+                  }}
+                >
+                  자유게시판
+                </button>
+              )}
+            </>
+          )}
+          
+          {mode !== 'lounge' && (
+            <button 
+              className={`nav-btn`}
+              onClick={() => setBoardType('MEDIA')}
+              style={{ 
+                background: boardType === 'MEDIA' ? 'var(--primary-color)' : 'white', 
+                color: boardType === 'MEDIA' ? 'white' : 'var(--text-main)',
+                border: boardType === 'MEDIA' ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
+                fontWeight: boardType === 'MEDIA' ? '700' : '500'
+              }}
+            >
+              미디어(자랑)
+            </button>
+          )}
+        </div>
         {/* 검색창 */}
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', marginBottom: '1.5rem', marginTop: '1rem' }}>
           <input 
@@ -293,7 +291,7 @@ export default function Community({ mode = 'all' }) {
                 📱 숏폼 뷰로 보기
               </Link>
             )}
-            <Link to={`/community/create?boardType=${boardType}`} className="submit-btn" style={{ textDecoration: 'none', padding: '0.5rem 1rem', width: 'auto', flexShrink: 0 }}>
+            <Link to={`/community/create?boardType=${boardType}`} className="submit-btn" style={{ textDecoration: 'none', padding: '0.5rem 1rem', width: 'auto', flexShrink: 0, marginTop: 0 }}>
               글쓰기
             </Link>
           </div>
