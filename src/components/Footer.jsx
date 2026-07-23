@@ -30,7 +30,6 @@ export default function Footer() {
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.85rem', color: '#686a78' }}>
               <span>이메일 문의: <a href="mailto:sleepyslime.official@gmail.com" style={{ color: '#8a8e9e', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={(e)=>e.target.style.color='#fff'} onMouseOut={(e)=>e.target.style.color='#8a8e9e'}>sleepyslime.official@gmail.com</a></span>
-              <span>운영시간: 평일 10:00 - 18:00 (주말 및 공휴일 휴무)</span>
             </div>
           </div>
 
