@@ -249,6 +249,7 @@ export default function ShortsItem({ post, index }) {
         <ShortsCommentModal 
           postId={post.id} 
           onClose={(e) => { if(e) e.stopPropagation(); setShowComments(false); }} 
+          onUpdateCount={setCommentCount}
         />
       )}
     </div>

@@ -3,7 +3,7 @@ import { boardApi } from '../api/board';
 import { useAuthStore } from '../store';
 import Avatar from './Avatar';
 
-export default function ShortsCommentModal({ postId, onClose }) {
+export default function ShortsCommentModal({ postId, onClose, onUpdateCount }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(true);
@@ -25,6 +25,7 @@ export default function ShortsCommentModal({ postId, onClose }) {
     try {
       const data = await boardApi.getComments(postId);
       setComments(data);
+      if (onUpdateCount) onUpdateCount(data.length);
     } catch (err) {
       console.error(err);
     } finally {
