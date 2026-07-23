@@ -37,7 +37,7 @@ export const adminApi = {
     api.post(`/admin/reports/${id}/resolve`, { action }),
   // Inquiries
   getInquiries: () =>
-    api.get(`/admin/inquiries`),
+    api.get(`/inquiries/admin`),
   replyToInquiry: (id, reply) =>
-    api.post(`/admin/inquiries/${id}/reply`, { reply }),
+    api.post(`/inquiries/admin/${id}/reply`, { reply }),
 };
