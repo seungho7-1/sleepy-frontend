@@ -4,6 +4,23 @@ import { authApi } from '../../api/auth'
 import { sellerApi } from '../../api/seller'
 import { useAuthStore } from '../../store'
 
+// URL에서 SNS 플랫폼 아이콘 자동 감지
+function getSnsIcon(url) {
+  if (!url) return <svg viewBox="0 0 24 24" width="18" height="18" stroke="#aaa" strokeWidth="2" fill="none"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+  const lower = url.toLowerCase()
+  if (lower.includes('youtube.com') || lower.includes('youtu.be'))
+    return <svg viewBox="0 0 24 24" width="18" height="18" fill="#FF0000"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.4 19.6c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#fff"/></svg>
+  if (lower.includes('instagram.com'))
+    return <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#E1306C" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+  if (lower.includes('facebook.com') || lower.includes('fb.com'))
+    return <svg viewBox="0 0 24 24" width="18" height="18" fill="#1877F2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+  if (lower.includes('tiktok.com'))
+    return <svg viewBox="0 0 24 24" width="18" height="18" stroke="#000" strokeWidth="2" fill="none"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
+  if (lower.includes('twitter.com') || lower.includes('x.com'))
+    return <svg viewBox="0 0 24 24" width="18" height="18" fill="#000"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+  return <svg viewBox="0 0 24 24" width="18" height="18" stroke="#888" strokeWidth="2" fill="none"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+}
+
 export default function Signup() {
   const [step, setStep] = useState(1)
   const [formData, setFormData] = useState({
@@ -18,7 +35,9 @@ export default function Signup() {
     shopUrl: '',
     snsUrls: [''],
     introduction: '',
-    businessNumber: ''
+    businessNumber: '',
+    repName: '',
+    startDate: ''
   })
   const [isBusinessVerified, setIsBusinessVerified] = useState(false)
   const [isVerifyingBusiness, setIsVerifyingBusiness] = useState(false)
@@ -48,8 +67,8 @@ export default function Signup() {
       setIsUsernameChecked(false)
       if (value.length > 0 && !/^[a-zA-Z0-9]+$/.test(value)) {
         setUsernameError('영문과 숫자만 사용 가능합니다. (한글/특수문자 불가)')
-      } else if (value.length > 0 && (value.length < 3 || value.length > 20)) {
-        setUsernameError('3자 이상 20자 이하로 입력해 주세요.')
+      } else if (value.length > 0 && (value.length < 5 || value.length > 20)) {
+        setUsernameError('5자 이상 20자 이하로 입력해 주세요.')
       } else {
         setUsernameError('')
       }
@@ -61,6 +80,7 @@ export default function Signup() {
         setPasswordError('')
       }
     }
+    
     if (name === 'email') setIsEmailChecked(false)
     if (name === 'nickname') setIsNicknameChecked(false)
     setFormData({ ...formData, [name]: value })
@@ -70,23 +90,31 @@ export default function Signup() {
     setSellerInfo({ ...sellerInfo, [e.target.name]: e.target.value })
   }
 
+  // SNS URL 다이나믹 리스트
   const handleSnsUrlChange = (index, value) => {
-    const newSnsUrls = [...sellerInfo.snsUrls]
-    newSnsUrls[index] = value
-    setSellerInfo({ ...sellerInfo, snsUrls: newSnsUrls })
+    const next = [...sellerInfo.snsUrls]
+    next[index] = value
+    setSellerInfo({ ...sellerInfo, snsUrls: next })
   }
-
   const handleAddSnsUrl = () => {
-    if (sellerInfo.snsUrls.length >= 5) {
-      alert('SNS 주소는 최대 5개까지 등록할 수 있습니다.')
-      return
-    }
+    if (sellerInfo.snsUrls.length >= 6) return
     setSellerInfo({ ...sellerInfo, snsUrls: [...sellerInfo.snsUrls, ''] })
   }
-
   const handleRemoveSnsUrl = (index) => {
-    const newSnsUrls = sellerInfo.snsUrls.filter((_, i) => i !== index)
-    setSellerInfo({ ...sellerInfo, snsUrls: newSnsUrls })
+    const next = sellerInfo.snsUrls.filter((_, i) => i !== index)
+    setSellerInfo({ ...sellerInfo, snsUrls: next.length ? next : [''] })
+  }
+
+  // URL 패턴으로 SNS 필드 자동 분류
+  const classifySnsUrls = (urls) => {
+    const filled = urls.filter(u => u.trim())
+    const find = (patterns) => filled.find(u => patterns.some(p => u.toLowerCase().includes(p))) || ''
+    return {
+      youtubeUrl: find(['youtube.com', 'youtu.be']),
+      instagramUrl: find(['instagram.com']),
+      facebookUrl: find(['facebook.com', 'fb.com']),
+      tiktokUrl: find(['tiktok.com']),
+    }
   }
 
   const handleRoleSelect = (role) => {
@@ -98,8 +126,8 @@ export default function Signup() {
       alert('아이디 형식을 확인해 주세요.');
       return;
     }
-    if (formData.username.trim().length < 3) {
-      alert('아이디는 최소 3글자 이상이어야 합니다.');
+    if (formData.username.trim().length < 5) {
+      alert('아이디는 최소 5글자 이상이어야 합니다.');
       return;
     }
     try {
@@ -124,10 +152,10 @@ export default function Signup() {
     try {
       const response = await authApi.checkEmail(formData.email);
       if (response.exists) {
-        alert('이미 가입된 이메일입니다. 🥲');
+        alert('이미 가입된 이메일입니다.');
         setIsEmailChecked(false);
       } else {
-        alert('사용 가능한 이메일입니다! 👍');
+        alert('사용 가능한 이메일입니다!');
         setIsEmailChecked(true);
       }
     } catch (err) {
@@ -156,52 +184,31 @@ export default function Signup() {
 
   const handleNextStep = () => {
     if (step === 2) {
-      if (formData.username.trim().length < 3) {
-        alert('아이디는 최소 3글자 이상 입력해 주세요.');
-        return;
-      }
-      if (!isUsernameChecked) {
-        alert('아이디 중복 확인을 진행해 주세요.');
-        return;
-      }
-      if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-        alert('올바른 이메일 주소를 필수로 입력해 주세요.');
-        return;
-      }
-      if (!isEmailChecked) {
-        alert('이메일 중복 확인을 진행해 주세요.');
-        return;
-      }
-      if (formData.password.length < 8) {
-        alert('비밀번호는 최소 8글자 이상 입력해 주세요. (보안 정책)');
-        return;
-      }
-      if (passwordError) {
-        alert('비밀번호 형식을 확인해 주세요.');
-        return;
-      }
-      if (formData.password !== confirmPassword) {
-        alert('비밀번호가 일치하지 않습니다.');
-        return;
-      }
+      if (formData.username.trim().length < 3) { alert('아이디는 최소 5글자 이상 입력해 주세요.'); return; }
+      if (!isUsernameChecked) { alert('아이디 중복 확인을 진행해 주세요.'); return; }
+      if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) { alert('올바른 이메일 주소를 필수로 입력해 주세요.'); return; }
+      if (!isEmailChecked) { alert('이메일 중복 확인을 진행해 주세요.'); return; }
+      if (formData.password.length < 8) { alert('비밀번호는 최소 8글자 이상 입력해 주세요. (보안 정책)'); return; }
+      if (passwordError) { alert('비밀번호 형식을 확인해 주세요.'); return; }
+      if (formData.password !== confirmPassword) { alert('비밀번호가 일치하지 않습니다.'); return; }
+      // 판매자는 닉네임 단계 건너뛰고 바로 step 4로
+      if (formData.role === 'SELLER') { setStep(4); return; }
     }
     setStep((prev) => prev + 1)
   }
 
   const handlePrevStep = () => {
+    // 판매자가 step 4에서 뒤로 가면 step 2로
+    if (step === 4 && formData.role === 'SELLER') { setStep(2); return; }
     setStep((prev) => prev - 1)
   }
 
   const handleSignup = async (e) => {
     if (e) e.preventDefault()
-    if (!formData.nickname.trim()) {
-      alert('닉네임을 입력해 주세요.');
-      return;
-    }
-    if (!isNicknameChecked) {
-      alert('닉네임 중복 확인을 진행해 주세요.');
-      return;
-    }
+    // 판매자는 shopName을 닉네임으로 사용
+    const nickname = formData.role === 'SELLER' ? sellerInfo.shopName : formData.nickname
+    if (!nickname.trim()) { alert('닉네임을 입력해 주세요.'); return; }
+    if (formData.role !== 'SELLER' && !isNicknameChecked) { alert('닉네임 중복 확인을 진행해 주세요.'); return; }
     if (formData.role === 'SELLER') {
       if (sellerInfo.businessNumber.trim() && !isBusinessVerified) {
         alert('입력하신 사업자등록번호 인증을 완료해 주세요! (또는 빈칸으로 남겨주세요)');
@@ -212,20 +219,19 @@ export default function Signup() {
     try {
       const signupData = {
         ...formData,
+        nickname,
         role: 'BUYER'
       }
       await authApi.signup(signupData);
 
       if (formData.role === 'SELLER') {
-        const loginData = await authApi.login({
-          username: formData.username,
-          password: formData.password
-        });
+        const loginData = await authApi.login({ username: formData.username, password: formData.password });
         useAuthStore.getState().login(loginData.accessToken, loginData.role, loginData.nickname);
+        const sns = classifySnsUrls(sellerInfo.snsUrls)
         await sellerApi.apply({
           shopName: sellerInfo.shopName,
           siteUrl: sellerInfo.shopUrl,
-          snsUrls: sellerInfo.snsUrls.filter(url => url.trim() !== '').join(','),
+          ...sns,
           introduction: sellerInfo.introduction,
           businessNumber: sellerInfo.businessNumber.replace(/-/g, '')
         });
@@ -236,13 +242,15 @@ export default function Signup() {
         navigate('/login');
       }
     } catch (error) {
-      alert(error.message || '회원가입에 실패했어요 🥲');
+      alert(error.message || '회원가입에 실패했어요');
     } finally {
       setLoading(false)
     }
   }
 
-  const totalSteps = formData.role === 'SELLER' ? 4 : 3;
+  // 판매자: step1→step2→step4(3단계), 일반: step1→step2→step3(3단계)
+  const totalSteps = 3;
+  const visualStep = (formData.role === 'SELLER' && step === 4) ? 3 : step;
 
   return (
     <div className="auth-container" style={{ minHeight: '85vh', padding: '2rem 1.2rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -250,34 +258,19 @@ export default function Signup() {
         
         {/* Brand Header */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{ display: 'inline-flex', padding: '0.7rem', borderRadius: '16px', backgroundColor: '#ffe8f0', color: 'var(--primary-color)', marginBottom: '0.8rem' }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-              <path d="M9 9h.01M15 9h.01" strokeWidth="3" />
-            </svg>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.5rem' }}>
+            <img src="/src/assets/logo_3.png" alt="Sleepy Logo" style={{ height: '180px', objectFit: 'contain' }} />
           </div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: '900', color: 'var(--text-main)', margin: '0', letterSpacing: '-0.03em' }}>SLEEPY</h1>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-sub)', marginTop: '0.3rem' }}>슬라임 마켓 플랫폼 회원가입</p>
         </div>
 
-        {/* Sleek Minimal Timeline Indicator */}
+        {/* Step Indicator */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: '0.6rem', marginBottom: '2.2rem' }}>
           {Array.from({ length: totalSteps }).map((_, idx) => {
-            const stepNum = idx + 1;
-            const isActive = step === stepNum;
-            const isCompleted = step > stepNum;
+            const isActive = visualStep === idx + 1;
+            const isCompleted = visualStep > idx + 1;
             return (
-              <div 
-                key={stepNum} 
-                style={{ 
-                  width: isActive ? '28px' : '8px', 
-                  height: '8px', 
-                  borderRadius: '4px', 
-                  backgroundColor: isActive ? 'var(--primary-color)' : isCompleted ? 'rgba(255, 32, 112, 0.4)' : 'var(--border-color)',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-                }} 
-              />
+              <div key={idx} style={{ width: isActive ? '28px' : '8px', height: '8px', borderRadius: '4px', backgroundColor: isActive ? 'var(--primary-color)' : isCompleted ? 'rgba(255, 32, 112, 0.4)' : 'var(--border-color)', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }} />
             )
           })}
         </div>
@@ -343,24 +336,8 @@ export default function Signup() {
 
             </div>
 
-            <button 
-              type="button" 
-              onClick={handleNextStep}
-              style={{ 
-                width: '100%', 
-                padding: '0.85rem', 
-                borderRadius: '12px', 
-                border: 'none', 
-                backgroundColor: 'var(--primary-color)', 
-                color: '#fff', 
-                fontWeight: 'bold', 
-                cursor: 'pointer',
-                fontSize: '0.9rem',
-                marginBottom: '1.8rem',
-                transition: 'all 0.2s'
-              }}
-            >
-              일반 회원가입 시작하기
+            <button type="button" onClick={handleNextStep} style={{ width: '100%', padding: '0.85rem', borderRadius: '12px', border: 'none', backgroundColor: 'var(--primary-color)', color: '#fff', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.9rem', marginBottom: '1.8rem', transition: 'all 0.2s' }}>
+              {formData.role === 'SELLER' ? '판매자로 가입하기' : '일반 회원가입 시작하기'}
             </button>
 
             {/* Social Login Section */}
@@ -571,8 +548,8 @@ export default function Signup() {
           </div>
         )}
 
-        {/* Step 3: Nickname Setup */}
-        {step === 3 && (
+        {/* Step 3: Nickname Setup (일반 구매자만) */}
+        {step === 3 && formData.role !== 'SELLER' && (
           <div className="fade-in">
             <h2 style={{ fontSize: '1.15rem', fontWeight: '800', color: 'var(--text-main)', marginBottom: '1.5rem', textAlign: 'center', letterSpacing: '-0.02em' }}>닉네임 설정</h2>
             <div className="auth-form" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
@@ -712,14 +689,22 @@ export default function Signup() {
                         alert('사업자등록번호 10자리를 정확히 입력해주세요.');
                         return;
                       }
+                      if (!sellerInfo.repName.trim()) {
+                        alert('대표자 성명을 입력해주세요.');
+                        return;
+                      }
+                      if (sellerInfo.startDate.length !== 8) {
+                        alert('개업일자 8자리(YYYYMMDD)를 정확히 입력해주세요.');
+                        return;
+                      }
                       setIsVerifyingBusiness(true);
                       try {
-                        const res = await sellerApi.verifyBusinessNumber(cleanNumber);
+                        const res = await sellerApi.verifyBusinessNumber(cleanNumber, sellerInfo.repName, sellerInfo.startDate);
                         if (res.isValid) {
-                          alert('정상 영업중인 사업자로 확인되었습니다.');
+                          alert(res.message || '정상 영업중인 사업자로 확인되었습니다.');
                           setIsBusinessVerified(true);
                         } else {
-                          alert('유효하지 않거나 휴/폐업 상태인 사업자등록번호입니다.');
+                          alert(res.message || '유효하지 않거나 휴/폐업 상태인 사업자등록번호입니다.');
                         }
                       } catch (err) {
                         alert('검증 중 오류가 발생했습니다.');
@@ -735,44 +720,70 @@ export default function Signup() {
                 </div>
               </div>
 
-              <div className="auth-form-group">
-                <label style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>쇼핑몰 주소 (필수)</label>
+              <div className="auth-form-group" style={{ marginTop: '0.8rem' }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>대표자 성명</label>
                 <input 
-                  type="url" 
-                  name="shopUrl"
-                  placeholder="https://smartstore.naver.com/..." 
-                  required 
-                  value={sellerInfo.shopUrl}
-                  onChange={handleSellerChange}
-                  style={{ width: '100%', padding: '0.75rem 0.9rem', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.85rem', outline: 'none', marginTop: '0.4rem', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-main)' }}
+                  type="text"
+                  placeholder="예: 홍길동"
+                  value={sellerInfo.repName}
+                  onChange={(e) => {
+                    setSellerInfo({ ...sellerInfo, repName: e.target.value });
+                    setIsBusinessVerified(false);
+                  }}
+                  readOnly={isBusinessVerified || isVerifyingBusiness}
+                  style={{ width: '100%', padding: '0.75rem 0.9rem', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.85rem', outline: 'none', marginTop: '0.4rem', backgroundColor: isBusinessVerified ? '#f3f4f6' : 'var(--bg-secondary)', color: 'var(--text-main)' }}
                 />
               </div>
 
+              <div className="auth-form-group" style={{ marginTop: '0.8rem' }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>개업일자 (YYYYMMDD)</label>
+                <input 
+                  type="text"
+                  placeholder="예: 20240101"
+                  maxLength={8}
+                  value={sellerInfo.startDate}
+                  onChange={(e) => {
+                    const v = e.target.value.replace(/[^0-9]/g, '');
+                    setSellerInfo({ ...sellerInfo, startDate: v });
+                    setIsBusinessVerified(false);
+                  }}
+                  readOnly={isBusinessVerified || isVerifyingBusiness}
+                  style={{ width: '100%', padding: '0.75rem 0.9rem', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.85rem', outline: 'none', marginTop: '0.4rem', backgroundColor: isBusinessVerified ? '#f3f4f6' : 'var(--bg-secondary)', color: 'var(--text-main)' }}
+                />
+              </div>
+              
+              <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: '0.5rem 0 1rem 0', lineHeight: '1.4' }}>
+                * 대표자 성명 및 개업일자는 국세청 진위확인용으로만 1회성으로 사용되며, 당사 데이터베이스에 저장되지 않습니다.
+              </p>
+
               <div className="auth-form-group">
-                <label style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>
-                  SNS 주소 (선택)
-                </label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '0.4rem' }}>
-                  {sellerInfo.snsUrls.map((snsUrl, index) => (
-                    <div key={index} style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-                      <input 
-                        type="url" 
-                        placeholder="인스타그램, 유튜브 등 주소 입력" 
-                        value={snsUrl}
-                        onChange={(e) => handleSnsUrlChange(index, e.target.value)}
-                        style={{ flex: 1, padding: '0.75rem 0.9rem', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.85rem', outline: 'none', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-main)' }}
+                <label style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>쇼핑몰 주소 (필수)</label>
+                <input type="url" name="shopUrl" placeholder="https://smartstore.naver.com/..." required value={sellerInfo.shopUrl} onChange={handleSellerChange} style={{ width: '100%', padding: '0.75rem 0.9rem', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.85rem', outline: 'none', marginTop: '0.4rem', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-main)' }} />
+              </div>
+
+              {/* SNS URL - URL 붙여넣기, 자동 아이콘 감지 */}
+              <div className="auth-form-group">
+                <label style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)' }}>SNS 링크 <span style={{ fontWeight: 'normal', color: 'var(--text-sub)' }}>(선택 · URL 붙여넣기하면 자동 인식)</span></label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
+                  {sellerInfo.snsUrls.map((url, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <div style={{ width: '28px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {getSnsIcon(url)}
+                      </div>
+                      <input
+                        type="url"
+                        value={url}
+                        onChange={(e) => handleSnsUrlChange(i, e.target.value)}
+                        placeholder="https://instagram.com/내계정 또는 유튜브 링크 등"
+                        style={{ flex: 1, padding: '0.65rem 0.9rem', borderRadius: '10px', border: '1px solid var(--border-color)', fontSize: '0.82rem', outline: 'none', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-main)' }}
                       />
                       {sellerInfo.snsUrls.length > 1 && (
-                        <button type="button" onClick={() => handleRemoveSnsUrl(index)} style={{ width: '42px', height: '42px', borderRadius: '12px', border: 'none', backgroundColor: '#ffe5e5', color: '#ff4d4d', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                        </button>
+                        <button type="button" onClick={() => handleRemoveSnsUrl(i)} style={{ width: '34px', height: '34px', borderRadius: '8px', border: 'none', background: '#ffe5e5', color: '#ff4d4d', cursor: 'pointer', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>×</button>
                       )}
                     </div>
                   ))}
-                  {sellerInfo.snsUrls.length < 5 && (
-                    <button type="button" onClick={handleAddSnsUrl} style={{ width: '100%', padding: '0.75rem', borderRadius: '12px', border: '1px dashed var(--border-color)', backgroundColor: 'transparent', color: 'var(--text-sub)', fontSize: '0.85rem', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s', marginTop: '0.2rem' }}>
-                      + SNS 주소 추가하기
-                    </button>
+                  {sellerInfo.snsUrls.length < 6 && (
+                    <button type="button" onClick={handleAddSnsUrl} style={{ padding: '0.55rem', borderRadius: '10px', border: '1px dashed var(--border-color)', background: 'transparent', color: 'var(--text-sub)', fontSize: '0.8rem', cursor: 'pointer' }}>+ SNS 링크 추가</button>
                   )}
                 </div>
               </div>

@@ -131,20 +131,32 @@ export default function AdminDashboard() {
           <div className="admin-preview-list">
             {recentData.reports.length === 0 ? <div className="admin-empty-msg">대기 중인 신고가 없습니다.</div> : 
               recentData.reports.map(r => (
-                <div key={r.id} className="admin-preview-item">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span className="text-danger font-semibold">[{r.targetType}] {r.reason}</span>
-                    <a 
-                      href={r.targetType === 'POST' ? `/community/${r.targetId}` : r.targetType === 'PRODUCT' ? `/product/${r.targetId}` : '#'} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      style={{ fontSize: '0.8rem', color: '#2563eb', textDecoration: 'underline' }}
-                      title="새 창으로 열기"
-                    >
-                      확인하기
-                    </a>
+                <div key={r.id} className="admin-preview-item" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span className="text-danger font-semibold">[{r.targetType}] {r.reason}</span>
+                      <a 
+                        href={
+                          r.targetType === 'POST' ? `/shorts?postId=${r.targetId}` : 
+                          r.targetType === 'COMMENT' ? `/shorts?postId=${r.postId || ''}` : 
+                          r.targetType === 'REVIEW' ? `/product/${r.productId || ''}` : 
+                          r.targetType === 'PRODUCT' ? `/product/${r.targetId}` : '#'
+                        } 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        style={{ fontSize: '0.8rem', color: '#2563eb', textDecoration: 'underline' }}
+                        title="새 창으로 열기"
+                      >
+                        (원문보기)
+                      </a>
+                    </div>
+                    <span className="text-muted text-sm">{r.createdAt?.split('T')[0]}</span>
                   </div>
-                  <span className="text-muted text-sm">{r.createdAt?.split('T')[0]}</span>
+                  {r.targetContent && (
+                    <div style={{ fontSize: '0.85rem', color: '#555', background: '#f9fafb', padding: '6px', borderRadius: '4px', width: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <span style={{ fontWeight: 'bold', marginRight: '4px' }}>{r.targetAuthor}</span>: {r.targetContent}
+                    </div>
+                  )}
                 </div>
               ))
             }
@@ -209,7 +221,7 @@ export default function AdminDashboard() {
       )}
 
       {activeTab === 'inquiries' && (
-        <div className="admin-preview-section" style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        <div className="admin-preview-section" style={{ maxWidth: 'var(--layout-width)', margin: '0 auto' }}>
           <h3>1:1 문의 관리</h3>
           {inquiries.length === 0 ? (
             <div className="admin-empty-msg">문의가 없습니다.</div>

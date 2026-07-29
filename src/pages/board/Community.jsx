@@ -3,14 +3,16 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { boardApi } from '../../api/board'
 import PostItem from '../../components/PostItem'
 import MediaPostItem from '../../components/MediaPostItem'
+import { Camera, Video, Eye, Heart, MessageCircle, Search } from 'lucide-react';
+import { isVideo } from '../../utils/media';
 
 const PAGE_SIZE = 20
 
 const SORT_OPTIONS = [
-  { label: '최근 등록순', value: 'createdAt,desc' },
-  { label: '오래된순', value: 'createdAt,asc' },
-  { label: '조회 많은순', value: 'viewCount,desc' },
-  { label: '좋아요 많은순', value: 'likeCount,desc' },
+  { label: '최신순', value: 'createdAt,desc' },
+  { label: '조회순', value: 'viewCount,desc' },
+  { label: '인기순', value: 'popularityScore,desc' },
+  { label: '댓글순', value: 'commentCount,desc' },
 ]
 
 export default function Community({ mode = 'all' }) {
@@ -19,7 +21,7 @@ export default function Community({ mode = 'all' }) {
   const tab = searchParams.get('tab')
   
   // mode에 따라 기본 게시판 타입 설정
-  const defaultBoardType = mode === 'gallery' ? 'MEDIA' : (mode === 'lounge' ? (tab || 'NOTICE') : (tab || 'FREE'))
+  const defaultBoardType = mode === 'gallery' ? 'MEDIA' : mode === 'notice' ? 'NOTICE' : (tab || 'ALL')
   const [boardType, setBoardType] = useState(defaultBoardType)
 
   const handleTabChange = (type) => {
@@ -31,22 +33,28 @@ export default function Community({ mode = 'all' }) {
   const [page, setPage] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
   const [totalElements, setTotalElements] = useState(0)
-  const [searchInput, setSearchInput] = useState('')
-  const [keyword, setKeyword] = useState('')
+  const initialSearch = searchParams.get('search') || ''
+  const [searchInput, setSearchInput] = useState(initialSearch)
+  const [keyword, setKeyword] = useState(initialSearch)
 
   // Sort state
-  const [sortBy, setSortBy] = useState('createdAt,desc')
+  const [sortBy, setSortBy] = useState(mode === 'lounge' ? 'popularityScore,desc' : 'createdAt,desc')
   
   useEffect(() => {
     // 탭 변경 시 페이지와 정렬을 초기화
     setPage(0)
-    setSortBy('createdAt,desc')
+    if (boardType === 'MEDIA' || boardType === 'NOTICE') {
+      setSortBy('createdAt,desc')
+    } else {
+      setSortBy('popularityScore,desc')
+    }
   }, [boardType])
   
   // 모드가 변경되면 탭도 강제 변경
   useEffect(() => {
     if (mode === 'gallery') setBoardType('MEDIA')
-    if (mode === 'lounge') setBoardType(tab || 'NOTICE')
+    else if (mode === 'notice') setBoardType('NOTICE')
+    else if (mode === 'lounge') setBoardType(tab || 'ALL')
   }, [mode, tab])
 
   useEffect(() => {
@@ -58,7 +66,7 @@ export default function Community({ mode = 'all' }) {
       const isMedia = boardType === 'MEDIA'
       const data = await boardApi.getPosts(
         boardType,
-        keyword,
+        keyword.replace(/^#/, ''),
         isMedia ? 0 : page,
         isMedia ? 50 : PAGE_SIZE,
         sortBy
@@ -92,152 +100,61 @@ export default function Community({ mode = 'all' }) {
   const isMedia = boardType === 'MEDIA'
 
   return (
-    <div className="home-container">
-      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 1rem' }}>
+    <div className="home-container" style={{ paddingBottom: '4rem' }}>
+      <style>{`
+        @media (max-width: 768px) {
+          .mobile-hide-search {
+            display: none !important;
+          }
+          .popular-media-card {
+            width: calc(50% - 6px) !important;
+          }
+        }
+        .popular-media-card {
+          width: calc(25% - 9px);
+        }
+      `}</style>
+      <div className="container" style={{ maxWidth: '968px', margin: '0 auto', padding: '0 1rem' }}>
         <div className="hero-section" style={{ padding: '2rem 0', marginBottom: '1.5rem' }}>
-          <h2>{mode === 'gallery' ? '슬라임 갤러리 ✨' : mode === 'lounge' ? 'Q&A 라운지 💬' : 'Sleepy 커뮤니티'}</h2>
-          <p>{mode === 'gallery' ? '여러분의 예쁜 슬라임을 마음껏 자랑해보세요!' : '공지사항을 확인하고 자유롭게 질문과 답변을 나누세요.'}</p>
+          <h2>{mode === 'gallery' ? '슬라임 갤러리' : mode === 'lounge' ? '커뮤니티' : '공지사항'}</h2>
+          <p>{mode === 'gallery' ? '여러분의 예쁜 슬라임을 마음껏 자랑해보세요!' : mode === 'lounge' ? '슬라임에 대한 다양한 이야기를 자유롭게 나누세요.' : '슬리피의 주요 공지사항을 확인하세요.'}</p>
         </div>
 
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
-          {mode !== 'gallery' && (
-            <>
-              <button 
-                className={`nav-btn`}
-                onClick={() => handleTabChange('NOTICE')}
+        {/* 카테고리 탭 (갤러리, 공지사항 모드가 아닐 때만 표시) */}
+        {mode !== 'gallery' && mode !== 'notice' && (
+          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+            {[
+              { id: 'ALL', label: '전체' },
+              { id: 'QNA', label: '질문' },
+              { id: 'REVIEW', label: '후기' },
+              { id: 'INFO', label: '정보' },
+              { id: 'FREE', label: '잡담' },
+            ].map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => handleTabChange(cat.id)}
                 style={{
-                  background: boardType === 'NOTICE' ? 'var(--primary-color)' : 'white',
-                  color: boardType === 'NOTICE' ? 'white' : 'var(--text-main)',
-                  border: boardType === 'NOTICE' ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
-                  fontWeight: boardType === 'NOTICE' ? '700' : '500'
+                  padding: '8px 16px',
+                  borderRadius: '20px',
+                  border: boardType === cat.id ? 'none' : '1px solid #eee',
+                  background: boardType === cat.id ? 'var(--primary-color)' : 'white',
+                  color: boardType === cat.id ? 'white' : '#666',
+                  fontWeight: boardType === cat.id ? 'bold' : 'normal',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  boxShadow: boardType === cat.id ? '0 4px 10px rgba(255, 32, 112, 0.2)' : '0 2px 5px rgba(0,0,0,0.02)',
+                  transition: 'all 0.2s ease'
                 }}
               >
-                공지사항
+                {cat.label}
               </button>
-              <button 
-                className={`nav-btn`}
-                onClick={() => handleTabChange('QNA')}
-                style={{
-                  background: boardType === 'QNA' ? 'var(--primary-color)' : 'white',
-                  color: boardType === 'QNA' ? 'white' : 'var(--text-main)',
-                  border: boardType === 'QNA' ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
-                  fontWeight: boardType === 'QNA' ? '700' : '500'
-                }}
-              >
-                질문게시판
-              </button>
-              {mode === 'all' && (
-                <button 
-                  className={`nav-btn`}
-                  onClick={() => handleTabChange('FREE')}
-                  style={{
-                    background: boardType === 'FREE' ? 'var(--primary-color)' : 'white',
-                    color: boardType === 'FREE' ? 'white' : 'var(--text-main)',
-                    border: boardType === 'FREE' ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
-                    fontWeight: boardType === 'FREE' ? '700' : '500'
-                  }}
-                >
-                  자유게시판
-                </button>
-              )}
-            </>
-          )}
-          
-          {mode !== 'lounge' && (
-            <button 
-              className={`nav-btn`}
-              onClick={() => setBoardType('MEDIA')}
-              style={{ 
-                background: boardType === 'MEDIA' ? 'var(--primary-color)' : 'white', 
-                color: boardType === 'MEDIA' ? 'white' : 'var(--text-main)',
-                border: boardType === 'MEDIA' ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
-                fontWeight: boardType === 'MEDIA' ? '700' : '500'
-              }}
-            >
-              미디어(자랑)
-            </button>
-          )}
-        </div>
-        {/* 검색창 */}
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', marginBottom: '1.5rem', marginTop: '1rem' }}>
-          <input 
-            type="text" 
-            placeholder="게시글 제목, 내용을 검색해보세요" 
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                setKeyword(searchInput)
-                setPage(0)
-              }
-            }}
-            style={{
-              width: '100%',
-              padding: '0.85rem 1.2rem',
-              paddingRight: searchInput ? '4.5rem' : '3rem',
-              fontSize: '0.95rem',
-              border: '1px solid var(--border-color)',
-              borderRadius: '12px',
-              background: 'var(--bg-secondary)',
-              outline: 'none',
-              transition: 'all 0.2s',
-            }}
-            onFocus={(e) => { e.target.style.borderColor = 'var(--text-main)'; e.target.style.background = 'var(--bg-color)'; }}
-            onBlur={(e) => { e.target.style.borderColor = 'var(--border-color)'; e.target.style.background = 'var(--bg-secondary)'; }}
-          />
-          {searchInput && (
-            <button 
-              type="button" 
-              onClick={() => {
-                setSearchInput('');
-                setKeyword('');
-                setPage(0);
-              }}
-              style={{
-                position: 'absolute',
-                right: '2.5rem',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                background: 'none',
-                border: 'none',
-                color: '#aaa',
-                cursor: 'pointer',
-                fontSize: '1rem',
-                padding: '4px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-              title="검색어 지우기"
-            >
-              ✖
-            </button>
-          )}
-          <button 
-            onClick={() => {
-              setKeyword(searchInput)
-              setPage(0)
-            }}
-            style={{
-              position: 'absolute',
-              right: '0.5rem',
-              width: '36px',
-              height: '36px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '1.1rem',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer'
-            }}
-          >
-            🔍
-          </button>
-        </div>
-
-        {/* 상단 툴바: 정렬 + 총 게시글 + 글쓰기 */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            ))}
+          </div>
+        )}
+        
+        {/* 상단 툴바: 정렬 + 총 게시글 + 검색창 + 글쓰기 */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+          {/* 왼쪽: 정렬, 총개수 */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <select
               value={sortBy}
@@ -270,28 +187,86 @@ export default function Community({ mode = 'all' }) {
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
-            {boardType === 'MEDIA' && (
-              <Link 
-                to="/shorts"
+          {/* 오른쪽: 검색창, 글쓰기 */}
+          <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', flex: 1, justifyContent: 'flex-end' }}>
+            <div className="mobile-hide-search" style={{ position: 'relative', display: 'flex', alignItems: 'center', maxWidth: '280px', width: '100%' }}>
+              <input 
+                type="text" 
+                placeholder="검색어를 입력하세요" 
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    setKeyword(searchInput)
+                    setPage(0)
+                  }
+                }}
                 style={{
+                  width: '100%',
                   padding: '0.5rem 1rem',
-                  background: 'linear-gradient(135deg, #ff6b8b, #ff8da1)',
-                  color: 'white',
-                  borderRadius: '20px',
-                  textDecoration: 'none',
-                  fontWeight: 'bold',
+                  paddingRight: searchInput ? '3.5rem' : '2.5rem',
                   fontSize: '0.9rem',
-                  boxShadow: '0 4px 12px rgba(255, 32, 112, 0.2)',
+                  borderRadius: '20px',
+                  border: '1px solid var(--border-color)',
+                  background: 'var(--bg-secondary)',
+                  outline: 'none',
+                  transition: 'all 0.2s',
+                }}
+                onFocus={(e) => { e.target.style.borderColor = 'var(--text-main)'; e.target.style.background = 'var(--bg-color)'; }}
+                onBlur={(e) => { e.target.style.borderColor = 'var(--border-color)'; e.target.style.background = 'var(--bg-secondary)'; }}
+              />
+              {searchInput && (
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    setSearchInput('');
+                    setKeyword('');
+                    setPage(0);
+                  }}
+                  style={{
+                    position: 'absolute',
+                    right: '2.2rem',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    color: '#aaa',
+                    cursor: 'pointer',
+                    fontSize: '0.9rem',
+                    padding: '2px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                  title="검색어 지우기"
+                >
+                  ✖
+                </button>
+              )}
+              <button 
+                onClick={() => {
+                  setKeyword(searchInput)
+                  setPage(0)
+                }}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  width: '28px',
+                  height: '28px',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px'
+                  justifyContent: 'center',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: '#9ca3af'
                 }}
               >
-                📱 숏폼 뷰로 보기
-              </Link>
-            )}
-            <Link to={`/community/create?boardType=${boardType}`} className="submit-btn" style={{ textDecoration: 'none', padding: '0.5rem 1rem', width: 'auto', flexShrink: 0, marginTop: 0 }}>
+                <Search size={18} strokeWidth={2.5} />
+              </button>
+            </div>
+            
+            <Link to={`/community/create?boardType=${boardType}`} className="submit-btn" style={{ textDecoration: 'none', padding: '0.55rem 1.2rem', width: 'auto', flexShrink: 0, marginTop: 0, borderRadius: '20px', fontSize: '0.9rem' }}>
               글쓰기
             </Link>
           </div>

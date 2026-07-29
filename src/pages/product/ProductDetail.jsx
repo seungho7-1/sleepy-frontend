@@ -1,95 +1,53 @@
 import { useState, useEffect } from 'react'
-
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
-
 import { useAuthStore } from '../../store'
-
 import { productApi } from '../../api/products'
-
 import { reviewApi } from '../../api/reviews'
-
+import { authApi } from '../../api/auth'
 import { boardApi } from '../../api/board'
+import { Heart, Star, Share2, AlertTriangle, Plus, Minus, Bookmark } from 'lucide-react'
 import ReviewSection from '../../components/ReviewSection'
 
-
-
 function getYoutubeId(url) {
-
   if (!url) return null;
-
   if (url.includes('/shorts/')) {
-
     const parts = url.split('/shorts/');
-
     if (parts[1]) {
-
       return parts[1].split(/[?#&]/)[0];
-
     }
-
   }
-
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-
   const match = url.match(regExp);
-
   return (match && match[2].length === 11) ? match[2] : null;
-
 }
-
-
 
 function getInstagramEmbedUrl(url) {
-
   if (!url) return '';
-
   let cleanUrl = url.split('?')[0];
-
   if (!cleanUrl.endsWith('/')) {
-
     cleanUrl += '/';
-
   }
-
   return `${cleanUrl}embed/`;
-
 }
 
-
-
 export default function ProductDetail() {
-
   const { id } = useParams()
-
   const navigate = useNavigate()
   const location = useLocation()
-
   const { token } = useAuthStore()
-
   
-
   const [product, setProduct] = useState(null)
-
   const [loading, setLoading] = useState(true)
-
   const [activeTab, setActiveTab] = useState('detail')
-
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
-
+  const [sellerInfo, setSellerInfo] = useState(null)
   
-
   const images = product && product.imageUrls && product.imageUrls.length > 0 
-
     ? product.imageUrls 
-
     : product ? [product.imageUrl] : []
-
   
-
   const [reviews, setReviews] = useState([])
   const [isWished, setIsWished] = useState(false)
-
-
 
   useEffect(() => {
     fetchProduct()
@@ -119,81 +77,65 @@ export default function ProductDetail() {
     return () => window.removeEventListener('hashchange', scrollToHash);
   }, [reviews, location.hash, product]);
 
-
-
   const fetchProduct = async () => {
-
     try {
-
       const data = await productApi.getProductDetail(id);
-
       setProduct(data);
-
+      if (data.sellerId) {
+        authApi.getSellerProfile(data.sellerId).then(sellerData => {
+          setSellerInfo(sellerData);
+        }).catch(err => console.error("Seller profile fetch error", err));
+      }
     } catch (err) {
-
       alert('상품을 찾을 수 없습니다.');
-
       navigate('/');
-
     } finally {
-
       setLoading(false);
-
     }
-
   }
-
-
 
   const fetchReviews = async () => {
-
     try {
-
       const data = await reviewApi.getProductReviews(id);
-
       setReviews(data.content || []);
-
     } catch (err) {
-
       console.error(err);
-
     }
-
   }
-
-
 
   const checkWishStatus = async () => {
-
     try {
-
       const list = await productApi.getWishlist();
-
       setIsWished(list.some(p => p.id === parseInt(id)));
-
     } catch (err) {}
-
   }
 
-
-
   const toggleWish = async () => {
+    if (!token) return alert('로그인이 필요합니다.');
+    try {
+      const res = await productApi.toggleWishlist(id);
+      setIsWished(res.wished);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleBrandScrap = async (e) => {
+    e.stopPropagation();
     if (!token) {
-      alert('로그인이 필요한 기능입니다.');
+      alert('로그인이 필요한 서비스입니다.');
       return;
     }
     try {
-      const data = await productApi.toggleWishlist(id);
-      setIsWished(data.wished);
+      const res = await authApi.toggleBrandScrap(product.sellerId);
+      setSellerInfo(prev => ({ ...prev, isScrapped: res.isScrapped }));
+      alert(res.isScrapped ? '브랜드를 스크랩했습니다.' : '스크랩을 취소했습니다.');
     } catch (err) {
-      console.error(err);
+      alert('스크랩 처리에 실패했습니다.');
     }
-  }
-
-
+  };
 
   const handleCopyId = () => {
-
     if (product) {
 
       navigator.clipboard.writeText(product.id.toString());
@@ -453,22 +395,26 @@ export default function ProductDetail() {
 
           {/* 스토어 정보 (슬라임 핑크 스타일) */}
 
-          <div 
-
-            onClick={() => navigate(`/?search=${encodeURIComponent(product.shopName || '일반스토어')}`)}
-
-            style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}
-
-          >
-
-            <span style={{ fontSize: '0.95rem', fontWeight: 'bold', color: 'var(--primary-color)' }}>
-
-              {product.shopName || '일반스토어'}
-
-            </span>
-
-            <span style={{ fontSize: '0.8rem', color: 'var(--primary-color)', fontWeight: 'bold' }}>&gt;</span>
-
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', marginBottom: '8px' }}>
+            <div onClick={() => navigate(`/shop/${product.sellerId}`)} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ fontSize: '0.95rem', fontWeight: 'bold', color: 'var(--primary-color)' }}>
+                {product.shopName || '일반스토어'}
+              </span>
+              <span style={{ fontSize: '0.8rem', color: 'var(--primary-color)', fontWeight: 'bold' }}>&gt;</span>
+            </div>
+            {sellerInfo && (
+              <button 
+                onClick={handleBrandScrap}
+                style={{ 
+                  background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', 
+                  color: sellerInfo.isScrapped ? '#ff2070' : '#888', marginLeft: '10px',
+                  padding: '4px', borderRadius: '4px'
+                }}
+                title="브랜드 스크랩"
+              >
+                <Bookmark size={18} fill={sellerInfo.isScrapped ? '#ff2070' : 'none'} />
+              </button>
+            )}
           </div>
 
 
@@ -681,17 +627,14 @@ export default function ProductDetail() {
                       <th>🏪 판매자명</th>
                       <td>
                         <span 
-                          onClick={() => navigate(`/?search=${encodeURIComponent(product.shopName || '일반스토어')}`)}
+                          onClick={() => navigate(`/shop/${product.sellerId}`)}
                           style={{ cursor: 'pointer', color: 'var(--primary-color)', fontWeight: 'bold', textDecoration: 'underline' }}
                         >
                           {product.shopName || '일반스토어'}
                         </span>
                       </td>
                     </tr>
-                    <tr>
-                      <th>💧 용량</th>
-                      <td>{product.capacity ? `${product.capacity}ml` : '-'}</td>
-                    </tr>
+
                     <tr>
                       <th>🧱 질감</th>
                       <td>{product.texture || '-'}</td>

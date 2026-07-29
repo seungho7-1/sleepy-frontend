@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { Star } from 'lucide-react';
 
 export default function ProductCard({ product }) {
   const navigate = useNavigate();
@@ -31,8 +32,8 @@ export default function ProductCard({ product }) {
           <div className="product-price">{product.price.toLocaleString()}원</div>
           {product.reviewCount > 0 && (
             <div style={{ fontSize: '0.8rem', color: '#999', display: 'flex', alignItems: 'center', gap: '3px', fontWeight: 'bold' }}>
-              <span style={{ color: '#ffb400' }}>★</span>
-              리뷰 {product.reviewCount}
+              <Star size={14} fill="#ffb400" color="#ffb400" />
+              <span>{product.avgRating ? product.avgRating.toFixed(1) : '0.0'} ({product.reviewCount})</span>
             </div>
           )}
         </div>

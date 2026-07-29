@@ -12,6 +12,7 @@ import ProductCard from '../../components/ProductCard'
 import { formatDate } from '../../utils/formatDate'
 import { useLocation } from 'react-router-dom'
 import { inquiryApi } from '../../api/inquiry'
+import { Camera, UploadCloud, Trash2, Hourglass, XCircle, CheckCircle, PartyPopper, MessageSquare, Heart, Star, ShoppingBag, Bell } from 'lucide-react'
 
 export default function MyPage() {
   const { token, role, nickname, setProfileImageUrl, setRole, setNickname, logout } = useAuthStore()
@@ -21,10 +22,17 @@ export default function MyPage() {
   const [profile, setProfile] = useState(null)
   const [wishlist, setWishlist] = useState([])
   const [myPosts, setMyPosts] = useState([])
+  const [myPostsPage, setMyPostsPage] = useState(1)
+  const [myPostsTotalPages, setMyPostsTotalPages] = useState(1)
+  
   const [myComments, setMyComments] = useState([])
+  const [myCommentsPage, setMyCommentsPage] = useState(1)
+  const [myCommentsTotalPages, setMyCommentsTotalPages] = useState(1)
+  
   const [myMedia, setMyMedia] = useState([])
   const [myNotifications, setMyNotifications] = useState([])
   const [notifPage, setNotifPage] = useState(1)
+  const [notifTotalPages, setNotifTotalPages] = useState(1)
   const [activeTab, setActiveTab] = useState('profile')
   const [application, setApplication] = useState(null)
   const [isEditing, setIsEditing] = useState(false)
@@ -32,7 +40,7 @@ export default function MyPage() {
   const [uploadingProfileImg, setUploadingProfileImg] = useState(false)
   const [isAvatarMenuOpen, setIsAvatarMenuOpen] = useState(false)
   const [myInquiries, setMyInquiries] = useState([])
-  const [inquiryForm, setInquiryForm] = useState({ title: '', content: '' })
+  const [scrappedBrands, setScrappedBrands] = useState([])
 
   useEffect(() => {
     if (!token) {
@@ -44,12 +52,13 @@ export default function MyPage() {
     // Load all user content counts on mount
     fetchProfile()
     fetchWishlist()
-    fetchMyPosts()
-    fetchMyComments()
+    fetchMyPosts(myPostsPage - 1)
+    fetchMyComments(myCommentsPage - 1)
     fetchMyMedia()
     fetchApplicationStatus()
-    fetchMyNotifications()
+    fetchMyNotifications(notifPage - 1)
     fetchMyInquiries()
+    fetchScrappedBrands()
     
     // URL 파라미터에서 탭 확인 (예: ?tab=notifications)
     const searchParams = new URLSearchParams(location.search);
@@ -57,7 +66,7 @@ export default function MyPage() {
     if (tabParam) {
       setActiveTab(tabParam);
     }
-  }, [token, location.search])
+  }, [token, location.search, myPostsPage, myCommentsPage, notifPage])
 
   const fetchProfile = async () => {
     try {
@@ -159,11 +168,15 @@ export default function MyPage() {
     }
   }
 
-  const fetchMyNotifications = async () => {
+  const fetchMyNotifications = async (page = 0) => {
     try {
-      const res = await notificationApi.getNotifications();
-      // data might be wrapped in res.data depending on axios setup, assuming res is the array
-      setMyNotifications(res.data || res);
+      const res = await notificationApi.getNotifications(page, 10);
+      if (res && res.content !== undefined) {
+        setMyNotifications(res.content);
+        setNotifTotalPages(res.totalPages || 1);
+      } else {
+        setMyNotifications(res.data || res);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -178,28 +191,42 @@ export default function MyPage() {
     }
   }
 
-  const fetchMyPosts = async () => {
+  const fetchMyPosts = async (page = 0) => {
     try {
-      const data = await boardApi.getMyPosts('TEXT');
-      setMyPosts(data);
+      const res = await boardApi.getMyPosts('TEXT', page, 10);
+      if (res && res.content !== undefined) {
+        setMyPosts(res.content);
+        setMyPostsTotalPages(res.totalPages || 1);
+      } else {
+        setMyPosts(res);
+      }
     } catch (err) {
       console.error(err);
     }
   }
 
-  const fetchMyComments = async () => {
+  const fetchMyComments = async (page = 0) => {
     try {
-      const data = await boardApi.getMyComments();
-      setMyComments(data);
+      const res = await boardApi.getMyComments(page, 10);
+      if (res && res.content !== undefined) {
+        setMyComments(res.content);
+        setMyCommentsTotalPages(res.totalPages || 1);
+      } else {
+        setMyComments(res);
+      }
     } catch (err) {
       console.error(err);
     }
   }
 
-  const fetchMyMedia = async () => {
+  const fetchMyMedia = async (page = 0) => {
     try {
-      const data = await boardApi.getMyPosts('MEDIA');
-      setMyMedia(data);
+      const res = await boardApi.getMyPosts('MEDIA', page, 100);
+      if (res && res.content !== undefined) {
+        setMyMedia(res.content);
+      } else {
+        setMyMedia(res);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -214,19 +241,12 @@ export default function MyPage() {
     }
   }
 
-  const handleInquirySubmit = async (e) => {
-    e.preventDefault();
-    if (!inquiryForm.title.trim() || !inquiryForm.content.trim()) {
-      alert('제목과 내용을 모두 입력해주세요.');
-      return;
-    }
+  const fetchScrappedBrands = async () => {
     try {
-      await inquiryApi.create(inquiryForm);
-      alert('문의가 등록되었습니다.');
-      setInquiryForm({ title: '', content: '' });
-      fetchMyInquiries();
+      const data = await authApi.getScrappedBrands();
+      setScrappedBrands(data);
     } catch (err) {
-      alert('문의 등록 중 오류가 발생했습니다.');
+      console.error(err);
     }
   }
 
@@ -250,63 +270,88 @@ export default function MyPage() {
     <div className="mypage-container">
       {/* 미니멀 프로필 영역 */}
       <div className="mypage-banner">
-        <div className="mypage-banner-content" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '1.5rem', textAlign: 'left', padding: '1rem 0' }}>
-          <div className="profile-avatar-container" style={{ position: 'relative', display: 'inline-block', width: '85px', height: '85px', flexShrink: 0 }}>
-            <div className="profile-avatar" style={{ overflow: 'hidden', position: 'relative', width: '100%', height: '100%', borderRadius: '50%', border: '3px solid #fff', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f3f4f6', color: '#9ca3af', fontSize: '2rem', fontWeight: 'bold' }}>
-              {profile?.profileImageUrl ? (
-                <img src={profile.profileImageUrl} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : (
-                nickname ? nickname.charAt(0).toUpperCase() : 'U'
-              )}
-              {uploadingProfileImg && (
-                <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(255,255,255,0.7)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                  <span className="spinner" style={{ width: '20px', height: '20px', border: '2px solid var(--primary-color)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></span>
-                </div>
-              )}
-            </div>
-            
-            {/* FB Style Camera Icon Button */}
-            <button 
-              onClick={() => setIsAvatarMenuOpen(!isAvatarMenuOpen)}
-              style={{ position: 'absolute', bottom: '0', right: '0', width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#e4e6eb', border: '2px solid #fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10, color: '#050505' }}
-              title="프로필 사진 관리"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0-2a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/><path d="M21 5.5H17.8L16.4 3.3C16.1 2.8 15.6 2.5 15 2.5H9C8.4 2.5 7.9 2.8 7.6 3.3L6.2 5.5H3C1.9 5.5 1 6.4 1 7.5v12C1 20.6 1.9 21.5 3 21.5h18c1.1 0 2-.9 2-2v-12c0-1.1-.9-2-2-2zM21 19.5H3v-12h4l1.4-2.2c.1-.1.2-.2.4-.2h6.4c.2 0 .3.1.4.2L17 7.5h4v12z"/></svg>
-            </button>
-
-            {/* Centered Modal Menu */}
-            {isAvatarMenuOpen && (
-              <>
-                <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 1000, animation: 'fadeIn 0.2s ease' }} onClick={() => setIsAvatarMenuOpen(false)}></div>
-                <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)', padding: '1.2rem', zIndex: 1001, minWidth: '280px', animation: 'scaleIn 0.2s ease', textAlign: 'center' }}>
-                  <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.1rem', fontWeight: 'bold', color: '#111', borderBottom: '1px solid #eee', paddingBottom: '0.8rem' }}>프로필 사진 관리</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '0.8rem', cursor: 'pointer', borderRadius: '8px', color: '#111', fontSize: '0.95rem', fontWeight: '600', backgroundColor: '#f3f4f6', transition: 'background-color 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#e5e7eb'} onMouseLeave={e => e.currentTarget.style.backgroundColor = '#f3f4f6'}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                      사진 업로드
-                      <input type="file" accept="image/*" onChange={(e) => { setIsAvatarMenuOpen(false); handleProfileImageUpload(e); }} style={{ display: 'none' }} disabled={uploadingProfileImg} />
-                    </label>
-                    
-                    {profile?.profileImageUrl && (
-                      <button onClick={() => { setIsAvatarMenuOpen(false); handleProfileImageDelete(); }} disabled={uploadingProfileImg} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '0.8rem', cursor: 'pointer', borderRadius: '8px', color: '#ef4444', fontSize: '0.95rem', fontWeight: '600', width: '100%', border: 'none', backgroundColor: '#fef2f2', transition: 'background-color 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#fee2e2'} onMouseLeave={e => e.currentTarget.style.backgroundColor = '#fef2f2'}>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                        현재 사진 삭제
-                      </button>
-                    )}
+        <div className="mypage-banner-content" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 2rem' }}>
+          
+          {/* 좌측 프로필 정보 */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+            <div className="profile-avatar-container" style={{ position: 'relative', display: 'inline-block', width: '85px', height: '85px', flexShrink: 0 }}>
+              <div className="profile-avatar" style={{ overflow: 'hidden', position: 'relative', width: '100%', height: '100%', borderRadius: '50%', border: '3px solid #fff', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f3f4f6', color: '#9ca3af', fontSize: '2rem', fontWeight: 'bold' }}>
+                {profile?.profileImageUrl ? (
+                  <img src={profile.profileImageUrl} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  nickname ? nickname.charAt(0).toUpperCase() : 'U'
+                )}
+                {uploadingProfileImg && (
+                  <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(255,255,255,0.7)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <span className="spinner" style={{ width: '20px', height: '20px', border: '2px solid var(--primary-color)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></span>
                   </div>
-                </div>
-              </>
-            )}
-          </div>
-          <div className="profile-info-header" style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-            <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: '800' }}>{nickname}님</h2>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <span className="role-badge" style={{ margin: 0, display: 'inline-block' }}>
-                {(role === 'USER' || role === 'BUYER') ? '일반 구매자' : role === 'SELLER' ? '슬라임 판매자' : '관리자'}
-              </span>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-sub)' }}>{profile?.email || '이메일 없음'}</span>
+                )}
+              </div>
+              
+              {/* FB Style Camera Icon Button */}
+              <button 
+                onClick={() => setIsAvatarMenuOpen(!isAvatarMenuOpen)}
+                style={{ position: 'absolute', bottom: '0', right: '0', width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#e4e6eb', border: '2px solid #fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10, color: '#050505' }}
+                title="프로필 사진 관리"
+              >
+                <Camera size={14} />
+              </button>
+
+              {/* Centered Modal Menu */}
+              {isAvatarMenuOpen && (
+                <>
+                  <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 1000, animation: 'fadeIn 0.2s ease' }} onClick={() => setIsAvatarMenuOpen(false)}></div>
+                  <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)', padding: '1.2rem', zIndex: 1001, minWidth: '280px', animation: 'scaleIn 0.2s ease', textAlign: 'center' }}>
+                    <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.1rem', fontWeight: 'bold', color: '#111', borderBottom: '1px solid #eee', paddingBottom: '0.8rem' }}>프로필 사진 관리</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '0.8rem', cursor: 'pointer', borderRadius: '8px', color: '#111', fontSize: '0.95rem', fontWeight: '600', backgroundColor: '#f3f4f6', transition: 'background-color 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#e5e7eb'} onMouseLeave={e => e.currentTarget.style.backgroundColor = '#f3f4f6'}>
+                        <UploadCloud size={18} />
+                        사진 업로드
+                        <input type="file" accept="image/*" onChange={(e) => { setIsAvatarMenuOpen(false); handleProfileImageUpload(e); }} style={{ display: 'none' }} disabled={uploadingProfileImg} />
+                      </label>
+                      
+                      {profile?.profileImageUrl && (
+                        <button onClick={() => { setIsAvatarMenuOpen(false); handleProfileImageDelete(); }} disabled={uploadingProfileImg} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '0.8rem', cursor: 'pointer', borderRadius: '8px', color: '#ef4444', fontSize: '0.95rem', fontWeight: '600', width: '100%', border: 'none', backgroundColor: '#fef2f2', transition: 'background-color 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#fee2e2'} onMouseLeave={e => e.currentTarget.style.backgroundColor = '#fef2f2'}>
+                          <Trash2 size={18} />
+                          현재 사진 삭제
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+            <div className="profile-info-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0.4rem', minWidth: 0, textAlign: 'left' }}>
+              <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '800', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nickname}님</h2>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+                <span className="role-badge" style={{ margin: 0, display: 'inline-block', flexShrink: 0 }}>
+                  {(role === 'USER' || role === 'BUYER') ? '일반 구매자' : role === 'SELLER' ? '슬라임 판매자' : '관리자'}
+                </span>
+                <span style={{ fontSize: '0.9rem', color: 'var(--text-sub)', wordBreak: 'break-all', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical' }}>
+                  {profile?.email || '이메일 없음'}
+                </span>
+              </div>
             </div>
           </div>
+
+          {/* 우측 내 활동 요약 (데스크톱 환경 등 1200px 뷰에서 균형을 맞추기 위함) */}
+          <div style={{ display: 'flex', gap: '2.5rem', textAlign: 'center', backgroundColor: 'rgba(255,255,255,0.6)', padding: '1.2rem 2.5rem', borderRadius: '16px', border: '1px solid #ffe4eb' }}>
+            <div style={{ cursor: 'pointer' }} onClick={() => setActiveTab('wishlist')}>
+              <div style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--primary-color)' }}>{wishlist.length}</div>
+              <div style={{ fontSize: '0.85rem', color: '#666', marginTop: '4px', fontWeight: '600' }}>찜한 상품</div>
+            </div>
+            <div style={{ width: '1px', backgroundColor: '#ffd6e0' }}></div>
+            <div style={{ cursor: 'pointer' }} onClick={() => setActiveTab('my-posts')}>
+              <div style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--primary-color)' }}>{myPosts.length}</div>
+              <div style={{ fontSize: '0.85rem', color: '#666', marginTop: '4px', fontWeight: '600' }}>내가 쓴 글</div>
+            </div>
+            <div style={{ width: '1px', backgroundColor: '#ffd6e0' }}></div>
+            <div style={{ cursor: 'pointer' }} onClick={() => setActiveTab('notifications')}>
+              <div style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--primary-color)' }}>{myNotifications.filter(n => !n.read).length}</div>
+              <div style={{ fontSize: '0.85rem', color: '#666', marginTop: '4px', fontWeight: '600' }}>새 알림</div>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -350,10 +395,16 @@ export default function MyPage() {
             내 알림 내역 ({myNotifications.length})
           </button>
           <button 
-            className={`mypage-nav-btn ${activeTab === 'inquiries' ? 'active' : ''}`} 
             onClick={() => setActiveTab('inquiries')}
+            className={`mypage-nav-btn ${activeTab === 'inquiries' ? 'active' : ''}`} 
           >
             1:1 문의 내역
+          </button>
+          <button 
+            onClick={() => setActiveTab('scrapped-brands')}
+            className={`mypage-nav-btn ${activeTab === 'scrapped-brands' ? 'active' : ''}`} 
+          >
+            내가 스크랩한 브랜드
           </button>
           {(role === 'USER' || role === 'BUYER') && (
             <>
@@ -525,25 +576,40 @@ export default function MyPage() {
               {myPosts.length === 0 ? (
                 <div className="empty-state">작성한 게시글이 없습니다.</div>
               ) : (
-                <div className="my-posts-list">
-                  {myPosts.map(post => (
-                    <div key={post.id} className="my-post-item-row">
-                      <div className="my-post-info">
-                        <span className="my-post-tag">
-                          {post.boardType === 'FREE' ? '자유' : post.boardType === 'QNA' ? '질문' : post.boardType === 'NOTICE' ? '공지' : '기타'}
-                        </span>
-                        <Link to={`/community/${post.id}`} className="my-post-title-link">
-                          {post.title}
-                        </Link>
+                <>
+                  <div className="my-posts-list">
+                    {myPosts.map(post => (
+                      <div key={post.id} className="my-post-item-row">
+                        <div className="my-post-info">
+                          <span className="my-post-tag">
+                            {post.boardType === 'FREE' ? '자유' : post.boardType === 'QNA' ? '질문' : post.boardType === 'NOTICE' ? '공지' : '기타'}
+                          </span>
+                          <Link to={`/community/${post.id}`} className="my-post-title-link">
+                            {post.title}
+                          </Link>
+                        </div>
+                        <div className="my-post-meta">
+                          <span>좋아요 {post.likeCount}</span>
+                          <span>조회 {post.viewCount}</span>
+                          <span>{formatDate(post.createdAt)}</span>
+                        </div>
                       </div>
-                      <div className="my-post-meta">
-                        <span>좋아요 {post.likeCount}</span>
-                        <span>조회 {post.viewCount}</span>
-                        <span>{formatDate(post.createdAt)}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                  <div className="pagination" style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '2rem' }}>
+                    <button 
+                      onClick={() => { setMyPostsPage(p => Math.max(1, p - 1)); }}
+                      disabled={myPostsPage === 1}
+                      style={{ padding: '0.5rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-secondary)', cursor: myPostsPage === 1 ? 'not-allowed' : 'pointer', opacity: myPostsPage === 1 ? 0.5 : 1 }}
+                    >이전</button>
+                    <span style={{ padding: '0.5rem 1rem', fontWeight: 'bold' }}>{myPostsPage} / {myPostsTotalPages}</span>
+                    <button 
+                      onClick={() => { setMyPostsPage(p => Math.min(myPostsTotalPages, p + 1)); }}
+                      disabled={myPostsPage >= myPostsTotalPages}
+                      style={{ padding: '0.5rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-secondary)', cursor: myPostsPage >= myPostsTotalPages ? 'not-allowed' : 'pointer', opacity: myPostsPage >= myPostsTotalPages ? 0.5 : 1 }}
+                    >다음</button>
+                  </div>
+                </>
               )}
             </div>
           )}
@@ -554,21 +620,36 @@ export default function MyPage() {
               {myComments.length === 0 ? (
                 <div className="empty-state">작성한 댓글이 없습니다.</div>
               ) : (
-                <div className="my-comments-list">
-                  {myComments.map(comment => (
-                    <div key={comment.id} className="my-comment-item-row">
-                      <div className="my-comment-text">"{comment.content}"</div>
-                      <div className="my-comment-origin">
-                        {comment.targetType === 'POST' ? (
-                          <span>원문: <Link to={`/community/${comment.targetId}`}>{comment.targetTitle}</Link></span>
-                        ) : (
-                          <span>원문: <Link to={`/product/${comment.targetId}`}>{comment.targetTitle}</Link></span>
-                        )}
-                        <span className="my-comment-date">{formatDate(comment.createdAt)}</span>
+                <>
+                  <div className="my-comments-list">
+                    {myComments.map(comment => (
+                      <div key={comment.id} className="my-comment-item-row">
+                        <div className="my-comment-text">"{comment.content}"</div>
+                        <div className="my-comment-origin">
+                          {comment.targetType === 'POST' ? (
+                            <span>원문: <Link to={`/community/${comment.targetId}`}>{comment.targetTitle}</Link></span>
+                          ) : (
+                            <span>원문: <Link to={`/product/${comment.targetId}`}>{comment.targetTitle}</Link></span>
+                          )}
+                          <span className="my-comment-date">{formatDate(comment.createdAt)}</span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                  <div className="pagination" style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '2rem' }}>
+                    <button 
+                      onClick={() => { setMyCommentsPage(p => Math.max(1, p - 1)); }}
+                      disabled={myCommentsPage === 1}
+                      style={{ padding: '0.5rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-secondary)', cursor: myCommentsPage === 1 ? 'not-allowed' : 'pointer', opacity: myCommentsPage === 1 ? 0.5 : 1 }}
+                    >이전</button>
+                    <span style={{ padding: '0.5rem 1rem', fontWeight: 'bold' }}>{myCommentsPage} / {myCommentsTotalPages}</span>
+                    <button 
+                      onClick={() => { setMyCommentsPage(p => Math.min(myCommentsTotalPages, p + 1)); }}
+                      disabled={myCommentsPage >= myCommentsTotalPages}
+                      style={{ padding: '0.5rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-secondary)', cursor: myCommentsPage >= myCommentsTotalPages ? 'not-allowed' : 'pointer', opacity: myCommentsPage >= myCommentsTotalPages ? 0.5 : 1 }}
+                    >다음</button>
+                  </div>
+                </>
               )}
             </div>
           )}
@@ -581,7 +662,7 @@ export default function MyPage() {
               ) : (
                 <div className="my-media-grid">
                   {myMedia.map(post => (
-                    <Link key={post.id} to={`/community/${post.id}`} className="my-media-card">
+                    <Link key={post.id} to={`/shorts?postId=${post.id}`} className="my-media-card">
                       <img src={post.imageUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500'} alt={post.title} />
                       <div className="my-media-overlay">
                         <span className="my-media-title">{post.title}</span>
@@ -594,10 +675,6 @@ export default function MyPage() {
           )}
           
           {activeTab === 'notifications' && (() => {
-            const NOTIF_PER_PAGE = 10;
-            const totalNotifPages = Math.ceil(myNotifications.length / NOTIF_PER_PAGE) || 1;
-            const currentNotifs = myNotifications.slice((notifPage - 1) * NOTIF_PER_PAGE, notifPage * NOTIF_PER_PAGE);
-            
             return (
               <div className="glass-card fade-in">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
@@ -612,7 +689,6 @@ export default function MyPage() {
                         }
                         
                         try {
-                          // 파이어베이스 싱크 강제 처리
                           const unreadNotifs = myNotifications.filter(n => !n.read);
                           for (const notif of unreadNotifs) {
                             try {
@@ -621,13 +697,13 @@ export default function MyPage() {
                               console.error(err);
                             }
                             try {
-                              const docRef = doc(db, "notifications", profile.nickname, "userNotifications", String(notif.id));
-                              await updateDoc(docRef, { isRead: true });
-                            } catch (fbErr) {
-                              console.error("Firebase direct update failed", fbErr);
+                              const envPrefix = import.meta.env.MODE === 'development' ? 'dev_' : '';
+                              const docRef = doc(db, `${envPrefix}notifications`, profile.nickname, "userNotifications", String(notif.id));
+                              await updateDoc(docRef, { read: true, isRead: true });
+                            } catch (err) {
+                              console.error(err);
                             }
                           }
-                          
                           fetchMyNotifications(); // 읽음 상태 갱신
                         } catch(e) {
                           console.error("Firebase sync failed", e);
@@ -645,7 +721,7 @@ export default function MyPage() {
                 ) : (
                   <>
                     <div className="my-notifications-list" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                      {currentNotifs.map(notif => (
+                      {myNotifications.map(notif => (
                         <div key={notif.id} className="notification-history-item" style={{ 
                           padding: '1rem', 
                           borderRadius: '8px', 
@@ -702,50 +778,33 @@ export default function MyPage() {
                     </div>
 
                     {/* Pagination */}
-                    {totalNotifPages > 1 && (
-                      <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '2rem' }}>
-                        <button 
-                          onClick={() => setNotifPage(prev => Math.max(prev - 1, 1))}
-                          disabled={notifPage === 1}
-                          style={{ 
-                            padding: '6px 12px', border: '1px solid #ddd', borderRadius: '4px', background: 'white', cursor: notifPage === 1 ? 'not-allowed' : 'pointer', opacity: notifPage === 1 ? 0.5 : 1 
-                          }}
-                        >
-                          이전
-                        </button>
-                        
-                        <div style={{ display: 'flex', gap: '0.2rem' }}>
-                          {Array.from({ length: totalNotifPages }, (_, i) => i + 1).map(pageNum => (
-                            <button
-                              key={pageNum}
-                              onClick={() => setNotifPage(pageNum)}
-                              style={{
-                                padding: '6px 12px', 
-                                border: '1px solid', 
-                                borderColor: notifPage === pageNum ? 'var(--primary-color)' : '#ddd',
-                                borderRadius: '4px', 
-                                background: notifPage === pageNum ? 'var(--primary-color)' : 'white',
-                                color: notifPage === pageNum ? 'white' : 'var(--text-main)',
-                                cursor: 'pointer',
-                                fontWeight: notifPage === pageNum ? 'bold' : 'normal'
-                              }}
-                            >
-                              {pageNum}
-                            </button>
-                          ))}
-                        </div>
-
-                        <button 
-                          onClick={() => setNotifPage(prev => Math.min(prev + 1, totalNotifPages))}
-                          disabled={notifPage === totalNotifPages}
-                          style={{ 
-                            padding: '6px 12px', border: '1px solid #ddd', borderRadius: '4px', background: 'white', cursor: notifPage === totalNotifPages ? 'not-allowed' : 'pointer', opacity: notifPage === totalNotifPages ? 0.5 : 1 
-                          }}
-                        >
-                          다음
-                        </button>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '2rem' }}>
+                      <button 
+                        onClick={() => { setNotifPage(prev => Math.max(prev - 1, 1)); }}
+                        disabled={notifPage === 1}
+                        style={{ 
+                          padding: '6px 12px', border: '1px solid #ddd', borderRadius: '4px', background: 'white', cursor: notifPage === 1 ? 'not-allowed' : 'pointer', opacity: notifPage === 1 ? 0.5 : 1 
+                        }}
+                      >
+                        이전
+                      </button>
+                      
+                      <div style={{ display: 'flex', gap: '0.2rem' }}>
+                        <span style={{ padding: '6px 12px', background: 'var(--primary-color)', color: 'white', borderRadius: '4px' }}>
+                          {notifPage} / {notifTotalPages}
+                        </span>
                       </div>
-                    )}
+
+                      <button 
+                        onClick={() => { setNotifPage(prev => Math.min(prev + 1, notifTotalPages)); }}
+                        disabled={notifPage >= notifTotalPages}
+                        style={{ 
+                          padding: '6px 12px', border: '1px solid #ddd', borderRadius: '4px', background: 'white', cursor: notifPage >= notifTotalPages ? 'not-allowed' : 'pointer', opacity: notifPage >= notifTotalPages ? 0.5 : 1 
+                        }}
+                      >
+                        다음
+                      </button>
+                    </div>
                   </>
                 )}
               </div>
@@ -755,31 +814,17 @@ export default function MyPage() {
           {activeTab === 'inquiries' && (
             <div className="glass-card fade-in">
               <h3 style={{ fontSize: '1.1rem', fontWeight: '700', marginBottom: '1.5rem' }}>1:1 문의 내역</h3>
-              <div style={{ marginBottom: '2rem', padding: '1rem', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                <h4 style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '1rem', marginTop: 0 }}>새 문의 등록하기</h4>
-                <form onSubmit={handleInquirySubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <input 
-                    type="text" 
-                    placeholder="제목" 
-                    value={inquiryForm.title}
-                    onChange={(e) => setInquiryForm({...inquiryForm, title: e.target.value})}
-                    style={{ padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}
-                  />
-                  <textarea 
-                    placeholder="문의 내용을 입력하세요" 
-                    value={inquiryForm.content}
-                    onChange={(e) => setInquiryForm({...inquiryForm, content: e.target.value})}
-                    rows={4}
-                    style={{ padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--border-color)', resize: 'vertical' }}
-                  ></textarea>
-                  <button type="submit" className="nav-btn" style={{ padding: '0.8rem', backgroundColor: 'var(--primary-color)', color: 'white', fontWeight: 'bold' }}>문의하기</button>
-                </form>
+              <div style={{ padding: '2rem', background: '#f9fafb', borderRadius: '12px', textAlign: 'center', marginBottom: '2rem' }}>
+                <p style={{ color: '#4b5563', marginBottom: '1rem', fontSize: '1.1rem' }}>새로운 문의를 남기시려면 고객센터를 이용해주세요.</p>
+                <button 
+                  onClick={() => navigate('/support?tab=inquiry')}
+                  style={{ padding: '0.8rem 1.5rem', background: 'var(--primary-color)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
+                >
+                  고객센터로 1:1 문의 작성하러 가기
+                </button>
               </div>
-
               <h4 style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '1rem' }}>나의 문의 내역</h4>
-              {myInquiries.length === 0 ? (
-                <div className="empty-state">문의 내역이 없습니다.</div>
-              ) : (
+              {myInquiries.length > 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   {myInquiries.map(inquiry => (
                     <div key={inquiry.id} style={{ padding: '1rem', border: '1px solid var(--border-color)', borderRadius: '8px' }}>
@@ -808,6 +853,55 @@ export default function MyPage() {
                       )}
                     </div>
                   ))}
+                </div>
+              ) : (
+                <div style={{ textAlign: 'center', padding: '3rem', color: '#999', background: '#f8f8f8', borderRadius: '12px' }}>
+                  문의 내역이 없습니다.
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'scrapped-brands' && (
+            <div className="mypage-section animate-fade-in">
+              <h2 className="section-title">내가 스크랩한 브랜드</h2>
+              
+              {scrappedBrands.length > 0 ? (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px', marginTop: '1.5rem' }}>
+                  {scrappedBrands.map(brand => (
+                    <div 
+                      key={brand.id} 
+                      onClick={() => navigate(`/shop/${brand.id}`)}
+                      style={{ 
+                        border: '1px solid #eee', 
+                        borderRadius: '12px', 
+                        padding: '1.5rem', 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        alignItems: 'center', 
+                        cursor: 'pointer',
+                        transition: 'transform 0.2s',
+                        background: '#fff',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+                      onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}
+                    >
+                      {brand.profileImageUrl ? (
+                        <img src={brand.profileImageUrl} alt="profile" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', marginBottom: '1rem' }} />
+                      ) : (
+                        <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#ff2070', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: '#fff', fontSize: '1.5rem', marginBottom: '1rem' }}>
+                          {brand.shopName.charAt(0)}
+                        </div>
+                      )}
+                      <h3 style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: '0 0 0.5rem 0', color: '#333' }}>{brand.shopName}</h3>
+                      <p style={{ fontSize: '0.85rem', color: '#888', margin: 0 }}>스크랩 {brand.scrapCount}명</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ textAlign: 'center', padding: '3rem', color: '#999', background: '#f8f8f8', borderRadius: '12px' }}>
+                  스크랩한 브랜드가 없습니다.
                 </div>
               )}
             </div>

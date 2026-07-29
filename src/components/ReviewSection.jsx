@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { ThumbsUp } from 'lucide-react';
+import { formatDate } from '../utils/formatDate';
 import { useAuthStore } from '../store';
 import { reviewApi } from '../api/reviews';
 import { boardApi } from '../api/board';
 
 export default function ReviewSection({ productId, reviews, fetchReviews }) {
-  const { token, nickname: currentNickname } = useAuthStore();
+  const { token, role, nickname: currentNickname } = useAuthStore();
   const [rating, setRating] = useState(5);
   const [content, setContent] = useState('');
   const [imageUrl, setImageUrl] = useState('');
@@ -192,7 +194,7 @@ export default function ReviewSection({ productId, reviews, fetchReviews }) {
                   onMouseEnter={(e) => { e.target.style.background = '#fff5f7'; }}
                   onMouseLeave={(e) => { e.target.style.background = '#fff'; }}
                 >
-                  {uploading ? '사진 업로드 중...' : '📷 사진 첨부하기'}
+                  {uploading ? '사진 업로드 중...' : ' 사진 첨부하기'}
                 </label>
               </div>
             )}
@@ -220,8 +222,8 @@ export default function ReviewSection({ productId, reviews, fetchReviews }) {
                   </span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span className="review-date" style={{ color: '#999', fontSize: '0.85rem' }}>{new Date(review.createdAt).toLocaleDateString()}</span>
-                  {!review.isHidden && review.nickname !== currentNickname && (
+                  <span className="review-date" style={{ color: '#999', fontSize: '0.85rem' }}>{formatDate(review.createdAt)}</span>
+                  {!review.isHidden && review.nickname !== currentNickname && role !== 'ADMIN' && (
                     <button 
                       onClick={() => reportReview(review.id)}
                       style={{ background: 'none', border: 'none', color: '#ff5b94', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 'bold' }}
@@ -247,8 +249,10 @@ export default function ReviewSection({ productId, reviews, fetchReviews }) {
                   <div style={{ marginTop: '1.2rem' }}>
                     <button 
                       onClick={() => toggleReviewLike(review.id)}
-                      style={{ background: '#fff', border: '1px solid #ffd6e0', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer', fontSize: '0.85rem', color: 'var(--primary-color)', display: 'flex', alignItems: 'center', gap: '4px', transition: 'all 0.2s', fontWeight: 'bold' }}
+                      disabled={isLiking}
+                      style={{ background: '#fff', border: '1px solid #ffd6e0', borderRadius: '20px', padding: '6px 14px', cursor: isLiking ? 'default' : 'pointer', fontSize: '0.85rem', color: 'var(--primary-color)', display: 'flex', alignItems: 'center', gap: '4px', transition: 'all 0.2s', fontWeight: 'bold', opacity: isLiking ? 0.7 : 1 }}
                       onMouseEnter={(e) => {
+                        if (isLiking) return;
                         e.target.style.background = '#fff5f7';
                       }}
                       onMouseLeave={(e) => {

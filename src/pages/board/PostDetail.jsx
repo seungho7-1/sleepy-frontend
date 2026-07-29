@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '../../store'
 import { boardApi } from '../../api/board'
+import { formatDate } from '../../utils/formatDate'
 
 export default function PostDetail() {
   const { id } = useParams()
@@ -19,6 +20,8 @@ export default function PostDetail() {
   
   // 신고 관련 상태
   const [isReportModalOpen, setIsReportModalOpen] = useState(false)
+  const [reportTargetType, setReportTargetType] = useState('POST')
+  const [reportTargetId, setReportTargetId] = useState(id)
   const [reportReasonOption, setReportReasonOption] = useState('영리목적/홍보성')
   const [customReportReason, setCustomReportReason] = useState('')
   const [submittingReport, setSubmittingReport] = useState(false)
@@ -101,13 +104,13 @@ export default function PostDetail() {
     setIsLiking(true);
     try {
       const res = await boardApi.toggleLike(id, 'POST');
+      const liked = res.liked !== undefined ? res.liked : res.isLiked;
       
       setPost(prev => {
-        const newCount = res ? prev.likeCount + 1 : Math.max(0, prev.likeCount - 1);
         return {
           ...prev,
-          likeCount: newCount,
-          isLiked: res
+          likeCount: res.likeCount,
+          isLiked: liked
         };
       });
     } catch (err) {
@@ -192,8 +195,8 @@ export default function PostDetail() {
     setSubmittingReport(true);
     try {
       await boardApi.report({
-        targetType: 'POST',
-        targetId: id,
+        targetType: reportTargetType,
+        targetId: reportTargetId,
         reason: finalReason
       });
       alert('신고가 성공적으로 접수되었습니다. 관리자 확인 후 처리됩니다.');
@@ -214,7 +217,7 @@ export default function PostDetail() {
   const isAdmin = role === 'ADMIN';
 
   return (
-    <div className="board-container" style={{ margin: '2rem auto' }}>
+    <div className="container" style={{ margin: '2rem auto', maxWidth: '968px', width: '100%', padding: '0 1rem', boxSizing: 'border-box' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <button 
           onClick={() => navigate(-1)}
@@ -222,10 +225,10 @@ export default function PostDetail() {
             display: 'flex',
             alignItems: 'center',
             gap: '6px',
-            fontSize: '0.9rem',
+            fontSize: '0.95rem',
             color: '#666',
             fontWeight: '600',
-            padding: '4px 8px',
+            padding: '8px 0',
             background: 'none',
             border: 'none',
             cursor: 'pointer',
@@ -234,7 +237,7 @@ export default function PostDetail() {
           onMouseEnter={(e) => e.target.style.color = 'var(--primary-color)'}
           onMouseLeave={(e) => e.target.style.color = '#666'}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
@@ -243,39 +246,50 @@ export default function PostDetail() {
 
       </div>
       
-      <div style={{ background: 'white', padding: '2rem', borderRadius: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.05)', marginTop: '1rem' }}>
-        <div style={{ fontSize: '0.9rem', color: 'var(--primary-color)', fontWeight: 'bold' }}>
-          [{post.boardType === 'FREE' ? '자유' : post.boardType === 'QNA' ? '질문' : post.boardType === 'MEDIA' ? '미디어' : '공지'}]
+      <div style={{ background: 'white', padding: '2.5rem 2rem', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.06)', marginTop: '1rem' }}>
+        <div style={{ fontSize: '0.95rem', color: 'var(--primary-color)', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+          [{post.boardType === 'FREE' ? '잡담' : post.boardType === 'QNA' ? '질문' : post.boardType === 'REVIEW' ? '후기' : post.boardType === 'INFO' ? '정보' : post.boardType === 'MEDIA' ? '미디어' : '공지'}]
         </div>
-        <h1 style={{ margin: '1rem 0' }}>{post.title}</h1>
+        <h1 style={{ margin: '0 0 1.5rem 0', fontSize: '1.8rem', lineHeight: '1.4', color: '#111' }}>{post.title}</h1>
         
-        <div className="post-meta" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.8rem', justifyContent: 'space-between', borderBottom: '1px solid #eee', paddingBottom: '1rem', color: '#666', fontSize: '0.9rem', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div>작성자: <strong>{post.nickname}</strong></div>
-            <div>{new Date(post.createdAt).toLocaleString()} <span style={{ color: '#ccc', margin: '0 4px' }}>|</span> 조회 {post.viewCount} <span style={{ color: '#ccc', margin: '0 4px' }}>|</span> 좋아요 {post.likeCount}</div>
-          </div>
+        <div className="post-meta">
           
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', columnGap: '16px', rowGap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ color: '#888', fontSize: '0.95rem' }}>작성자</span>
+              <strong style={{ color: '#333', fontSize: '1.05rem' }}>{post.nickname}</strong>
+            </div>
+            
+            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '12px', color: '#888', fontSize: '0.95rem' }}>
+              <span>{formatDate(post.createdAt)}</span>
+              <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#ccc' }} />
+              <span>좋아요 {post.likeCount}</span>
+              <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#ccc' }} />
+              <span>조회 {post.viewCount}</span>
+            </div>
+          </div>
+            
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
             {(isAuthor || isAdmin) && (
               <>
                 <button 
                   onClick={() => navigate(`/community/create?edit=${id}`)}
-                  style={{ background: 'white', border: '1px solid #ddd', padding: '4px 10px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', color: '#555' }}
+                  style={{ background: '#f8f9fa', border: '1px solid #e0e0e0', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', color: '#555', fontWeight: '600' }}
                 >
                   수정
                 </button>
                 <button 
                   onClick={handlePostDelete}
-                  style={{ background: '#fff0f2', border: '1px solid #ffccd8', padding: '4px 10px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', color: 'var(--primary-color)' }}
+                  style={{ background: '#fff0f2', border: '1px solid #ffccd8', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', color: 'var(--primary-color)', fontWeight: '600' }}
                 >
                   삭제
                 </button>
               </>
             )}
-            {token && !isAuthor && (
+            {token && !isAuthor && role !== 'ADMIN' && (
               <button 
-                onClick={() => setIsReportModalOpen(true)}
-                style={{ background: '#fff9f0', border: '1px solid #ffe8cc', padding: '4px 10px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', color: '#e67e22', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '2px' }}
+                onClick={() => { setReportTargetType('POST'); setReportTargetId(id); setIsReportModalOpen(true); }}
+                style={{ background: '#fff9f0', border: '1px solid #ffe8cc', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', color: '#e67e22', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}
               >
                 🚨 신고
               </button>
@@ -302,7 +316,9 @@ export default function PostDetail() {
         <div style={{ textAlign: 'center', padding: '3rem 0', borderBottom: '1px solid #eee' }}>
           <button 
             onClick={toggleLike}
+            disabled={isLiking}
             onMouseOver={(e) => {
+              if(isLiking) return;
               e.currentTarget.style.background = '#fff0f2';
               e.currentTarget.style.borderColor = 'var(--primary-color)';
             }}
@@ -412,7 +428,7 @@ export default function PostDetail() {
                             {c.nickname}
                           </div>
                           <div style={{ fontSize: '0.75rem', color: '#999' }}>
-                            {new Date(c.createdAt).toLocaleString()}
+                            {formatDate(c.createdAt)}
                           </div>
                         </div>
 
@@ -496,6 +512,15 @@ export default function PostDetail() {
                               </button>
                             </>
                           )}
+                          {token && nickname !== c.nickname && role !== 'ADMIN' && !isEditing && (
+                            <button 
+                              type="button" 
+                              onClick={() => { setReportTargetType('COMMENT'); setReportTargetId(c.id); setIsReportModalOpen(true); }}
+                              style={{ background: 'none', border: 'none', color: '#e67e22', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer', padding: 0 }}
+                            >
+                              🚨 신고
+                            </button>
+                          )}
                         </div>
                       </div>
 
@@ -555,10 +580,10 @@ export default function PostDetail() {
           />
           <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.15)', padding: '2rem', zIndex: 1001, width: '90%', maxWidth: '420px', boxSizing: 'border-box' }}>
             <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.2rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px', color: '#e67e22' }}>
-              🚨 게시글 신고하기
+              🚨 {reportTargetType === 'POST' ? '게시글' : '댓글'} 신고하기
             </h3>
             <p style={{ fontSize: '0.85rem', color: '#666', marginBottom: '1.5rem', lineHeight: '1.4' }}>
-              부적절하거나 커뮤니티 가이드를 위반한 게시글은 신고해 주세요. 관리자 확인 후 신속히 조치하겠습니다.
+              부적절하거나 커뮤니티 가이드를 위반한 {reportTargetType === 'POST' ? '게시글' : '댓글'}은 신고해 주세요. 관리자 확인 후 신속히 조치하겠습니다.
             </p>
             
             <form onSubmit={handleReportSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>

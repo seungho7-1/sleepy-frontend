@@ -4,7 +4,8 @@ import { useAuthStore } from '../store';
 import { isVideo } from '../utils/media';
 import ShortsCommentModal from './ShortsCommentModal';
 import Avatar from './Avatar';
-import { Heart, Volume2, VolumeX } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Volume2, VolumeX } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function ShortsItem({ post, index }) {
   const videoRef = useRef(null);
@@ -18,7 +19,7 @@ export default function ShortsItem({ post, index }) {
   const { token } = useAuthStore();
   
   // Default fallback image if no URL
-  const mediaUrl = post.imageUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500';
+  const mediaUrl = post.imageUrl ? post.imageUrl.split(',')[0] : 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500';
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -75,6 +76,7 @@ export default function ShortsItem({ post, index }) {
   };
 
   const [isLiked, setIsLiked] = useState(post.isLiked || false);
+  const [isLiking, setIsLiking] = useState(false);
 
   const handleLike = async (e) => {
     e.stopPropagation(); // 비디오 재생 이벤트 버블링 방지
@@ -82,31 +84,133 @@ export default function ShortsItem({ post, index }) {
       alert('로그인이 필요합니다.');
       return;
     }
+    if (isLiking) return;
+    setIsLiking(true);
     try {
       const res = await boardApi.toggleLike(post.id, 'POST');
-      setIsLiked(res);
-      setLikeCount(prev => res ? prev + 1 : Math.max(0, prev - 1));
+      const liked = res.liked !== undefined ? res.liked : res.isLiked;
+      setIsLiked(liked);
+      setLikeCount(res.likeCount);
     } catch (err) {
       console.error(err);
+    } finally {
+      setIsLiking(false);
     }
   };
 
+  const [isExpanded, setIsExpanded] = useState(false);
+  const navigate = useNavigate();
+
   return (
     <div 
+      className="shorts-item-container"
       ref={containerRef}
       style={{
         width: '100%',
         height: '100%', // 100% of the scroll container
         scrollSnapAlign: 'start',
         position: 'relative',
-        background: 'black',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
       }}
-      onClick={togglePlay}
     >
-      {/* Media Player */}
+      <style>{`
+        .shorts-item-container {
+          display: block;
+          background: black;
+        }
+        .shorts-video-wrapper {
+          width: 100%;
+          height: 100%;
+          flex: 1;
+          position: relative;
+          background: black;
+        }
+        .shorts-desktop-comments {
+          display: none;
+        }
+        .desktop-only-action {
+          display: none;
+        }
+        
+        @media (min-width: 768px) {
+          .shorts-item-container {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            margin: 0 auto;
+            padding: 0;
+            gap: 0;
+            background: transparent;
+          }
+          .shorts-video-wrapper {
+            width: 100% !important;
+            flex: 1 !important;
+            max-width: 500px !important;
+            height: 100% !important;
+            max-height: 100% !important;
+            border-radius: 0;
+            overflow: hidden;
+            box-shadow: none;
+          }
+          .shorts-desktop-comments {
+            display: flex !important;
+            flex-direction: column;
+            width: 100%;
+            flex: 1 !important;
+            max-width: 500px !important;
+            height: 100%;
+            border-radius: 0;
+            overflow: hidden;
+            position: relative;
+          }
+          .mobile-only-comment-btn {
+            display: flex !important;
+          }
+          .desktop-only-action {
+            display: flex !important;
+          }
+          .mobile-only-modal {
+            display: none !important;
+          }
+        }
+      `}</style>
+
+      <div className="shorts-video-wrapper" onClick={togglePlay}>
+        {/* Header / Back button */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          padding: '1rem',
+          zIndex: 10,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%)'
+        }}>
+          <button 
+            onClick={(e) => { e.stopPropagation(); navigate('/gallery'); }}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'white',
+              fontSize: '1.2rem',
+              cursor: 'pointer',
+              textShadow: '0 1px 3px rgba(0,0,0,0.5)'
+            }}
+          >
+            ← 
+          </button>
+          <h2 style={{ margin: 0, color: 'white', fontSize: '1.1rem', fontWeight: 'bold', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>
+            슬라임 숏폼
+          </h2>
+          <div style={{ width: '40px' }}></div>
+        </div>
+
+        {/* Media Player */}
       {isVideo(mediaUrl) ? (
         <video 
           ref={videoRef}
@@ -150,7 +254,8 @@ export default function ShortsItem({ post, index }) {
 
         <button 
           onClick={handleLike}
-          style={{ background: 'none', border: 'none', color: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer' }}
+          disabled={isLiking}
+          style={{ background: 'none', border: 'none', color: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: isLiking ? 'default' : 'pointer', opacity: isLiking ? 0.7 : 1 }}
         >
           <div style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(4px)', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Heart size={20} color={isLiked ? '#ff2070' : 'white'} fill={isLiked ? '#ff2070' : 'none'} />
@@ -159,11 +264,12 @@ export default function ShortsItem({ post, index }) {
         </button>
 
         <button 
-          onClick={(e) => { e.stopPropagation(); setShowComments(true); }}
+          className="mobile-only-comment-btn"
+          onClick={(e) => { e.stopPropagation(); setShowComments(prev => !prev); }}
           style={{ background: 'none', border: 'none', color: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer' }}
         >
           <div style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(4px)', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
-            💬
+            <MessageCircle size={20} color="white" />
           </div>
           <span style={{ fontSize: '0.8rem', textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>{commentCount}</span>
         </button>
@@ -177,7 +283,7 @@ export default function ShortsItem({ post, index }) {
           style={{ background: 'none', border: 'none', color: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer' }}
         >
           <div style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(4px)', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
-            🔗
+            <Share2 size={20} color="white" />
           </div>
           <span style={{ fontSize: '0.8rem', textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>공유</span>
         </button>
@@ -211,46 +317,72 @@ export default function ShortsItem({ post, index }) {
         color: 'white',
         zIndex: 5
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
           <Avatar name={post.nickname} imageUrl={post.profileImageUrl} size={32} />
           <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 'bold', textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>
             @{post.nickname}
           </h3>
+          {post.hashtags && post.hashtags.length > 0 && (
+            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginLeft: '4px' }}>
+              {post.hashtags.map((tag, idx) => (
+                <span 
+                  key={idx} 
+                  onClick={(e) => { e.stopPropagation(); window.location.href = `/gallery?search=${tag}` }}
+                  style={{ color: '#ff70a0', fontWeight: '700', fontSize: '0.9rem', cursor: 'pointer', textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
         
-        <p style={{ margin: '0 0 12px 0', fontSize: '0.95rem', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>
-          {post.title} - {post.content}
-        </p>
-
-        {/* Fake Commerce Button */}
-        <button 
-          onClick={(e) => { e.stopPropagation(); alert('커머스 기능 준비 중!'); }}
-          style={{
-            background: 'var(--primary-color)',
-            color: 'white',
-            border: 'none',
-            padding: '8px 16px',
-            borderRadius: '20px',
-            fontSize: '0.85rem',
-            fontWeight: 'bold',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            cursor: 'pointer',
-            boxShadow: '0 2px 8px rgba(255, 32, 112, 0.4)'
-          }}
+        <div 
+          onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
+          style={{ cursor: 'pointer' }}
         >
-          🛒 연관 상품 보러가기
-        </button>
+          <div style={{ 
+            margin: '0 0 12px 0', 
+            fontSize: '0.95rem', 
+            lineHeight: '1.4', 
+            display: isExpanded ? 'block' : '-webkit-box', 
+            WebkitLineClamp: isExpanded ? 'unset' : 2, 
+            WebkitBoxOrient: 'vertical', 
+            overflow: 'hidden', 
+            textShadow: '0 1px 2px rgba(0,0,0,0.8)' 
+          }}>
+            <strong style={{ display: 'block', marginBottom: '4px' }}>{post.title}</strong>
+            {post.content}
+          </div>
+          {!isExpanded && (
+            <span style={{ fontSize: '0.85rem', color: '#ccc', fontWeight: '600' }}>더보기</span>
+          )}
+        </div>
       </div>
+      
+      </div> {/* End of video wrapper */}
 
-      {/* Comment Modal Overlay */}
+      {/* Desktop Comments Panel */}
       {showComments && (
-        <ShortsCommentModal 
-          postId={post.id} 
-          onClose={(e) => { if(e) e.stopPropagation(); setShowComments(false); }} 
-          onUpdateCount={setCommentCount}
-        />
+        <div className="shorts-desktop-comments">
+          <ShortsCommentModal 
+            postId={post.id} 
+            inline={true}
+            onClose={() => setShowComments(false)}
+            onUpdateCount={setCommentCount} 
+          />
+        </div>
+      )}
+
+      {/* Mobile Comment Modal Overlay */}
+      {showComments && (
+        <div className="mobile-only-modal">
+          <ShortsCommentModal 
+            postId={post.id} 
+            onClose={(e) => { if(e) e.stopPropagation(); setShowComments(false); }} 
+            onUpdateCount={setCommentCount}
+          />
+        </div>
       )}
     </div>
   );

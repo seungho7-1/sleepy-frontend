@@ -3,13 +3,15 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuthStore } from '../../store'
 import { boardApi } from '../../api/board'
 import { compressVideo, needsCompression } from '../../utils/videoCompressor'
+import { Edit, Sparkles, Megaphone, MessageCircle } from 'lucide-react'
+import { Image } from 'lucide-react';
 
 export default function PostCreate() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { token, role } = useAuthStore()
   
-  const initialBoardType = searchParams.get('boardType') || 'QNA'
+  const initialBoardType = searchParams.get('boardType') || 'FREE'
   
   const editId = searchParams.get('edit')
   
@@ -18,6 +20,8 @@ export default function PostCreate() {
   const [boardType, setBoardType] = useState(initialBoardType)
   const [file, setFile] = useState(null)
   const [previewUrl, setPreviewUrl] = useState(null)
+  const [hashtags, setHashtags] = useState([])
+  const [tagInput, setTagInput] = useState('')
   const [isUploading, setIsUploading] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
   const [uploadStatus, setUploadStatus] = useState('') // 현재 단계 텍스트
@@ -33,6 +37,9 @@ export default function PostCreate() {
           setTitle(postData.title);
           setContent(postData.content);
           setBoardType(postData.boardType);
+          if (postData.hashtags) {
+            setHashtags(postData.hashtags);
+          }
           if (postData.imageUrl) {
             setPreviewUrl(postData.imageUrl);
           }
@@ -73,10 +80,33 @@ export default function PostCreate() {
     }
   }
 
+  const handleTagInputKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      const val = tagInput.trim().replace(/^#/, '');
+      if (val && !hashtags.includes(val) && hashtags.length < 5) {
+        setHashtags([...hashtags, val]);
+        setTagInput('');
+      } else if (hashtags.length >= 5) {
+        alert('해시태그는 최대 5개까지만 등록할 수 있습니다.');
+      }
+    } else if (e.key === 'Backspace' && tagInput === '' && hashtags.length > 0) {
+      setHashtags(hashtags.slice(0, -1));
+    }
+  };
+
+  const removeTag = (idxToRemove) => {
+    setHashtags(hashtags.filter((_, idx) => idx !== idxToRemove));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!token) {
       alert('로그인이 필요합니다.')
+      return
+    }
+    if (boardType === 'ALL') {
+      alert('타입의 종류를 골라주세요.')
       return
     }
 
@@ -114,11 +144,11 @@ export default function PostCreate() {
 
       setUploadStatus('📝 게시글 저장 중...');
       if (isEditMode) {
-        await boardApi.updatePost(editId, { title, content, boardType, imageUrl: finalImageUrl });
+        await boardApi.updatePost(editId, { title, content, boardType, imageUrl: finalImageUrl, hashtags });
         alert('게시글이 수정되었습니다.');
         navigate(`/community/post/${editId}`);
       } else {
-        await boardApi.createPost({ title, content, boardType, imageUrl: finalImageUrl });
+        await boardApi.createPost({ title, content, boardType, imageUrl: finalImageUrl, hashtags });
         alert('게시글이 등록되었습니다.');
         navigate(boardType === 'MEDIA' ? '/gallery' : `/lounge?tab=${boardType}`);
       }
@@ -132,12 +162,43 @@ export default function PostCreate() {
   }
 
   return (
-    <div className="post-create-container" style={{ maxWidth: '600px', margin: '2rem auto', padding: '0 1.2rem 80px' }}>
-      <h2 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '1.8rem', color: 'var(--text-main)' }}>
-        {isEditMode ? '✍️ 게시글 수정하기' : boardType === 'MEDIA' ? '✨ 슬라임 자랑하기' : boardType === 'NOTICE' ? '📢 공지사항 작성' : '💬 질문 남기기'}
+    <div className="container" style={{ maxWidth: 'var(--layout-width)', margin: '2rem auto', padding: '0 1.2rem 80px' }}>
+      <h2 style={{ fontSize: '1.4rem', fontWeight: '800', marginBottom: '1.8rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        {isEditMode ? <><Edit size={24} /> 게시글 수정하기</> : boardType === 'MEDIA' ? <><Sparkles size={24} /> 슬라임 자랑하기</> : boardType === 'NOTICE' ? <><Megaphone size={24} /> 공지사항 작성</> : <><MessageCircle size={24} /> 질문 남기기</>}
       </h2>
       
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
+        {/* 카테고리 선택 필드 (공지사항/미디어가 아닐 때만 노출) */}
+        {boardType !== 'MEDIA' && boardType !== 'NOTICE' && (
+          <div style={{ marginBottom: '1.2rem' }}>
+            <label style={{ display: 'block', marginBottom: '0.6rem', fontWeight: '700', fontSize: '0.9rem', color: 'var(--text-main)' }}>
+              카테고리
+            </label>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              {['QNA', 'REVIEW', 'INFO', 'FREE'].map((type) => (
+                <button
+                  type="button"
+                  key={type}
+                  onClick={() => setBoardType(type)}
+                  style={{
+                    flex: 1,
+                    padding: '10px 0',
+                    borderRadius: '8px',
+                    border: boardType === type ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
+                    background: boardType === type ? 'var(--primary-color)' : 'white',
+                    color: boardType === type ? 'white' : 'var(--text-sub)',
+                    fontWeight: boardType === type ? '700' : '500',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  {type === 'QNA' ? '질문' : type === 'REVIEW' ? '후기' : type === 'INFO' ? '정보' : '잡담'}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* 제목 입력 필드 */}
         <div style={{ marginBottom: '1.2rem' }}>
           <label style={{ display: 'block', marginBottom: '0.6rem', fontWeight: '700', fontSize: '0.9rem', color: 'var(--text-main)' }}>
@@ -162,33 +223,32 @@ export default function PostCreate() {
             onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
           />
         </div>
-        
-        {/* 내용 입력 필드 */}
-        <div style={{ marginBottom: '1.2rem' }}>
-          <label style={{ display: 'block', marginBottom: '0.6rem', fontWeight: '700', fontSize: '0.9rem', color: 'var(--text-main)' }}>
-            내용
-          </label>
-          <textarea 
-            placeholder="슬라임에 대한 리얼한 이야기나 유용한 팁을 작성해 주세요!" 
-            required 
-            value={content} 
-            onChange={(e) => setContent(e.target.value)} 
-            style={{ 
-              width: '100%', 
-              padding: '14px', 
-              borderRadius: '10px', 
-              border: '1px solid var(--border-color)', 
-              minHeight: '240px', 
-              fontSize: '0.95rem',
-              lineHeight: '1.6',
-              outline: 'none',
-              resize: 'vertical',
-              transition: 'border-color 0.2s',
-            }}
-            onFocus={(e) => e.target.style.borderColor = 'var(--primary-color)'}
-            onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
-          />
-        </div>
+
+        {/* 해시태그 입력 필드 (MEDIA 선택 시만 노출) */}
+        {boardType === 'MEDIA' && (
+          <div style={{ marginBottom: '1.2rem' }}>
+            <label style={{ display: 'block', marginBottom: '0.6rem', fontWeight: '700', fontSize: '0.9rem', color: 'var(--text-main)' }}>
+              해시태그 (최대 5개)
+            </label>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', padding: '8px 12px', border: '1px solid var(--border-color)', borderRadius: '10px', minHeight: '44px', alignItems: 'center' }}>
+              {hashtags.map((tag, idx) => (
+                <span key={idx} style={{ background: '#fef1f8', color: 'var(--primary-color)', padding: '4px 10px', borderRadius: '16px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '600' }}>
+                  #{tag}
+                  <button type="button" onClick={() => removeTag(idx)} style={{ background: 'none', border: 'none', color: '#ff70a0', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', fontSize: '0.9rem' }}>×</button>
+                </span>
+              ))}
+              <input
+                type="text"
+                placeholder={hashtags.length < 5 ? "스페이스바나 엔터로 태그 추가" : "최대 5개까지 가능합니다"}
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={handleTagInputKeyDown}
+                disabled={hashtags.length >= 5}
+                style={{ border: 'none', outline: 'none', flex: 1, minWidth: '120px', fontSize: '0.9rem' }}
+              />
+            </div>
+          </div>
+        )}
 
         {/* 미디어 업로드 (모든 게시판 선택 시 노출) */}
         <div style={{ marginBottom: '1.8rem' }}>
@@ -208,7 +268,7 @@ export default function PostCreate() {
               }}
               onClick={() => document.getElementById('file-upload-input').click()}
             >
-              <div style={{ fontSize: '1.8rem', marginBottom: '0.4rem' }}>📷</div>
+              <div style={{ fontSize: '1.8rem', marginBottom: '0.4rem' }}><Image /></div>
               <div style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--primary-color)' }}>사진 또는 영상 추가</div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-sub)', marginTop: '4px' }}>이미지(png, jpg) 또는 비디오(mp4) 파일</div>
               <input 
@@ -264,6 +324,33 @@ export default function PostCreate() {
               </div>
             </div>
           )}
+        </div>
+        
+        {/* 내용 입력 필드 */}
+        <div style={{ marginBottom: '1.2rem' }}>
+          <label style={{ display: 'block', marginBottom: '0.6rem', fontWeight: '700', fontSize: '0.9rem', color: 'var(--text-main)' }}>
+            내용
+          </label>
+          <textarea 
+            placeholder="슬라임에 대한 리얼한 이야기나 유용한 팁을 작성해 주세요!" 
+            required 
+            value={content} 
+            onChange={(e) => setContent(e.target.value)} 
+            style={{ 
+              width: '100%', 
+              padding: '14px', 
+              borderRadius: '10px', 
+              border: '1px solid var(--border-color)', 
+              minHeight: '240px', 
+              fontSize: '0.95rem',
+              lineHeight: '1.6',
+              outline: 'none',
+              resize: 'vertical',
+              transition: 'border-color 0.2s',
+            }}
+            onFocus={(e) => e.target.style.borderColor = 'var(--primary-color)'}
+            onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
+          />
         </div>
         
         {/* 하단 취소 / 등록 버튼 */}

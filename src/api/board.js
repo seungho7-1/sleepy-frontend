@@ -3,8 +3,10 @@ import imageCompression from 'browser-image-compression';
 
 export const boardApi = {
   // 게시글 목록
-  getPosts: (type = 'FREE', keyword = '', page = 0, size = 20, sort = 'createdAt,desc') => 
-    api.get(`/board/posts`, { params: { type, keyword, page, size, sort } }),
+  getPosts: (type = 'FREE', keyword = '', page = 0, size = 20, sort = 'createdAt,desc') => {
+    const params = { keyword, page, size, sort, type };
+    return api.get(`/board/posts`, { params });
+  },
 
   // 게시글 상세
   getPostDetail: (id) => 
@@ -93,9 +95,10 @@ export const boardApi = {
   //조회수 증가 함수
   incrementViewCount: (id) => api.post(`/board/posts/${id}/view`),
   // 게시글 좋아요 토글
-  toggleLike: (targetId, targetType = 'POST') => 
-    targetType === 'POST' ? api.post(`/board/posts/${targetId}/like`) : api.post(`/likes/toggle`, null, { params: { targetId, targetType } }),
-
+ toggleLike: (targetId, targetType = 'POST') => {
+  const requestBody = { targetId, targetType }; 
+  return api.post(`/likes/toggle`, requestBody); 
+},
   // 게시글 댓글 불러오기
   getComments: (targetId, targetType = 'POST') => 
     api.get(`/board/comments`, { params: { targetId, targetType } }),
@@ -105,12 +108,12 @@ export const boardApi = {
     api.post(`/board/comments`, data),
 
   // 내가 쓴 게시글 목록
-  getMyPosts: (type = 'TEXT') => 
-    api.get(`/board/my-posts`, { params: { type } }),
+  getMyPosts: (type = 'TEXT', page = 0, size = 10) => 
+    api.get(`/board/my-posts`, { params: { type, page, size } }),
 
   // 내가 쓴 댓글 목록
-  getMyComments: () => 
-    api.get(`/board/my-comments`),
+  getMyComments: (page = 0, size = 10) => 
+    api.get(`/board/my-comments`, { params: { page, size } }),
 
   // 댓글 수정
   updateComment: (id, data) =>

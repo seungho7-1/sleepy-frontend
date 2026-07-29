@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { formatDate } from '../utils/formatDate';
-import { Heart, Eye } from 'lucide-react';
+import { Heart, Eye, MessageCircle } from 'lucide-react';
 
 export default function PostItem({ post }) {
   const navigate = useNavigate();
@@ -22,7 +22,9 @@ export default function PostItem({ post }) {
   const badgeName = {
     'NOTICE': '공지',
     'QNA': '질문',
-    'FREE': '자유'
+    'FREE': '잡담',
+    'REVIEW': '후기',
+    'INFO': '정보'
   }[post.boardType] || post.boardType;
 
   return (
@@ -33,22 +35,44 @@ export default function PostItem({ post }) {
     >
       <div className="post-item-left">
         {/* 뱃지 영역 */}
-        <div className="post-item-badge-wrap">
-          <span style={{
-            ...getBadgeStyle(post.boardType),
-            fontSize: '0.75rem',
-            fontWeight: '700',
-            padding: '4px 8px',
-            borderRadius: '12px',
-            whiteSpace: 'nowrap'
-          }}>
-            {badgeName}
-          </span>
+        <div className="post-item-badge-wrap" style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+          {/* 카테고리 배지 */}
+          <div style={{ width: '46px', flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
+            <span style={{
+              ...getBadgeStyle(post.boardType),
+              fontSize: '0.75rem',
+              fontWeight: '700',
+              padding: '4px 0',
+              width: '100%',
+              textAlign: 'center',
+              borderRadius: '4px',
+              whiteSpace: 'nowrap'
+            }}>
+              {badgeName}
+            </span>
+          </div>
         </div>
 
-        {/* 메인 텍스트 (제목) */}
-        <div className="post-item-title">
-          {post.title}
+        {/* 메인 텍스트 (제목 + HOT 배지) */}
+        <div className="post-item-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {post.title}
+          </span>
+          {((post.popularityScore !== undefined ? post.popularityScore >= 2.0 : false) || 
+            (post.popularityScore === undefined && (post.viewCount >= 50 || post.likeCount >= 3 || post.commentCount >= 5))) && (
+            <span style={{
+              background: 'var(--primary-color)',
+              color: 'white',
+              fontSize: '0.7rem',
+              fontWeight: '800',
+              padding: '3px 6px',
+              borderRadius: '4px',
+              whiteSpace: 'nowrap',
+              display: 'inline-block'
+            }}>
+              HOT
+            </span>
+          )}
         </div>
       </div>
 
@@ -62,6 +86,13 @@ export default function PostItem({ post }) {
           <Eye style={{ width: '14px', height: '14px' }} />
           <span>{post.viewCount}</span>
         </div>
+
+        {post.commentCount !== undefined && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: post.commentCount > 0 ? 'var(--primary-color)' : 'inherit' }}>
+            <MessageCircle style={{ width: '14px', height: '14px' }} />
+            <span>{post.commentCount}</span>
+          </div>
+        )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: post.likeCount > 0 ? '#ff2070' : 'inherit' }}>
           <Heart style={{ width: '14px', height: '14px', fill: post.likeCount > 0 ? '#ff2070' : 'none' }} />

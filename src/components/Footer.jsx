@@ -15,13 +15,7 @@ export default function Footer() {
           {/* Left: Brand & Info */}
           <div style={{ flex: '1 1 350px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.2rem' }}>
-              <div style={{ display: 'inline-flex', padding: '0.5rem', borderRadius: '12px', backgroundColor: 'var(--primary-color)', color: '#fff', boxShadow: '0 4px 12px rgba(255, 32, 112, 0.3)' }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-                  <path d="M9 9h.01M15 9h.01" strokeWidth="3" />
-                </svg>
-              </div>
+              
               <h2 style={{ fontSize: '1.8rem', fontWeight: '900', color: '#fff', margin: 0, letterSpacing: '-0.5px' }}>Sleepy</h2>
             </div>
             <p style={{ fontSize: '0.95rem', color: '#a0a4b8', margin: '0 0 1.5rem 0', lineHeight: '1.6' }}>
@@ -39,15 +33,21 @@ export default function Footer() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
               <h3 style={{ fontSize: '1.05rem', fontWeight: 'bold', color: '#fff', margin: '0 0 0.5rem 0', letterSpacing: '0.5px' }}>서비스</h3>
               <Link to="/" style={{ color: '#8a8e9e', textDecoration: 'none', fontSize: '0.95rem', transition: 'color 0.2s' }} onMouseOver={(e)=>e.target.style.color='#var(--primary-color)'} onMouseOut={(e)=>e.target.style.color='#8a8e9e'}>슬라임 마켓</Link>
-              <Link to="/gallery" style={{ color: '#8a8e9e', textDecoration: 'none', fontSize: '0.95rem', transition: 'color 0.2s' }} onMouseOver={(e)=>e.target.style.color='#var(--primary-color)'} onMouseOut={(e)=>e.target.style.color='#8a8e9e'}>자랑 피드</Link>
-              <Link to="/lounge" style={{ color: '#8a8e9e', textDecoration: 'none', fontSize: '0.95rem', transition: 'color 0.2s' }} onMouseOver={(e)=>e.target.style.color='#var(--primary-color)'} onMouseOut={(e)=>e.target.style.color='#8a8e9e'}>커뮤니티 라운지</Link>
+              <Link to="/gallery" style={{ color: '#8a8e9e', textDecoration: 'none', fontSize: '0.95rem', transition: 'color 0.2s' }} onMouseOver={(e)=>e.target.style.color='#var(--primary-color)'} onMouseOut={(e)=>e.target.style.color='#8a8e9e'}>슬라임 갤러리</Link>
+              <Link to="/lounge" style={{ color: '#8a8e9e', textDecoration: 'none', fontSize: '0.95rem', transition: 'color 0.2s' }} onMouseOver={(e)=>e.target.style.color='#var(--primary-color)'} onMouseOut={(e)=>e.target.style.color='#8a8e9e'}>커뮤니티</Link>
             </div>
 
             {/* Column 2: 고객 지원 */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
               <h3 style={{ fontSize: '1.05rem', fontWeight: 'bold', color: '#fff', margin: '0 0 0.5rem 0', letterSpacing: '0.5px' }}>고객 지원</h3>
+              <Link to="/support" style={{ color: '#8a8e9e', textDecoration: 'none', fontSize: '0.95rem', transition: 'color 0.2s' }} onMouseOver={(e)=>e.target.style.color='#fff'} onMouseOut={(e)=>e.target.style.color='#8a8e9e'}>고객센터</Link>
               <Link to="/mypage?tab=inquiries" style={{ color: '#8a8e9e', textDecoration: 'none', fontSize: '0.95rem', transition: 'color 0.2s' }} onMouseOver={(e)=>e.target.style.color='#fff'} onMouseOut={(e)=>e.target.style.color='#8a8e9e'}>1:1 문의하기</Link>
               <Link to="/notice" style={{ color: '#8a8e9e', textDecoration: 'none', fontSize: '0.95rem', transition: 'color 0.2s' }} onMouseOver={(e)=>e.target.style.color='#fff'} onMouseOut={(e)=>e.target.style.color='#8a8e9e'}>공지사항</Link>
+            </div>
+            
+            {/* Column 3: 약관 및 정책 */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 'bold', color: '#fff', margin: '0 0 0.5rem 0', letterSpacing: '0.5px' }}>약관 및 정책</h3>
               <Link to="/terms" style={{ color: '#8a8e9e', textDecoration: 'none', fontSize: '0.95rem', transition: 'color 0.2s' }} onMouseOver={(e)=>e.target.style.color='#fff'} onMouseOut={(e)=>e.target.style.color='#8a8e9e'}>이용약관</Link>
               <Link to="/privacy" style={{ color: '#8a8e9e', textDecoration: 'none', fontSize: '0.95rem', transition: 'color 0.2s' }} onMouseOver={(e)=>e.target.style.color='#fff'} onMouseOut={(e)=>e.target.style.color='#8a8e9e'}>개인정보처리방침</Link>
             </div>

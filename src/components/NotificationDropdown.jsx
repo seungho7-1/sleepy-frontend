@@ -18,15 +18,27 @@ export default function NotificationDropdown({ onClose }) {
     
     if (nickname) {
       setLoading(true);
+      const envPrefix = import.meta.env.MODE === 'development' ? 'dev_' : '';
       const q = query(
-        collection(db, "notifications", nickname, "userNotifications"),
+        collection(db, `${envPrefix}notifications`, nickname, "userNotifications"),
         orderBy("createdAt", "desc")
       );
       unsubscribe = onSnapshot(q, (snapshot) => {
-        const data = snapshot.docs.map(doc => ({
+        const rawData = snapshot.docs.map(doc => ({
           ...doc.data(),
           docId: doc.id
         }));
+        
+        // 프론트엔드 중복 알림 방어 로직 (메시지+시간 기준 중복 제거)
+        const uniqueDataMap = new Map();
+        rawData.forEach(n => {
+          // Firebase의 id 또는 메시지와 createdAt 시간을 조합하여 유니크 키 생성
+          const key = n.id ? String(n.id) : `${n.message}_${n.createdAt?.seconds}`;
+          if (!uniqueDataMap.has(key)) {
+            uniqueDataMap.set(key, n);
+          }
+        });
+        const data = Array.from(uniqueDataMap.values());
         
         // 안 읽은 알림은 전부 보이고, 읽은 알림은 최근 3개까지만 표시 (시간순 정렬)
         const unreadNotifs = data.filter(n => !(n.isRead !== undefined ? n.isRead : n.read));
@@ -86,7 +98,8 @@ export default function NotificationDropdown({ onClose }) {
           }
           // 프론트엔드에서 파이어베이스 직접 업데이트 강제 실행
           try {
-            const docRef = doc(db, "notifications", nickname, "userNotifications", String(notifId));
+            const envPrefix = import.meta.env.MODE === 'development' ? 'dev_' : '';
+            const docRef = doc(db, `${envPrefix}notifications`, nickname, "userNotifications", String(notifId));
             await updateDoc(docRef, { isRead: true });
           } catch (fbErr) {
             console.error("Firebase direct update failed", fbErr);
@@ -106,7 +119,8 @@ export default function NotificationDropdown({ onClose }) {
     // 1. 읽음 처리 (비동기로 백그라운드에서 실행, 네비게이션 지연 방지)
     if (!isAlreadyRead && notifId) {
       notificationApi.markAsRead(notifId).catch(e => console.error("Failed to mark as read", e));
-      const docRef = doc(db, "notifications", nickname, "userNotifications", String(notifId));
+      const envPrefix = import.meta.env.MODE === 'development' ? 'dev_' : '';
+      const docRef = doc(db, `${envPrefix}notifications`, nickname, "userNotifications", String(notifId));
       updateDoc(docRef, { isRead: true }).catch(fbErr => console.error("Firebase direct update failed", fbErr));
     }
     
@@ -147,7 +161,7 @@ export default function NotificationDropdown({ onClose }) {
     }
     
     // 3. 창 닫기 (이동 후에 닫기)
-    onClose(true);
+    onClose();
   };
 
   return (

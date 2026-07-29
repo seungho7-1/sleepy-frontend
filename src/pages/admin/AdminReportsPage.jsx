@@ -64,16 +64,30 @@ export default function AdminReportsPage() {
                     <span className="text-danger font-semibold">{report.targetType}</span>
                   </td>
                   <td className="text-muted">
-                    {report.targetId}
-                    <a 
-                      href={report.targetType === 'POST' ? `/community/${report.targetId}` : report.targetType === 'PRODUCT' ? `/product/${report.targetId}` : '#'} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      style={{ marginLeft: '8px', fontSize: '0.85rem', color: '#2563eb', textDecoration: 'underline' }}
-                      title="새 창으로 열기"
-                    >
-                      (바로가기)
-                    </a>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span>{report.targetId}</span>
+                        <a 
+                          href={
+                            report.targetType === 'POST' ? `/shorts?postId=${report.targetId}` : 
+                            report.targetType === 'COMMENT' ? `/shorts?postId=${report.postId || ''}` : 
+                            report.targetType === 'REVIEW' ? `/product/${report.productId || ''}` : 
+                            report.targetType === 'PRODUCT' ? `/product/${report.targetId}` : '#'
+                          } 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          style={{ fontSize: '0.85rem', color: '#2563eb', textDecoration: 'underline' }}
+                          title="새 창으로 열기"
+                        >
+                          (원문보기)
+                        </a>
+                      </div>
+                      {report.targetContent && (
+                        <div style={{ fontSize: '0.8rem', color: '#555', background: '#f9fafb', padding: '6px', borderRadius: '4px', maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          <span style={{ fontWeight: 'bold' }}>{report.targetAuthor}</span>: {report.targetContent}
+                        </div>
+                      )}
+                    </div>
                   </td>
                   <td className="font-semibold">{report.reason}</td>
                   <td className="text-sm text-muted">{report.createdAt?.replace('T', ' ')}</td>

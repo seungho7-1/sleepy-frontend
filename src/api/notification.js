@@ -2,8 +2,8 @@ import api from './index';
 
 export const notificationApi = {
   // 알림 목록 조회
-  getNotifications: () => 
-    api.get(`/notifications`),
+  getNotifications: (page = 0, size = 10) => 
+    api.get(`/notifications`, { params: { page, size } }),
 
   // 안 읽은 알림 개수 조회
   getUnreadCount: () => 

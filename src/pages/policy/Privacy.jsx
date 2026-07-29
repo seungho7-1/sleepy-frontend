@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function Privacy() {
   return (
-    <div style={{ padding: '2rem 1.2rem', maxWidth: '800px', margin: '0 auto' }}>
+    <div className="container" style={{ padding: '2rem 1.2rem', maxWidth: 'var(--layout-width)', margin: '0 auto' }}>
       <h1 style={{ fontSize: '1.8rem', fontWeight: '900', marginBottom: '2rem', color: '#111' }}>개인정보처리방침</h1>
       
       <div style={{ color: '#333', lineHeight: '1.8', fontSize: '0.95rem' }}>

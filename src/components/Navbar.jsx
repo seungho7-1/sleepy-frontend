@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useAuthStore } from '../store'
-import { Camera, House, LogOut, UserRound, Bell, LayoutDashboard, Store } from 'lucide-react';
+import { Camera, House, LogOut, UserRound, Bell, LayoutDashboard, Store, Menu, Search } from 'lucide-react';
 import NotificationDropdown from './NotificationDropdown';
 import { notificationApi } from '../api/notification';
 import { db } from '../firebase';
@@ -18,12 +18,33 @@ export default function Navbar() {
   const [isCategoryOpen, setIsCategoryOpen] = useState(true) // 기본으로 카테고리 아코디언 열어둠
   const [isNotificationOpen, setIsNotificationOpen] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
+  const [searchQuery, setSearchQuery] = useState('')
+
+  // If user navigates to /?search=xxx, we could sync it here, but keeping it simple is fine.
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    if (params.get('search')) {
+      setSearchQuery(params.get('search'))
+    } else {
+      setSearchQuery('')
+    }
+  }, [location.search])
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      navigate(`/?search=${encodeURIComponent(searchQuery)}`)
+    } else {
+      navigate(`/`)
+    }
+  }
 
   // 안 읽은 알림 개수 주기적 조회 (혹은 마운트 시 1회) -> Firebase 실시간 연동
   useEffect(() => {
     if (token && nickname) {
+      const envPrefix = import.meta.env.MODE === 'development' ? 'dev_' : '';
       const q = query(
-        collection(db, "notifications", nickname, "userNotifications"),
+        collection(db, `${envPrefix}notifications`, nickname, "userNotifications"),
         where("isRead", "==", false)
       );
       const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -86,122 +107,89 @@ export default function Navbar() {
   return (
     <>
       <header className="main-header">
-        {/* 모바일 햄버거 메뉴 버튼 */}
-        <button 
-          className="hamburger-btn" 
-          onClick={() => setIsDrawerOpen(true)}
-          aria-label="메뉴 열기"
-        >
-          ☰
-        </button>
-
-        {/* 브랜드 로고 */}
-        <div className="logo-text">
-          <Link to="/" className="brand-logo">
-            <span className="bubble-icon">🫧</span>
-            <span className="brand-name">Sleepy</span>
-          </Link>
-        </div>
-
-        {/* 모바일용 알림 버튼 (900px 이하에서만 표시) */}
-        {token && (
-          <div className="mobile-notification-wrapper">
-            <button 
-              className="nav-btn notification-btn" 
-              onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-            >
-              <Bell size={22} strokeWidth={2.2} />
-              {unreadCount > 0 && <span className="notification-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>}
-            </button>
-            {isNotificationOpen && <NotificationDropdown onClose={(wasRead) => { 
-              setIsNotificationOpen(false); 
-              if (wasRead) fetchUnreadCount(); 
-            }} />}
-          </div>
-        )}
-
-        {/* 데스크톱 네비게이션 링크 */}
-        <nav className="nav-links">
-          <Link 
-            to="/" 
-            className={`nav-btn ${isActive('/') ? 'active' : ''}`}
-          >
-            <House size={18} strokeWidth={2.2} />마켓홈
-          </Link>
-          <Link 
-            to="/gallery" 
-            className={`nav-btn ${isActive('/gallery') ? 'active' : ''}`}
-          >
-            <Camera size={18} strokeWidth={2.2} />슬라임 갤러리
-          </Link>
-          <Link 
-            to="/lounge" 
-            className={`nav-btn ${isActive('/lounge') ? 'active' : ''}`}
-          >
-            Q&A 라운지
-          </Link>
-          <Link 
-            to="/notice" 
-            className={`nav-btn ${isActive('/notice') ? 'active' : ''}`}
-          >
-            이용 가이드
-          </Link>
+        <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', height: '100%' }}>
           
-          <div className="nav-divider">|</div>
+          {/* 모바일 햄버거 메뉴 (900px 이하에서만 표시) */}
+          <button 
+            className="hamburger-btn" 
+            onClick={() => setIsDrawerOpen(true)}
+            aria-label="메뉴 열기"
+            style={{ padding: '4px', margin: '0 -27px' }}
+          >
+            <Menu size={28} strokeWidth={2.2} />
+          </button>
 
-          {token ? (
-            <div className="user-nav-actions">
-              <span className="welcome-badge">
-                <span className="dot"></span>
-                {nickname}님
-              </span>
-              
-              <div className="notification-wrapper" style={{ position: 'relative' }}>
+          {/* 왼쪽: 로고 + 메인 네비게이션 링크 */}
+          <div className="nav-left-group" style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+            <div className="logo-text">
+              <Link to="/" className="brand-logo">
+                <span className="bubble-icon"></span>
+                <span className="brand-name">Sleepy</span>
+              </Link>
+            </div>
+
+            <nav className="nav-links">
+              <Link to="/gallery" className={`nav-btn ${isActive('/gallery') ? 'active' : ''}`}>
+                <Camera size={18} strokeWidth={2.2} />슬라임 갤러리
+              </Link>
+              <Link to="/lounge" className={`nav-btn ${isActive('/lounge') ? 'active' : ''}`}>
+                커뮤니티
+              </Link>
+              <Link to="/notice" className={`nav-btn ${isActive('/notice') ? 'active' : ''}`}>
+                공지사항
+              </Link>
+              <Link to="/support" className={`nav-btn ${isActive('/support') ? 'active' : ''}`}>
+                고객센터
+              </Link>
+            </nav>
+          </div>
+
+          {/* 중앙: 글로벌 검색창 제거됨 */}
+          <div className="nav-center-search" style={{ flex: 1, maxWidth: '400px', margin: '0 2rem', display: 'none' }}>
+          </div>
+
+          {/* 오른쪽: 모바일용 알림 버튼 또는 데스크톱 유저 액션 */}
+          <div className="nav-right-group" style={{ display: 'flex', alignItems: 'center' }}>
+            {/* 모바일 알림 (900px 이하) */}
+            {token && (
+              <div className="mobile-notification-wrapper">
                 <button 
                   className="nav-btn notification-btn" 
                   onClick={() => setIsNotificationOpen(!isNotificationOpen)}
                 >
-                  <Bell size={20} strokeWidth={2.2} />
+                  <Bell size={22} strokeWidth={2.2} />
                   {unreadCount > 0 && <span className="notification-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>}
                 </button>
-                {isNotificationOpen && <NotificationDropdown onClose={(wasRead) => { 
-                  setIsNotificationOpen(false); 
-                  if (wasRead) fetchUnreadCount(); 
-                }} />}
+                {isNotificationOpen && <NotificationDropdown onClose={() => setIsNotificationOpen(false)} />}
               </div>
+            )}
 
-              <Link 
-                to="/mypage" 
-                className={`nav-btn mypage-btn ${isActive('/mypage') ? 'active' : ''}`}
-              >
-                마이페이지
-              </Link>
-              {role === 'SELLER' && (
-                <Link to="/seller" className="nav-btn admin-badge seller">
-                  판매자 센터
-                </Link>
+            {/* 데스크톱 유저 액션 (900px 초과) */}
+            <div className="desktop-user-actions">
+              {token ? (
+                <div className="user-nav-actions">
+                  <span className="welcome-badge"><span className="dot"></span>{nickname}님</span>
+                  <div className="notification-wrapper" style={{ position: 'relative' }}>
+                    <button className="nav-btn notification-btn" onClick={() => setIsNotificationOpen(!isNotificationOpen)}>
+                      <Bell size={20} strokeWidth={2.2} />
+                      {unreadCount > 0 && <span className="notification-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>}
+                    </button>
+                    {isNotificationOpen && <NotificationDropdown onClose={() => setIsNotificationOpen(false)} />}
+                  </div>
+                  <Link to="/mypage" className={`nav-btn mypage-btn ${isActive('/mypage') ? 'active' : ''}`}>마이페이지</Link>
+                  {role === 'SELLER' && <Link to="/seller" className="nav-btn admin-badge seller">판매자 센터</Link>}
+                  {role === 'ADMIN' && <Link to="/admin" className="nav-btn admin-badge admin">관리자</Link>}
+                  <button onClick={handleLogout} className="nav-btn logout-btn"><LogOut size={16} strokeWidth={2.5} />로그아웃</button>
+                </div>
+              ) : (
+                <div className="auth-nav-actions">
+                  <Link to="/login" className="nav-btn login-btn">로그인</Link>
+                  <Link to="/signup" className="nav-btn signup-btn">회원가입</Link>
+                </div>
               )}
-              {role === 'ADMIN' && (
-                <Link to="/admin" className="nav-btn admin-badge admin">
-                  관리자
-                </Link>
-              )}
-              <button onClick={handleLogout} className="nav-btn logout-btn">
-                <LogOut size={16} strokeWidth={2.5} />
-                로그아웃
-              </button>
             </div>
-          ) : (
-            <div className="auth-nav-actions">
-              <Link to="/login" className="nav-btn login-btn">
-                로그인
-              </Link>
-              <Link to="/signup" className="nav-btn signup-btn">
-                회원가입
-              </Link>
-            </div>
-          )}
-        </nav>
+          </div>
+        </div>
       </header>
 
       {/* 모바일 사이드 드로어 메뉴 */}
@@ -216,7 +204,7 @@ export default function Navbar() {
         {/* 드로어 헤더 */}
         <div className="drawer-header">
           <Link to="/" className="brand-logo" onClick={() => setIsDrawerOpen(false)}>
-            <span className="bubble-icon">🫧</span>
+            <span className="bubble-icon"></span>
             <span className="brand-name">Sleepy</span>
           </Link>
           <button 
@@ -257,7 +245,7 @@ export default function Navbar() {
         {/* 메뉴 목록 */}
         <div className="drawer-menu-list">
           <Link to="/" className={`drawer-menu-item ${isActive('/') ? 'active' : ''}`}>
-            마켓 홈
+            홈
           </Link>
           
           {/* 상품 카테고리 목록 (드로어 내부 아코디언) */}
@@ -266,7 +254,7 @@ export default function Navbar() {
               className="accordion-header" 
               onClick={() => setIsCategoryOpen(!isCategoryOpen)}
             >
-              <span>마켓 카테고리</span>
+              <span>카테고리</span>
               <span className={`arrow ${isCategoryOpen ? 'open' : ''}`}>▼</span>
             </button>
             
@@ -292,10 +280,15 @@ export default function Navbar() {
             슬라임 갤러리
           </Link>
           <Link to="/lounge" className={`drawer-menu-item ${isActive('/lounge') ? 'active' : ''}`}>
-            Q&A 라운지
+            커뮤니티
           </Link>
-          <Link to="/notice" className={`drawer-menu-item ${isActive('/notice') ? 'active' : ''}`} onClick={() => setIsDrawerOpen(false)}>
-            이용 가이드
+          
+          <div className="drawer-menu-divider" />
+          <Link to="/support" className={`drawer-menu-item ${isActive('/support') ? 'active' : ''}`}>
+            고객센터
+          </Link>
+          <Link to="/notice" className={`drawer-menu-item ${isActive('/notice') ? 'active' : ''}`}>
+            공지사항
           </Link>
           {token && (
             <Link to="/mypage" className={`drawer-menu-item ${isActive('/mypage') ? 'active' : ''}`}>

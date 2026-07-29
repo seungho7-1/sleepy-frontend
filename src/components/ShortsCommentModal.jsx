@@ -3,7 +3,7 @@ import { boardApi } from '../api/board';
 import { useAuthStore } from '../store';
 import Avatar from './Avatar';
 
-export default function ShortsCommentModal({ postId, onClose, onUpdateCount }) {
+export default function ShortsCommentModal({ postId, onClose, onUpdateCount, inline = false }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(true);
@@ -87,29 +87,31 @@ export default function ShortsCommentModal({ postId, onClose, onUpdateCount }) {
 
   return (
     <div style={{
-      position: 'absolute',
+      position: inline ? 'relative' : 'absolute',
       top: 0,
       left: 0,
       width: '100%',
       height: '100%',
-      background: 'rgba(0,0,0,0.5)',
-      zIndex: 100,
+      background: inline ? 'transparent' : 'rgba(0,0,0,0.5)',
+      zIndex: inline ? 1 : 100,
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'flex-end',
+      justifyContent: inline ? 'flex-start' : 'flex-end',
     }} onClick={onClose}>
       <div 
         style={{
           width: '100%',
-          height: '75%',
+          height: inline ? '100%' : '75%',
           background: '#1a1a1a',
           color: '#f1f1f1',
-          borderTopLeftRadius: '20px',
-          borderTopRightRadius: '20px',
+          borderTopLeftRadius: inline ? '0' : '20px',
+          borderTopRightRadius: inline ? '0' : '20px',
+          borderBottomLeftRadius: '0',
+          borderBottomRightRadius: '0',
           display: 'flex',
           flexDirection: 'column',
-          boxShadow: '0 -4px 20px rgba(0,0,0,0.2)',
-          animation: 'slideUp 0.3s ease-out forwards'
+          boxShadow: inline ? 'none' : '0 -4px 20px rgba(0,0,0,0.2)',
+          animation: inline ? 'none' : 'slideUp 0.3s ease-out forwards'
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -125,7 +127,9 @@ export default function ShortsCommentModal({ postId, onClose, onUpdateCount }) {
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', borderBottom: '1px solid #333' }}>
           <h3 style={{ margin: 0, fontSize: '1.1rem' }}>댓글 {comments.length}</h3>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#f1f1f1' }}>✖</button>
+          {!inline && (
+            <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#f1f1f1' }}>✖</button>
+          )}
         </div>
 
         {/* Comment List */}

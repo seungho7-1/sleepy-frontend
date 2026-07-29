@@ -36,7 +36,7 @@ export default function Login() {
       login(data.accessToken, data.role, data.nickname);
       navigate('/');
     } catch (error) {
-      alert(error.message || '로그인에 실패했어요 🥲 아이디와 비밀번호를 확인해주세요.');
+      alert(error.message || '로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.');
     } finally {
       setLoading(false);
     }
@@ -50,16 +50,10 @@ export default function Login() {
     <div className="auth-container">
       <div className="auth-card">
         {/* Brand Logo Section */}
-        <div className="auth-logo-section">
-          <div className="auth-logo-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-              <path d="M9 9h.01M15 9h.01" strokeWidth="3" />
-            </svg>
-          </div>
-          <span className="auth-logo-text">SLEEPY</span>
-          <span className="auth-logo-sub">Lovely Slime Market Platform</span>
+        <div className="auth-logo-section" style={{ display: 'flex', justifyContent: 'center' }}>
+          <img src="/src/assets/logo_3.png" alt="Sleepy Logo" style={{ height: '180px', objectFit: 'contain' }} />
+          <span className="auth-logo-sub">나만의 슬라임 찾는 방법</span>
+
         </div>
 
         <h2>로그인</h2>

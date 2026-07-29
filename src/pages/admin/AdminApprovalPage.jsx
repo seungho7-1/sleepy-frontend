@@ -52,7 +52,7 @@ export default function AdminApprovalPage() {
   }
 
   return (
-    <div className="container" style={{ padding: '2rem', maxWidth: '1000px', margin: '0 auto' }}>
+    <div className="container" style={{ padding: '2rem', maxWidth: 'var(--layout-width)', margin: '0 auto' }}>
       <h2 style={{ marginBottom: '1.5rem' }}>셀러 신청 관리</h2>
       
       {applications.length === 0 ? (

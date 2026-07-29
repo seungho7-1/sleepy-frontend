@@ -4,16 +4,19 @@ import { formatDate } from '../utils/formatDate'
 import { isVideo } from '../utils/media'
 import Avatar from './Avatar'
 import HoverVideo from './HoverVideo'
+import { Eye, Heart, MessageCircle } from 'lucide-react';
 
 export default function MediaPostItem({ post }) {
   const [isHovered, setIsHovered] = useState(false)
+  const [imgError, setImgError] = useState(false)
 
   // Use a default placeholder if no imageUrl is present
-  const imageUrl = post.imageUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500'
+  const rawUrl = post.imageUrl || ''
+  const imageUrl = rawUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500'
 
   return (
     <Link 
-      to={`/community/${post.id}`} 
+      to={`/shorts?postId=${post.id}`} 
       style={{ textDecoration: 'none', color: 'inherit' }}
     >
       <div 
@@ -22,7 +25,6 @@ export default function MediaPostItem({ post }) {
         onMouseLeave={() => setIsHovered(false)}
         style={{
           background: 'white',
-          borderRadius: '12px',
           overflow: 'hidden',
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
@@ -39,11 +41,18 @@ export default function MediaPostItem({ post }) {
               src={imageUrl} 
               style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
             />
+          ) : imgError ? (
+            <div style={{
+              position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+              background: 'linear-gradient(135deg, #ffeef5 0%, #fff0f8 100%)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '2.5rem'
+            }}>🫧</div>
           ) : (
             <img 
               src={imageUrl} 
               alt={post.title}
-              loading="lazy"
+              onError={() => setImgError(true)}
               style={{
                 position: 'absolute',
                 top: 0,
@@ -56,30 +65,24 @@ export default function MediaPostItem({ post }) {
               }} 
             />
           )}
-
-          <div 
-            style={{
+          {/* HOT 배지 (우측 상단 겹치기) */}
+          {((post.popularityScore !== undefined ? post.popularityScore >= 2.0 : false) || 
+            (post.popularityScore === undefined && (post.viewCount >= 50 || post.likeCount >= 3 || post.commentCount >= 5))) && (
+            <div style={{
               position: 'absolute',
-              bottom: '12px',
-              right: '12px',
-              width: '32px',
-              height: '32px',
-              borderRadius: '50%',
-              background: 'rgba(255, 255, 255, 0.9)',
-              backdropFilter: 'blur(4px)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              transition: 'all 0.2s',
-              transform: isHovered ? 'scale(1.1)' : 'scale(1)',
-              color: 'var(--primary-color)',
-              fontSize: '0.9rem',
-              fontWeight: 'bold'
-            }}
-          >
-            ♥
-          </div>
+              top: '8px',
+              right: '8px',
+              background: 'var(--primary-color)',
+              color: 'white',
+              fontSize: '0.7rem',
+              fontWeight: '800',
+              padding: '3px 8px',
+              borderRadius: '12px',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+            }}>
+              HOT
+            </div>
+          )}
         </div>
         
         {/* 메타데이터 영역 (제목 2줄 제한, 프로필 아바타 매칭) */}
@@ -104,13 +107,19 @@ export default function MediaPostItem({ post }) {
               <Avatar name={post.nickname || 'slime'} imageUrl={post.profileImageUrl} size={22} />
               <span style={{ fontWeight: '600', color: '#555', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{post.nickname}</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#666', fontWeight: 'bold', fontSize: '0.8rem' }}>
-                <span>👁️</span>
+                <Eye size={14} />
                 <span>{post.viewCount || 0}</span>
               </div>
+              {post.commentCount !== undefined && post.commentCount > 0 && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '3px', color: 'var(--primary-color)', fontWeight: 'bold', fontSize: '0.8rem' }}>
+                  <MessageCircle size={14} />
+                  <span>{post.commentCount}</span>
+                </div>
+              )}
               <div style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#ff2070', fontWeight: 'bold' }}>
-                <span>❤️</span>
+                <Heart size={14} fill={post.likeCount > 0 ? '#ff2070' : 'none'} />
                 <span>{post.likeCount}</span>
               </div>
             </div>

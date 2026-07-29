@@ -19,6 +19,9 @@ export const authApi = {
   updateProfile: (data) =>
     api.put(`/auth/me`, data),
 
+  getSellerProfile: (id) =>
+    api.get(`/auth/profile/${id}`),
+
   checkUsername: (username) =>
     api.get(`/auth/check-username?username=${username}`),
 
@@ -36,4 +39,13 @@ export const authApi = {
 
   resetPassword: (data) =>
     api.post(`/auth/password/reset`, data),
+
+  toggleBrandScrap: (sellerId) =>
+    api.post(`/auth/sellers/${sellerId}/scrap`),
+
+  getScrappedBrands: () =>
+    api.get(`/auth/scraps/brands`),
+
+  updateSellerProfile: (data) =>
+    api.put(`/auth/sellers/profile`, data),
 };

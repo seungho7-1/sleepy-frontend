@@ -2,13 +2,17 @@ import React, { useState, useEffect, useRef } from 'react';
 import { boardApi } from '../../api/board';
 import ShortsItem from '../../components/ShortsItem';
 import { useAuthStore } from '../../store';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export default function ShortsFeed() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const feedRef = useRef(null);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const postId = searchParams.get('postId');
+  const sortParam = searchParams.get('sort') || 'createdAt,desc';
+  const keyword = searchParams.get('keyword') || '';
 
   useEffect(() => {
     fetchMediaPosts();
@@ -32,8 +36,28 @@ export default function ShortsFeed() {
   const fetchMediaPosts = async () => {
     setLoading(true);
     try {
-      const data = await boardApi.getPosts('MEDIA', '', 0, 50, 'createdAt,desc');
-      setPosts(data.content || []);
+      const data = await boardApi.getPosts('MEDIA', keyword.replace(/^#/, ''), 0, 50, sortParam);
+      let fetchedPosts = data.content || [];
+      
+      if (postId) {
+        const idNum = Number(postId);
+        const existingIndex = fetchedPosts.findIndex(p => p.id === idNum);
+        
+        if (existingIndex !== -1) {
+          const targetPost = fetchedPosts[existingIndex];
+          fetchedPosts.splice(existingIndex, 1);
+          fetchedPosts.unshift(targetPost);
+        } else {
+          try {
+            const singlePost = await boardApi.getPostDetail(idNum);
+            fetchedPosts.unshift(singlePost);
+          } catch(e) {
+            console.error('Failed to fetch specific post for shorts', e);
+          }
+        }
+      }
+      
+      setPosts(fetchedPosts);
     } catch (err) {
       console.error('Failed to fetch media posts:', err);
     } finally {
@@ -42,46 +66,14 @@ export default function ShortsFeed() {
   };
 
   return (
-    <div style={{
+    <div className="shorts-feed-container" style={{
       width: '100%',
-      height: '100dvh', // Navbar를 숨겼으므로 전체 화면 사용
+      height: '100dvh',
       background: 'black',
       position: 'relative',
       overflow: 'hidden',
-      maxWidth: '500px', // Mobile view simulation for desktop
       margin: '0 auto'
     }}>
-      {/* Header / Back button */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        padding: '1rem',
-        zIndex: 10,
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        background: 'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%)'
-      }}>
-        <button 
-          onClick={() => navigate('/gallery')}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: 'white',
-            fontSize: '1.2rem',
-            cursor: 'pointer',
-            textShadow: '0 1px 3px rgba(0,0,0,0.5)'
-          }}
-        >
-          ← 
-        </button>
-        <h2 style={{ margin: 0, color: 'white', fontSize: '1.1rem', fontWeight: 'bold', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>
-          슬라임 숏폼 🎥
-        </h2>
-        <div style={{ width: '40px' }}></div>
-      </div>
 
       {/* Feed Container */}
       <div 
@@ -121,7 +113,7 @@ export default function ShortsFeed() {
           </div>
         ) : (
           posts.map((post, index) => (
-            <ShortsItem key={post.id} post={post} index={index} />
+            <ShortsItem key={post.id} post={post} index={index} activePostId={postId} />
           ))
         )}
       </div>
