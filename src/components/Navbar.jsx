@@ -122,8 +122,8 @@ export default function Navbar() {
           {/* 왼쪽: 로고 + 메인 네비게이션 링크 */}
           <div className="nav-left-group" style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
             <div className="logo-text">
-              <Link to="/" className="brand-logo">
-                <span className="bubble-icon"></span>
+              <Link to="/" className="brand-logo" style={{ display: 'flex', alignItems: 'center' }}>
+                <img src="/logo.png" alt="Sleepy Logo" style={{ height: '32px', marginRight: '8px' }} />
                 <span className="brand-name">Sleepy</span>
               </Link>
             </div>
@@ -203,8 +203,8 @@ export default function Navbar() {
       <div className={`drawer-container ${isDrawerOpen ? 'open' : ''}`}>
         {/* 드로어 헤더 */}
         <div className="drawer-header">
-          <Link to="/" className="brand-logo" onClick={() => setIsDrawerOpen(false)}>
-            <span className="bubble-icon"></span>
+          <Link to="/" className="brand-logo" onClick={() => setIsDrawerOpen(false)} style={{ display: 'flex', alignItems: 'center' }}>
+            <img src="/logo.png" alt="Sleepy Logo" style={{ height: '32px', marginRight: '8px' }} />
             <span className="brand-name">Sleepy</span>
           </Link>
           <button 
