@@ -8,13 +8,27 @@ export default function HoverVideo({ src, thumbnailUrl, style, className }) {
   // iOS Safari 등에서 첫 프레임을 썸네일로 보여주기 위한 꼼수 (#t=0.001) - 이제 thumbnailUrl이 있으면 안 써도 됨
   const videoSrc = src.includes('#t=') ? src : `${src}#t=0.001`;
 
+  const playTimeoutRef = useRef(null);
+
+  const clearPlayTimeout = () => {
+    if (playTimeoutRef.current) {
+      clearTimeout(playTimeoutRef.current);
+      playTimeoutRef.current = null;
+    }
+  };
+
   const playVideo = () => {
     setHasHovered(true);
+    clearPlayTimeout();
+    
     // If videoRef is already mounted, play it immediately.
-    // If not mounted yet, the autoPlay attribute on the video tag will handle the first play.
     if (videoRef.current && !isPlaying) {
       videoRef.current.play().then(() => {
         setIsPlaying(true);
+        // 5초 뒤에 자동으로 정지
+        playTimeoutRef.current = setTimeout(() => {
+          pauseAndResetVideo();
+        }, 5000);
       }).catch(err => {
         console.warn('Auto-play prevented:', err);
       });
@@ -22,12 +36,17 @@ export default function HoverVideo({ src, thumbnailUrl, style, className }) {
   };
 
   const pauseAndResetVideo = () => {
+    clearPlayTimeout();
     if (videoRef.current) {
       videoRef.current.pause();
       videoRef.current.currentTime = 0; // 초기화
       setIsPlaying(false);
     }
   };
+
+  useEffect(() => {
+    return () => clearPlayTimeout();
+  }, []);
 
   // 비디오가 마운트될 때 isPlaying 상태 동기화 및 자동 재생 보장
   const onVideoCanPlay = () => {
