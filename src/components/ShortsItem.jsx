@@ -194,7 +194,6 @@ export default function ShortsItem({ post, index, activePostId }) {
             border-radius: 0;
             overflow: hidden;
             box-shadow: none;
-            margin: 0 auto !important;
           }
           .shorts-desktop-comments {
             display: flex !important;
@@ -219,7 +218,7 @@ export default function ShortsItem({ post, index, activePostId }) {
         }
       `}</style>
 
-      <div className="shorts-flex-wrapper">
+      <div className="shorts-flex-wrapper" style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <div className="shorts-video-wrapper" onClick={togglePlay}>
         {/* Header / Back button */}
         <div style={{
