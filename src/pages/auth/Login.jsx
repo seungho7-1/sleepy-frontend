@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { useAuthStore } from '../../store'
 import { authApi } from '../../api/auth'
+import logoImg from '../../assets/logo_3.png'
 
 export default function Login() {
   const [username, setUsername] = useState('')
@@ -51,7 +52,7 @@ export default function Login() {
       <div className="auth-card">
         {/* Brand Logo Section */}
         <div className="auth-logo-section" style={{ display: 'flex', justifyContent: 'center' }}>
-          <img src="/src/assets/logo_3.png" alt="Sleepy Logo" style={{ height: '180px', objectFit: 'contain' }} />
+          <img src={logoImg} alt="Sleepy Logo" style={{ height: '180px', objectFit: 'contain' }} />
           <span className="auth-logo-sub">나만의 슬라임 찾는 방법</span>
 
         </div>

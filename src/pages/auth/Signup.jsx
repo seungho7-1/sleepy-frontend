@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { authApi } from '../../api/auth'
 import { sellerApi } from '../../api/seller'
 import { useAuthStore } from '../../store'
+import logoImg from '../../assets/logo_3.png'
 
 // URL에서 SNS 플랫폼 아이콘 자동 감지
 function getSnsIcon(url) {
@@ -258,8 +259,9 @@ export default function Signup() {
         
         {/* Brand Header */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.5rem' }}>
-            <img src="/src/assets/logo_3.png" alt="Sleepy Logo" style={{ height: '180px', objectFit: 'contain' }} />
+          <div className="auth-logo-section" style={{ display: 'flex', justifyContent: 'center' }}>
+            <img src={logoImg} alt="Sleepy Logo" style={{ height: '180px', objectFit: 'contain' }} />
+            <span className="auth-logo-sub">회원가입</span>
           </div>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-sub)', marginTop: '0.3rem' }}>슬라임 마켓 플랫폼 회원가입</p>
         </div>
