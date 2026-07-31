@@ -11,7 +11,7 @@ export default function ShortsItem({ post, index, activePostId }) {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likeCount || 0);
   const [showComments, setShowComments] = useState(false);
   const [commentCount, setCommentCount] = useState('댓글');
@@ -146,14 +146,6 @@ export default function ShortsItem({ post, index, activePostId }) {
         .shorts-item-container {
           display: block;
           background: black;
-          width: 100%;
-          height: 100%;
-        }
-        .shorts-flex-wrapper {
-          width: 100%;
-          height: 100%;
-          display: flex;
-          flex-direction: column;
         }
         .shorts-video-wrapper {
           width: 100%;
@@ -171,13 +163,10 @@ export default function ShortsItem({ post, index, activePostId }) {
         
         @media (min-width: 768px) {
           .shorts-item-container {
-            background: transparent;
-          }
-          .shorts-flex-wrapper {
             display: flex !important;
             flex-direction: row !important;
             align-items: center;
-            justify-content: center !important;
+            justify-content: center;
             width: 100%;
             height: 100%;
             margin: 0 auto;
@@ -187,11 +176,11 @@ export default function ShortsItem({ post, index, activePostId }) {
           }
           .shorts-video-wrapper {
             width: 100% !important;
-            flex: 0 1 500px !important;
+            flex: 1 !important;
             max-width: 500px !important;
             height: 100% !important;
             max-height: 100% !important;
-            border-radius: 0 !important;
+            border-radius: 0;
             overflow: hidden;
             box-shadow: none;
           }
@@ -199,14 +188,12 @@ export default function ShortsItem({ post, index, activePostId }) {
             display: flex !important;
             flex-direction: column;
             width: 100%;
-            flex: 0 1 500px !important;
+            flex: 1 !important;
             max-width: 500px !important;
             height: 100%;
-            border-radius: 0 !important;
+            border-radius: 0;
             overflow: hidden;
             position: relative;
-            background: #1a1a1a;
-            box-shadow: none;
           }
           .mobile-only-comment-btn {
             display: flex !important;
@@ -220,8 +207,7 @@ export default function ShortsItem({ post, index, activePostId }) {
         }
       `}</style>
 
-      <div className="shorts-flex-wrapper" style={{ width: '100vw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <div className="shorts-video-wrapper" onClick={togglePlay} style={{ margin: '0 auto', maxWidth: '500px', width: '100%', position: 'relative' }}>
+      <div className="shorts-video-wrapper" onClick={togglePlay}>
         {/* Header / Back button */}
         <div style={{
           position: 'absolute',
@@ -333,7 +319,7 @@ export default function ShortsItem({ post, index, activePostId }) {
           loop
           muted={isMuted}
           playsInline
-          preload="metadata"
+          preload="none"
           style={{
             width: '100%',
             height: '100%',
@@ -488,15 +474,14 @@ export default function ShortsItem({ post, index, activePostId }) {
           />
         </div>
       )}
-      </div> {/* End of flex wrapper */}
 
       {/* Mobile Comment Modal Overlay */}
       {showComments && (
         <div className="mobile-only-modal">
           <ShortsCommentModal 
             postId={post.id} 
-            onClose={() => setShowComments(false)}
-            onUpdateCount={setCommentCount} 
+            onClose={(e) => { if(e) e.stopPropagation(); setShowComments(false); }} 
+            onUpdateCount={setCommentCount}
           />
         </div>
       )}
