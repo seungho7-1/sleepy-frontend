@@ -34,7 +34,7 @@ export default function ProductList() {
       else if (activeCategory === '말랑이') categoryApiValue = 'MALLANGI';
       else if (activeCategory === '스퀴시') categoryApiValue = 'SQUISHY';
 
-      const data = await productApi.getProducts(categoryApiValue, searchQuery, pageNumber, 20);
+      const data = await productApi.getProducts(categoryApiValue, searchQuery, '', pageNumber, 20);
       
       if (data && data.content) {
         setProducts(prev => reset ? data.content : [...prev, ...data.content]);

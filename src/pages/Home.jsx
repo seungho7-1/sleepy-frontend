@@ -62,7 +62,7 @@ export default function Home() {
       else if (catName === '말랑이') categoryApiValue = 'MALLANGI';
       else if (catName === '스퀴시') categoryApiValue = 'SQUISHY';
 
-      const data = await productApi.getProducts(categoryApiValue, '', 0, 50, 'reviewCount,desc')
+      const data = await productApi.getProducts(categoryApiValue, '', '', 0, 50, 'reviewCount,desc')
       const all = data?.content || []
       const scored = all
         .map(p => ({ ...p, _score: (p.reviewCount || 0) * 3 + (p.avgRating || 0) * 2 }))
