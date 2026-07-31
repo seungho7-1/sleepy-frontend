@@ -1,46 +1,28 @@
 import { create } from 'zustand'
 
 export const useAuthStore = create((set) => ({
-  token: localStorage.getItem('token') || null,
-  role: localStorage.getItem('role') || null,
-  nickname: localStorage.getItem('nickname') || null,
-  profileImageUrl: localStorage.getItem('profileImageUrl') || null,
+  // localStorage 접근 금지! 오직 메모리에만 둡니다. (새로고침하면 null이 됨)
+  token: null,
+  role: null,
+  nickname: null,
+  profileImageUrl: null,
+  
+  // axios interceptor에서 새 토큰을 덮어씌울 때 쓰는 함수
+  setToken: (token) => {
+    set({ token })
+  },
+
+  // 로그인 시 상태 저장
   login: (token, role, nickname, profileImageUrl = null) => {
-    localStorage.setItem('token', token)
-    localStorage.setItem('role', role)
-    localStorage.setItem('nickname', nickname)
-    if (profileImageUrl) localStorage.setItem('profileImageUrl', profileImageUrl)
     set({ token, role, nickname, profileImageUrl })
   },
-  setRole: (role) => {
-    if (role) {
-      localStorage.setItem('role', role)
-    } else {
-      localStorage.removeItem('role')
-    }
-    set({ role })
-  },
-  setNickname: (nickname) => {
-    if (nickname) {
-      localStorage.setItem('nickname', nickname)
-    } else {
-      localStorage.removeItem('nickname')
-    }
-    set({ nickname })
-  },
-  setProfileImageUrl: (url) => {
-    if (url) {
-      localStorage.setItem('profileImageUrl', url)
-    } else {
-      localStorage.removeItem('profileImageUrl')
-    }
-    set({ profileImageUrl: url })
-  },
+  
+  setRole: (role) => set({ role }),
+  setNickname: (nickname) => set({ nickname }),
+  setProfileImageUrl: (url) => set({ profileImageUrl: url }),
+  
+  // 로그아웃 시 상태 초기화
   logout: () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('role')
-    localStorage.removeItem('nickname')
-    localStorage.removeItem('profileImageUrl')
     set({ token: null, role: null, nickname: null, profileImageUrl: null })
   },
 }))

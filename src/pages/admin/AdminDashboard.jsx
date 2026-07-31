@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuthStore } from '../../store'
 import { useNavigate } from 'react-router-dom'
 import { adminApi } from '../../api/admin'
+import ThumbnailMigrator from '../../components/admin/ThumbnailMigrator'
 import './AdminDashboard.css'
 
 export default function AdminDashboard() {
@@ -216,6 +217,8 @@ export default function AdminDashboard() {
             }
           </div>
         </div>
+        
+        <ThumbnailMigrator />
       </div>
         </>
       )}

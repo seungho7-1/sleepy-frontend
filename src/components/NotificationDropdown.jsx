@@ -218,7 +218,7 @@ export default function NotificationDropdown({ onClose }) {
                     i === 0 && arr.length > 1 ? <strong key={i}>{text}님이</strong> : text
                   ) : msg}
                 </p>
-                <span className="notification-time">{formatDate(notif.createdAt)}</span>
+                <span className="notification-time">{formatDate(notif.createdAt, true)}</span>
               </div>
               {!isAlreadyRead && <div className="notification-dot" />}
             </div>

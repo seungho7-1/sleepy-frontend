@@ -270,7 +270,7 @@ export default function MyPage() {
     <div className="mypage-container">
       {/* 미니멀 프로필 영역 */}
       <div className="mypage-banner">
-        <div className="mypage-banner-content" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 2rem' }}>
+        <div className="seller-dashboard-banner">
           
           {/* 좌측 프로필 정보 */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
@@ -335,7 +335,7 @@ export default function MyPage() {
           </div>
 
           {/* 우측 내 활동 요약 (데스크톱 환경 등 1200px 뷰에서 균형을 맞추기 위함) */}
-          <div style={{ display: 'flex', gap: '2.5rem', textAlign: 'center', backgroundColor: 'rgba(255,255,255,0.6)', padding: '1.2rem 2.5rem', borderRadius: '16px', border: '1px solid #ffe4eb' }}>
+          <div className="seller-dashboard-stats">
             <div style={{ cursor: 'pointer' }} onClick={() => setActiveTab('wishlist')}>
               <div style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--primary-color)' }}>{wishlist.length}</div>
               <div style={{ fontSize: '0.85rem', color: '#666', marginTop: '4px', fontWeight: '600' }}>찜한 상품</div>
@@ -746,8 +746,8 @@ export default function MyPage() {
                                 {notif.message}
                               </span>
                             </div>
-                            <span style={{ fontSize: '0.8rem', color: '#888' }}>
-                              {formatDate(notif.createdAt)}
+                            <span style={{ fontSize: '0.8rem', color: '#888', whiteSpace: 'nowrap', flexShrink: 0, marginLeft: '10px' }}>
+                              {formatDate(notif.createdAt, true)}
                             </span>
                           </div>
                           

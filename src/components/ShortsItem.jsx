@@ -4,7 +4,7 @@ import { useAuthStore } from '../store';
 import { isVideo } from '../utils/media';
 import ShortsCommentModal from './ShortsCommentModal';
 import Avatar from './Avatar';
-import { Heart, MessageCircle, Share2, Volume2, VolumeX } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Volume2, VolumeX, MoreVertical, Edit, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function ShortsItem({ post, index }) {
@@ -16,8 +16,12 @@ export default function ShortsItem({ post, index }) {
   const [showComments, setShowComments] = useState(false);
   const [commentCount, setCommentCount] = useState('댓글');
   const [commentsLoaded, setCommentsLoaded] = useState(false);
-  const { token } = useAuthStore();
-  
+  const { token, role, nickname } = useAuthStore();
+  const [showMenu, setShowMenu] = useState(false);
+  const isAuthor = nickname === post.nickname;
+  const isAdmin = role === 'ADMIN';
+  const canEdit = isAuthor || isAdmin;
+
   // Default fallback image if no URL
   const mediaUrl = post.imageUrl ? post.imageUrl.split(',')[0] : 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500';
 
@@ -100,6 +104,25 @@ export default function ShortsItem({ post, index }) {
 
   const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate();
+
+  const handleDelete = async (e) => {
+    e.stopPropagation();
+    if (window.confirm('정말 삭제하시겠습니까?')) {
+      try {
+        await boardApi.deletePost(post.id);
+        alert('삭제되었습니다.');
+        window.location.reload();
+      } catch (err) {
+        console.error(err);
+        alert('삭제 실패');
+      }
+    }
+  };
+
+  const handleEdit = (e) => {
+    e.stopPropagation();
+    navigate(`/community/create?edit=${post.id}&boardType=MEDIA`);
+  };
 
   return (
     <div 
@@ -207,7 +230,78 @@ export default function ShortsItem({ post, index }) {
           <h2 style={{ margin: 0, color: 'white', fontSize: '1.1rem', fontWeight: 'bold', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>
             슬라임 숏폼
           </h2>
-          <div style={{ width: '40px' }}></div>
+          <div style={{ position: 'relative' }}>
+            {canEdit && (
+              <button 
+                onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'white',
+                  cursor: 'pointer',
+                  padding: '5px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  textShadow: '0 1px 3px rgba(0,0,0,0.5)'
+                }}
+              >
+                <MoreVertical size={24} />
+              </button>
+            )}
+            
+            {showMenu && (
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                right: 0,
+                background: 'rgba(30, 30, 30, 0.9)',
+                borderRadius: '8px',
+                padding: '5px 0',
+                minWidth: '120px',
+                zIndex: 20,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                backdropFilter: 'blur(10px)'
+              }}>
+                <button 
+                  onClick={handleEdit}
+                  style={{
+                    width: '100%',
+                    padding: '10px 15px',
+                    background: 'none',
+                    border: 'none',
+                    color: 'white',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    cursor: 'pointer',
+                    fontSize: '0.9rem'
+                  }}
+                >
+                  <Edit size={16} />
+                  수정
+                </button>
+                <button 
+                  onClick={handleDelete}
+                  style={{
+                    width: '100%',
+                    padding: '10px 15px',
+                    background: 'none',
+                    border: 'none',
+                    color: '#ff4d4d',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    cursor: 'pointer',
+                    fontSize: '0.9rem'
+                  }}
+                >
+                  <Trash2 size={16} />
+                  삭제
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Media Player */}

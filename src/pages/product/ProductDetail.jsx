@@ -430,20 +430,23 @@ export default function ProductDetail() {
 
 
           {/* 리뷰 요약 별점 */}
-
-          {reviews.length > 0 && (
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.9rem', color: '#333' }}>
-
-              <span style={{ color: '#ffb400', fontSize: '1.1rem' }}>★</span>
-
-              <strong style={{ fontWeight: '700' }}>{avgRating}</strong>
-
-              <span style={{ color: '#888' }}>({reviews.length}개 리뷰)</span>
-
-            </div>
-
-          )}
+          <div 
+            onClick={() => {
+              setActiveTab('review');
+              setTimeout(() => {
+                const tabs = document.querySelector('.commerce-tabs');
+                if (tabs) {
+                  tabs.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }, 100);
+            }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.9rem', color: '#333', cursor: 'pointer' }}
+            title="리뷰 보기"
+          >
+            <span style={{ color: reviews.length > 0 ? '#ffb400' : '#ddd', fontSize: '1.1rem' }}>★</span>
+            <strong style={{ fontWeight: '700' }}>{avgRating}</strong>
+            <span style={{ color: '#888', textDecoration: 'underline' }}>({reviews.length}개 리뷰)</span>
+          </div>
 
           
 

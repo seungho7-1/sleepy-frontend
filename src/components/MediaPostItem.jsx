@@ -39,6 +39,7 @@ export default function MediaPostItem({ post }) {
           {isVideo(imageUrl) ? (
             <HoverVideo 
               src={imageUrl} 
+              thumbnailUrl={post.thumbnailUrl}
               style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
             />
           ) : imgError ? (

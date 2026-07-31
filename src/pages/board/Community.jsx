@@ -5,6 +5,7 @@ import PostItem from '../../components/PostItem'
 import MediaPostItem from '../../components/MediaPostItem'
 import { Camera, Video, Eye, Heart, MessageCircle, Search } from 'lucide-react';
 import { isVideo } from '../../utils/media';
+import { useAuthStore } from '../../store';
 
 const PAGE_SIZE = 20
 
@@ -16,6 +17,7 @@ const SORT_OPTIONS = [
 ]
 
 export default function Community({ mode = 'all' }) {
+  const role = useAuthStore((state) => state.role)
   const [searchParams, setSearchParams] = useSearchParams()
   const [posts, setPosts] = useState([])
   const tab = searchParams.get('tab')
@@ -156,32 +158,34 @@ export default function Community({ mode = 'all' }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
           {/* 왼쪽: 정렬, 총개수 */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <select
-              value={sortBy}
-              onChange={(e) => handleSortChange(e.target.value)}
-              style={{
-                padding: '8px 12px',
-                borderRadius: '8px',
-                border: '1px solid #ddd',
-                backgroundColor: 'white',
-                color: '#333',
-                fontSize: '0.9rem',
-                fontWeight: '500',
-                outline: 'none',
-                cursor: 'pointer',
-                WebkitAppearance: 'none',
-                appearance: 'none',
-                background: 'white url("data:image/svg+xml;utf8,<svg fill=\'%23333\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/><path d=\'M0 0h24v24H0z\' fill=\'none\'/></svg>") no-repeat right 8px center',
-                backgroundSize: '20px',
-                paddingRight: '32px'
-              }}
-            >
-              {SORT_OPTIONS.map(opt => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
+            {mode !== 'notice' && (
+              <select
+                value={sortBy}
+                onChange={(e) => handleSortChange(e.target.value)}
+                style={{
+                  padding: '8px 12px',
+                  borderRadius: '8px',
+                  border: '1px solid #ddd',
+                  backgroundColor: 'white',
+                  color: '#333',
+                  fontSize: '0.9rem',
+                  fontWeight: '500',
+                  outline: 'none',
+                  cursor: 'pointer',
+                  WebkitAppearance: 'none',
+                  appearance: 'none',
+                  background: 'white url("data:image/svg+xml;utf8,<svg fill=\'%23333\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/><path d=\'M0 0h24v24H0z\' fill=\'none\'/></svg>") no-repeat right 8px center',
+                  backgroundSize: '20px',
+                  paddingRight: '32px'
+                }}
+              >
+                {SORT_OPTIONS.map(opt => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            )}
             <div style={{ fontSize: '0.85rem', color: 'var(--text-sub)' }}>
               총 <strong style={{ color: 'var(--primary-color)' }}>{totalElements}</strong>개
             </div>
@@ -189,23 +193,24 @@ export default function Community({ mode = 'all' }) {
 
           {/* 오른쪽: 검색창, 글쓰기 */}
           <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', flex: 1, justifyContent: 'flex-end' }}>
-            <div className="mobile-hide-search" style={{ position: 'relative', display: 'flex', alignItems: 'center', maxWidth: '280px', width: '100%' }}>
-              <input 
-                type="text" 
-                placeholder="검색어를 입력하세요" 
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    setKeyword(searchInput)
-                    setPage(0)
-                  }
-                }}
-                style={{
-                  width: '100%',
-                  padding: '0.5rem 1rem',
-                  paddingRight: searchInput ? '3.5rem' : '2.5rem',
-                  fontSize: '0.9rem',
+            {mode !== 'notice' && (
+              <div className="mobile-hide-search" style={{ position: 'relative', display: 'flex', alignItems: 'center', maxWidth: '280px', width: '100%' }}>
+                <input 
+                  type="text" 
+                  placeholder="검색어를 입력하세요" 
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      setKeyword(searchInput)
+                      setPage(0)
+                    }
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem 1rem',
+                    paddingRight: searchInput ? '3.5rem' : '2.5rem',
+                    fontSize: '0.9rem',
                   borderRadius: '20px',
                   border: '1px solid var(--border-color)',
                   background: 'var(--bg-secondary)',
@@ -265,10 +270,13 @@ export default function Community({ mode = 'all' }) {
                 <Search size={18} strokeWidth={2.5} />
               </button>
             </div>
+            )}
             
-            <Link to={`/community/create?boardType=${boardType}`} className="submit-btn" style={{ textDecoration: 'none', padding: '0.55rem 1.2rem', width: 'auto', flexShrink: 0, marginTop: 0, borderRadius: '20px', fontSize: '0.9rem' }}>
-              글쓰기
-            </Link>
+            {(mode !== 'notice' || role === 'ADMIN') && (
+              <Link to={`/community/create?boardType=${boardType}`} className="submit-btn" style={{ textDecoration: 'none', padding: '0.55rem 1.2rem', width: 'auto', flexShrink: 0, marginTop: 0, borderRadius: '20px', fontSize: '0.9rem' }}>
+                글쓰기
+              </Link>
+            )}
           </div>
         </div>
 

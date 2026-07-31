@@ -296,8 +296,8 @@ export default function SellerDashboard() {
               </div>
             </div>
             <div className="profile-info-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0.4rem', minWidth: 0, textAlign: 'left' }}>
-              <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '800', whiteSpace: 'nowrap' }}>판매자 센터</h2>
-              <div className="profile-details-row" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+              <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '800', whiteSpace: 'nowrap', width: '100%', textAlign: 'center' }}>판매자 센터</h2>
+              <div className="profile-details-row" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap', justifyContent: 'center', width: '100%' }}>
                 <span className="role-badge" style={{ margin: 0, display: 'inline-block', flexShrink: 0 }}>
                   슬라임 판매자
                 </span>
@@ -313,8 +313,13 @@ export default function SellerDashboard() {
                   </button>
                 )}
               </div>
+              {myInfo?.introduction && (
+                <div style={{ fontSize: '0.9rem', color: 'var(--text-main)', marginTop: '0.5rem', width: '100%', textAlign: 'center', lineHeight: '1.4' }}>
+                  {myInfo.introduction}
+                </div>
+              )}
               {myInfo && (
-                <div className="profile-sns-row" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+                <div className="profile-sns-row" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '0.5rem', flexWrap: 'wrap', justifyContent: 'center', width: '100%' }}>
                   {myInfo.siteUrl && (
                     <a href={myInfo.siteUrl} target="_blank" rel="noreferrer" style={{ color: '#555' }} title="쇼핑몰 사이트">
                       <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
@@ -421,56 +426,49 @@ export default function SellerDashboard() {
               <form onSubmit={handleAddProduct} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                 
                 {/* 상단 2단 레이아웃: 실제 상품 상세페이지와 유사한 배치 */}
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', alignItems: 'flex-start' }}>
                   
                   {/* 좌측: 대표 이미지 썸네일 */}
-                  <div className="seller-form-box">
-                    <h4 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--text-main)', borderBottom: '2px solid #ffd6e0', paddingBottom: '0.8rem', margin: 0 }}>📸 대표 이미지 썸네일</h4>
-                    
+                  <div className="seller-form-box" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <label style={{ fontSize: '0.9rem', fontWeight: 'bold', color: 'var(--text-main)' }}>최대 5개 *</label>
-                      <span style={{ fontSize: '0.8rem', color: 'var(--text-sub)' }}>{imageUrls.length}/5개</span>
+                      <h4 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--text-main)', margin: 0 }}>📸 상품 대표 이미지</h4>
+                      <span style={{ fontSize: '0.85rem', color: 'var(--text-sub)', fontWeight: 'bold' }}>{imageUrls.length} / 5</span>
                     </div>
-                    
+
+                    <label htmlFor="image-file-input" style={{
+                      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                      border: '2px dashed #ffd6e0', borderRadius: '12px', padding: '3rem 1rem', cursor: 'pointer',
+                      background: '#fffafb', transition: 'all 0.2s ease', gap: '0.8rem'
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = '#ffeef2'; e.currentTarget.style.borderColor = 'var(--primary-color)' }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = '#fffafb'; e.currentTarget.style.borderColor = '#ffd6e0' }}
+                    >
+                      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21 15 16 10 5 21"/>
+                      </svg>
+                      <span style={{ fontSize: '1rem', fontWeight: 'bold', color: 'var(--primary-color)' }}>클릭하여 이미지 업로드</span>
+                      <span style={{ fontSize: '0.85rem', color: 'var(--text-sub)' }}>{uploadingImg ? '업로드 중...' : '최대 5장 선택 (첫 번째가 대표 이미지)'}</span>
+                    </label>
+                    <input type="file" accept="image/*" multiple onChange={handleImageUpload} style={{ display: 'none' }} id="image-file-input" disabled={imageUrls.length >= 5} />
+
                     {imageUrls.length > 0 && (
-                      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: '12px' }}>
                         {imageUrls.map((url, index) => (
-                          <div key={index} style={{ position: 'relative', width: '90px', height: '90px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
+                          <div key={index} style={{ position: 'relative', width: '100%', aspectRatio: '1/1', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
                             <img src={url} alt={`preview-${index}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            <button type="button" onClick={() => setImageUrls(prev => prev.filter((_, i) => i !== index))} style={{ position: 'absolute', top: '4px', right: '4px', width: '20px', height: '20px', borderRadius: '50%', background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>✕</button>
-                            {index === 0 && <div style={{ position: 'absolute', bottom: '0', width: '100%', background: 'var(--primary-color)', color: '#fff', fontSize: '10px', textAlign: 'center', padding: '2px 0', fontWeight: 'bold' }}>대표</div>}
+                            <button type="button" onClick={() => setImageUrls(prev => prev.filter((_, i) => i !== index))} style={{ position: 'absolute', top: '6px', right: '6px', width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(255,255,255,0.9)', color: '#ff4d4f', border: '1px solid #ff4d4f', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontWeight: 'bold', zIndex: 10 }}>✕</button>
+                            {index === 0 && <div style={{ position: 'absolute', bottom: '0', width: '100%', background: 'rgba(255, 107, 142, 0.9)', color: '#fff', fontSize: '11px', textAlign: 'center', padding: '4px 0', fontWeight: 'bold', letterSpacing: '1px' }}>대표</div>}
                           </div>
                         ))}
                       </div>
                     )}
-
-                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: 'auto' }}>
-                      <input type="file" accept="image/*" multiple onChange={handleImageUpload} style={{ display: 'none' }} id="image-file-input" disabled={imageUrls.length >= 5} />
-                      <label htmlFor="image-file-input" style={{ flex: 1, textAlign: 'center', padding: '0.8rem', background: imageUrls.length >= 5 ? 'var(--bg-secondary)' : '#fff', border: `1px solid ${imageUrls.length >= 5 ? 'var(--border-color)' : 'var(--primary-color)'}`, color: imageUrls.length >= 5 ? 'var(--text-sub)' : 'var(--primary-color)', borderRadius: '10px', fontWeight: '600', cursor: imageUrls.length >= 5 ? 'not-allowed' : 'pointer', fontSize: '0.9rem', transition: 'all 0.2s' }}>
-                        {uploadingImg ? '업로드 중...' : 'PC에서 이미지 추가'}
-                      </label>
-                    </div>
-                    <div style={{ display: 'flex', width: '100%' }}>
-                      <input type="text" id="manual-image-url-input" placeholder="이미지 URL 직접 추가" style={{ flex: 1, padding: '0.8rem 1rem', borderTopLeftRadius: '10px', borderBottomLeftRadius: '10px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem' }} />
-                      <button type="button" onClick={() => {
-                          const input = document.getElementById('manual-image-url-input');
-                          const val = input.value.trim();
-                          if (val) {
-                            if (imageUrls.length >= 5) { alert('최대 5개까지만 등록할 수 있습니다.'); return; }
-                            setImageUrls(prev => [...prev, val]);
-                            input.value = '';
-                          }
-                        }}
-                        style={{ padding: '0 1.2rem', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderLeft: 'none', borderTopRightRadius: '10px', borderBottomRightRadius: '10px', color: 'var(--text-main)', fontWeight: '600', cursor: 'pointer' }}>
-                        추가
-                      </button>
-                    </div>
                   </div>
 
                   {/* 우측: 상품 기본 정보 및 가격 (구매 버튼 영역) */}
                   <div className="seller-form-box">
-                    <h4 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--text-main)', borderBottom: '2px solid #ffd6e0', paddingBottom: '0.8rem', margin: 0 }}>📋 상품 기본 정보</h4>
-                                          <br></br>
+                    <h4 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--text-main)', borderBottom: '2px solid #ffd6e0', paddingBottom: '0.8rem', margin: '0 0 1rem 0' }}>📋 상품 기본 정보</h4>
 
                     <div className="seller-form-row">
                       <label style={{ fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-main)' }}>카테고리 *</label>

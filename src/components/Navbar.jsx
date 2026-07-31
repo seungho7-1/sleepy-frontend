@@ -123,7 +123,6 @@ export default function Navbar() {
           <div className="nav-left-group" style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
             <div className="logo-text">
               <Link to="/" className="brand-logo" style={{ display: 'flex', alignItems: 'center' }}>
-                <img src="/logo.png" alt="Sleepy Logo" style={{ height: '32px', marginRight: '8px' }} />
                 <span className="brand-name">Sleepy</span>
               </Link>
             </div>
@@ -152,7 +151,7 @@ export default function Navbar() {
           <div className="nav-right-group" style={{ display: 'flex', alignItems: 'center' }}>
             {/* 모바일 알림 (900px 이하) */}
             {token && (
-              <div className="mobile-notification-wrapper">
+              <div className="mobile-notification-wrapper" style={{ marginRight: '-16px' }}>
                 <button 
                   className="nav-btn notification-btn" 
                   onClick={() => setIsNotificationOpen(!isNotificationOpen)}
@@ -244,6 +243,29 @@ export default function Navbar() {
 
         {/* 메뉴 목록 */}
         <div className="drawer-menu-list">
+          {(role === 'SELLER' || role === 'ADMIN' || token) && (
+            <>
+              <div className="drawer-quick-links">
+                {role === 'SELLER' && (
+                  <Link to="/seller" className="drawer-menu-item quick-badge seller">
+                    판매자 센터
+                  </Link>
+                )}
+                {token && (
+                  <Link to="/mypage" className={`drawer-menu-item ${isActive('/mypage') ? 'active' : ''}`}>
+                  마이페이지
+                  </Link>
+                )}
+                {role === 'ADMIN' && (
+                  <Link to="/admin" className="drawer-menu-item quick-badge admin">
+                    관리자 대시보드
+                  </Link>
+                )}
+              </div>
+            </>
+          )}
+          
+          <div className="drawer-menu-divider" />
           <Link to="/" className={`drawer-menu-item ${isActive('/') ? 'active' : ''}`}>
             홈
           </Link>
@@ -290,26 +312,11 @@ export default function Navbar() {
           <Link to="/notice" className={`drawer-menu-item ${isActive('/notice') ? 'active' : ''}`}>
             공지사항
           </Link>
-          {token && (
-            <Link to="/mypage" className={`drawer-menu-item ${isActive('/mypage') ? 'active' : ''}`}>
-              마이페이지
-            </Link>
-          )}
           
           {(role === 'SELLER' || role === 'ADMIN' || token) && (
             <>
               <div className="drawer-menu-divider" />
               <div className="drawer-quick-links">
-                {role === 'SELLER' && (
-                  <Link to="/seller" className="drawer-menu-item quick-badge seller">
-                    판매자 센터
-                  </Link>
-                )}
-                {role === 'ADMIN' && (
-                  <Link to="/admin" className="drawer-menu-item quick-badge admin">
-                    관리자 대시보드
-                  </Link>
-                )}
                 {token && (
                   <button onClick={handleLogout} className="drawer-menu-item logout-btn" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <LogOut size={16} strokeWidth={2.5} />

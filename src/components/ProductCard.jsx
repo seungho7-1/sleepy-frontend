@@ -30,12 +30,10 @@ export default function ProductCard({ product }) {
         <h3 className="product-title">{product.name}</h3>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto' }}>
           <div className="product-price">{product.price.toLocaleString()}원</div>
-          {product.reviewCount > 0 && (
-            <div style={{ fontSize: '0.8rem', color: '#999', display: 'flex', alignItems: 'center', gap: '3px', fontWeight: 'bold' }}>
-              <Star size={14} fill="#ffb400" color="#ffb400" />
-              <span>{product.avgRating ? product.avgRating.toFixed(1) : '0.0'} ({product.reviewCount})</span>
-            </div>
-          )}
+          <div style={{ fontSize: '0.8rem', color: '#999', display: 'flex', alignItems: 'center', gap: '3px', fontWeight: 'bold' }}>
+            <Star size={14} fill={product.reviewCount > 0 ? "#ffb400" : "#ddd"} color={product.reviewCount > 0 ? "#ffb400" : "#ddd"} />
+            <span>{product.avgRating ? product.avgRating.toFixed(1) : '0.0'} ({product.reviewCount || 0})</span>
+          </div>
         </div>
       </div>
     </Link>

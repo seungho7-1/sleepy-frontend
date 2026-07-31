@@ -111,7 +111,7 @@ export default function ReviewSection({ productId, reviews, fetchReviews }) {
       
       {token ? (
         <form className="review-form" onSubmit={handleReviewSubmit} style={{ background: '#fffbfd', border: '1px solid #ffd6e0', borderRadius: '12px', padding: '1.5rem', marginBottom: '2.5rem' }}>
-          <div style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333', marginBottom: '8px' }}>만족도를 선택해주세요 🫧</div>
+          <div style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333', marginBottom: '8px' }}>만족도를 선택해주세요</div>
           <div className="review-rating-input" style={{ marginBottom: '1rem' }}>
             {[1, 2, 3, 4, 5].map(star => (
               <button 

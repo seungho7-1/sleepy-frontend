@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuthStore } from '../../store'
 import { boardApi } from '../../api/board'
 import { compressVideo, needsCompression } from '../../utils/videoCompressor'
+import { extractThumbnailFromVideo } from '../../utils/thumbnailExtractor'
 import { Edit, Sparkles, Megaphone, MessageCircle } from 'lucide-react'
 import { Image } from 'lucide-react';
 
@@ -52,6 +53,14 @@ export default function PostCreate() {
       fetchPost();
     }
   }, [editId])
+
+  // 공지사항은 관리자만 작성 가능
+  useEffect(() => {
+    if (boardType === 'NOTICE' && role !== 'ADMIN') {
+      alert('공지사항은 관리자만 작성할 수 있습니다.');
+      navigate(-1);
+    }
+  }, [boardType, role, navigate])
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0]
@@ -114,9 +123,21 @@ export default function PostCreate() {
       setIsUploading(true)
       setUploadProgress(0)
       let finalImageUrl = previewUrl;
+      let finalThumbnailUrl = null;
       
       if (file) {
         let fileToUpload = file;
+        
+        if (file.type.startsWith('video/')) {
+          setUploadStatus('🖼️ 썸네일 추출 중...');
+          try {
+            const thumbFile = await extractThumbnailFromVideo(file);
+            const thumbRes = await boardApi.uploadFile(thumbFile, 'post', () => {});
+            finalThumbnailUrl = thumbRes.url;
+          } catch (e) {
+            console.error('썸네일 추출 실패:', e);
+          }
+        }
         
         // 🎬 영상이고 20MB를 초과하면 → 브라우저에서 자동 압축
         if (file.type.startsWith('video/') && needsCompression(file)) {
@@ -144,11 +165,11 @@ export default function PostCreate() {
 
       setUploadStatus('📝 게시글 저장 중...');
       if (isEditMode) {
-        await boardApi.updatePost(editId, { title, content, boardType, imageUrl: finalImageUrl, hashtags });
+        await boardApi.updatePost(editId, { title, content, boardType, imageUrl: finalImageUrl, thumbnailUrl: finalThumbnailUrl, hashtags });
         alert('게시글이 수정되었습니다.');
-        navigate(`/community/post/${editId}`);
+        navigate(`/community/${editId}`);
       } else {
-        await boardApi.createPost({ title, content, boardType, imageUrl: finalImageUrl, hashtags });
+        await boardApi.createPost({ title, content, boardType, imageUrl: finalImageUrl, thumbnailUrl: finalThumbnailUrl, hashtags });
         alert('게시글이 등록되었습니다.');
         navigate(boardType === 'MEDIA' ? '/gallery' : `/lounge?tab=${boardType}`);
       }
@@ -255,7 +276,7 @@ export default function PostCreate() {
           <label style={{ display: 'block', marginBottom: '0.6rem', fontWeight: '700', fontSize: '0.9rem', color: 'var(--text-main)' }}>
             미디어 첨부 (선택)
           </label>
-          {!file ? (
+          {(!file && !previewUrl) ? (
             <div 
               style={{ 
                 border: '2px dashed #ffccd8', 
@@ -283,15 +304,19 @@ export default function PostCreate() {
             <div style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', border: '1px solid #ffd6e0', backgroundColor: '#fffcfd', padding: '12px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <div style={{ width: '60px', height: '60px', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {file.type.startsWith('video/') ? (
+                  {(file?.type.startsWith('video/') || (previewUrl && previewUrl.match(/\.(mp4|webm|mov)$/i))) ? (
                     <video src={previewUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : (
                     <img src={previewUrl} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   )}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: '0.85rem', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--text-main)' }}>{file.name}</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-sub)', marginTop: '2px' }}>{(file.size / 1024 / 1024).toFixed(2)} MB</div>
+                  <div style={{ fontSize: '0.85rem', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--text-main)' }}>
+                    {file ? file.name : '기존 첨부 파일'}
+                  </div>
+                  {file && (
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-sub)', marginTop: '2px' }}>{(file.size / 1024 / 1024).toFixed(2)} MB</div>
+                  )}
                 </div>
                 <button 
                   type="button" 

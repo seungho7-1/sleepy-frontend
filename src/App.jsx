@@ -1,5 +1,8 @@
-import React, { Suspense, lazy } from 'react'
+import React, { Suspense, lazy, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import api from './api';
+import { useAuthStore } from './store';
+
 import Navbar from './components/Navbar';
 import Footer from './components/Footer'
 
@@ -34,6 +37,22 @@ const NotFound = lazy(() => import('./pages/NotFound'))
 import ScrollToTop from './components/ScrollToTop'
 
 function App() {
+  const { login, logout } = useAuthStore();
+
+  useEffect(() => {
+    const restoreSession = async () => {
+      try {
+        const response = await api.get('/auth/me'); 
+        const user = response.data || response; 
+        login(useAuthStore.getState().token, user.role, user.nickname, user.profileImageUrl);
+      } catch (error) {
+        logout();
+      }
+    };
+    
+    restoreSession();
+  }, []);
+
   return (
     <Router>
       <ScrollToTop />
