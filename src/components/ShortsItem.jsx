@@ -172,6 +172,7 @@ export default function ShortsItem({ post, index, activePostId }) {
         @media (min-width: 768px) {
           .shorts-item-container {
             background: transparent;
+            padding: 2vh 0; /* Add vertical padding so it doesn't touch edges */
           }
           .shorts-flex-wrapper {
             display: flex !important;
@@ -182,29 +183,32 @@ export default function ShortsItem({ post, index, activePostId }) {
             height: 100%;
             margin: 0 auto;
             padding: 0;
-            gap: 0;
+            gap: 20px;
             background: transparent;
           }
           .shorts-video-wrapper {
-            width: 100% !important;
-            flex: 0 1 500px !important;
-            max-width: 500px !important;
-            height: 100% !important;
-            max-height: 100% !important;
-            border-radius: 0;
+            width: auto !important;
+            height: 90vh !important;
+            aspect-ratio: 9 / 16 !important;
+            max-width: 450px !important;
+            max-height: 850px !important;
+            flex: none !important;
+            border-radius: 20px !important;
             overflow: hidden;
-            box-shadow: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
           }
           .shorts-desktop-comments {
             display: flex !important;
             flex-direction: column;
-            width: 100%;
-            flex: 0 1 500px !important;
-            max-width: 500px !important;
-            height: 100%;
-            border-radius: 0;
+            width: 400px;
+            height: 90vh !important;
+            max-height: 850px !important;
+            flex: none !important;
+            border-radius: 20px !important;
             overflow: hidden;
             position: relative;
+            background: #1a1a1a;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
           }
           .mobile-only-comment-btn {
             display: flex !important;
@@ -218,8 +222,8 @@ export default function ShortsItem({ post, index, activePostId }) {
         }
       `}</style>
 
-      <div className="shorts-flex-wrapper" style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <div className="shorts-video-wrapper" onClick={togglePlay}>
+      <div className="shorts-flex-wrapper" style={{ width: '100vw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <div className="shorts-video-wrapper" onClick={togglePlay} style={{ margin: '0 auto', maxWidth: '500px', width: '100%', position: 'relative' }}>
         {/* Header / Back button */}
         <div style={{
           position: 'absolute',
