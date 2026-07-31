@@ -103,20 +103,19 @@ export default function MediaPostItem({ post }) {
           }}>
             {post.title}
           </h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.8rem' }}>
-            {/* 닉네임 영역 */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <h4></h4>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', gap: '6px 4px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: '70px', flex: '1 1 auto' }}>
               <Avatar name={post.nickname || 'slime'} imageUrl={post.profileImageUrl} size={22} />
               <span style={{ fontWeight: '600', color: '#555', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{post.nickname}</span>
             </div>
-            {/* 조회수, 댓글, 좋아요 영역 */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#666', fontWeight: 'bold' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0, justifyContent: 'flex-start' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#666', fontWeight: 'bold', fontSize: '0.8rem' }}>
                 <Eye size={14} />
                 <span>{post.viewCount || 0}</span>
               </div>
               {post.commentCount !== undefined && post.commentCount > 0 && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '3px', color: 'var(--primary-color)', fontWeight: 'bold' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '3px', color: 'var(--primary-color)', fontWeight: 'bold', fontSize: '0.8rem' }}>
                   <MessageCircle size={14} />
                   <span>{post.commentCount}</span>
                 </div>
