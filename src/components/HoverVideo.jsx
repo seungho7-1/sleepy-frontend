@@ -64,12 +64,21 @@ export default function HoverVideo({ src, thumbnailUrl, style, className }) {
     >
       {/* 썸네일 이미지 (영상이 아직 재생 안되었거나, thumbnailUrl이 있을 때 표시) */}
       {(!isPlaying) && (
-        <img 
-          src={thumbnailUrl || videoSrc} 
-          alt="thumbnail"
-          loading="lazy"
-          style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', top: 0, left: 0, zIndex: 1 }}
-        />
+        thumbnailUrl ? (
+          <img 
+            src={thumbnailUrl} 
+            alt="thumbnail"
+            loading="lazy"
+            style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', top: 0, left: 0, zIndex: 1 }}
+          />
+        ) : (
+          <video 
+            src={videoSrc}
+            playsInline
+            muted
+            style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', top: 0, left: 0, zIndex: 1 }}
+          />
+        )
       )}
 
       {/* 실제 영상: 한 번이라도 hover된 적이 있을 때만 렌더링 (Lazy Loading) */}

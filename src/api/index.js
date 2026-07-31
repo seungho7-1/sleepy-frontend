@@ -56,7 +56,6 @@ api.interceptors.response.use(
       } catch (refreshError) {
         // Refresh Token마저 만료/조작되었다면? 얄짤없이 강제 로그아웃
         useAuthStore.getState().logout();
-        window.location.href = '/login'; // 로그인 페이지로 쫓아냄
         return Promise.reject(refreshError);
       }
     }

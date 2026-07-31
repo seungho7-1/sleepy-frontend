@@ -15,7 +15,6 @@ export default function ShortsFeed() {
   const keyword = searchParams.get('keyword') || '';
 
   useEffect(() => {
-    fetchMediaPosts();
     // 숏폼 피드 접속 시 body 스크롤 방지 및 검은색 배경 설정 (키보드 올라올 때 하얀 바탕 방지)
     const originalOverflow = document.body.style.overflow;
     const originalBg = document.body.style.backgroundColor;
@@ -32,6 +31,10 @@ export default function ShortsFeed() {
       if (rootEl) rootEl.style.backgroundColor = originalRootBg;
     };
   }, []);
+
+  useEffect(() => {
+    fetchMediaPosts();
+  }, [postId, sortParam, keyword]);
 
   const fetchMediaPosts = async () => {
     setLoading(true);

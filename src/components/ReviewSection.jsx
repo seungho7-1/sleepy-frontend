@@ -236,7 +236,7 @@ export default function ReviewSection({ productId, reviews, fetchReviews }) {
               
               {review.isHidden ? (
                 <div style={{ padding: '1.5rem', background: '#f5f5f5', borderRadius: '8px', color: '#888', textAlign: 'center', margin: '1rem 0' }}>
-                  🚫 신고 누적으로 인해 블라인드 처리된 리뷰입니다.
+                  신고 누적으로 인해 블라인드 처리된 리뷰입니다.
                 </div>
               ) : (
                 <>

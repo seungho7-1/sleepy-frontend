@@ -31,7 +31,7 @@ export default function ProductCard({ product }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto' }}>
           <div className="product-price">{product.price.toLocaleString()}원</div>
           <div style={{ fontSize: '0.8rem', color: '#999', display: 'flex', alignItems: 'center', gap: '3px', fontWeight: 'bold' }}>
-            <Star size={14} fill={product.reviewCount > 0 ? "#ffb400" : "#ddd"} color={product.reviewCount > 0 ? "#ffb400" : "#ddd"} />
+            <Star size={14}  fill={product.reviewCount > 0 ? "#ffb400" : "#ddd"} color={product.reviewCount > 0 ? "#ffb400" : "#ddd"} />
             <span>{product.avgRating ? product.avgRating.toFixed(1) : '0.0'} ({product.reviewCount || 0})</span>
           </div>
         </div>

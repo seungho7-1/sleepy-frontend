@@ -614,7 +614,7 @@ export default function ProductDetail() {
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid var(--primary-color)', paddingBottom: '0.8rem', marginBottom: '1.5rem' }}>
 
-                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '800', color: '#111' }}>상품 주요 스펙 🫧</h3>
+                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '800', color: '#111' }}>상품 주요 스펙</h3>
 
                 </div>
 
@@ -623,11 +623,11 @@ export default function ProductDetail() {
                 <table className="info-table">
                   <tbody>
                     <tr>
-                      <th>🏷️ 상품명</th>
+                      <th>상품명</th>
                       <td>{product.name}</td>
                     </tr>
                     <tr>
-                      <th>🏪 판매자명</th>
+                      <th>판매자명</th>
                       <td>
                         <span 
                           onClick={() => navigate(`/shop/${product.sellerId}`)}
@@ -639,7 +639,7 @@ export default function ProductDetail() {
                     </tr>
 
                     <tr>
-                      <th>🧱 질감</th>
+                      <th>질감</th>
                       <td>{product.texture || '-'}</td>
                     </tr>
                   </tbody>

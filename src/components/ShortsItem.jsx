@@ -7,7 +7,7 @@ import Avatar from './Avatar';
 import { Heart, MessageCircle, Share2, Volume2, VolumeX, MoreVertical, Edit, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-export default function ShortsItem({ post, index }) {
+export default function ShortsItem({ post, index, activePostId }) {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -21,6 +21,13 @@ export default function ShortsItem({ post, index }) {
   const isAuthor = nickname === post.nickname;
   const isAdmin = role === 'ADMIN';
   const canEdit = isAuthor || isAdmin;
+
+  // URL 해시 및 activePostId를 통해 댓글 모달 자동 열기
+  useEffect(() => {
+    if (activePostId && Number(activePostId) === post.id && window.location.hash.includes('comment')) {
+      setShowComments(true);
+    }
+  }, [activePostId, post.id, window.location.hash]);
 
   // Default fallback image if no URL
   const mediaUrl = post.imageUrl ? post.imageUrl.split(',')[0] : 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500';

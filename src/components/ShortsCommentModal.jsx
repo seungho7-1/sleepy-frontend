@@ -21,6 +21,22 @@ export default function ShortsCommentModal({ postId, onClose, onUpdateCount, inl
     fetchComments();
   }, [postId]);
 
+  useEffect(() => {
+    const hash = window.location.hash || location.hash;
+    if (comments.length > 0 && hash && hash.includes('comment')) {
+      const hashId = hash.replace('#', '');
+      const element = document.getElementById(hashId);
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300);
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 1200);
+      }
+    }
+  }, [comments, window.location.hash]);
+
   const fetchComments = async () => {
     try {
       const data = await boardApi.getComments(postId);
@@ -157,7 +173,7 @@ export default function ShortsCommentModal({ postId, onClose, onUpdateCount, inl
                   const hasChildren = childComments.length > 0;
                   const isExpanded = expandedReplies[c.id];
                   return (
-                    <div key={c.id}>
+                    <div key={c.id} id={`comment-${c.id}`}>
                       <div style={{ marginLeft: depth > 0 ? '3.4rem' : '0', display: 'flex', gap: '12px', marginBottom: '1rem' }}>
                         
                         {/* Avatar */}
