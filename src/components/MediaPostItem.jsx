@@ -104,12 +104,12 @@ export default function MediaPostItem({ post }) {
             {post.title}
           </h4>
           <h4></h4>
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', gap: '6px 4px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: '70px', flex: '1 1 auto' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', gap: '8px 4px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: '70px', flex: '0 1 auto', overflow: 'hidden' }}>
               <Avatar name={post.nickname || 'slime'} imageUrl={post.profileImageUrl} size={22} />
               <span style={{ fontWeight: '600', color: '#555', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{post.nickname}</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0, justifyContent: 'flex-start' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0, marginLeft: 'auto' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#666', fontWeight: 'bold', fontSize: '0.8rem' }}>
                 <Eye size={14} />
                 <span>{post.viewCount || 0}</span>
