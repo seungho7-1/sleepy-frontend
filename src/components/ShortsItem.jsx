@@ -172,7 +172,6 @@ export default function ShortsItem({ post, index, activePostId }) {
         @media (min-width: 768px) {
           .shorts-item-container {
             background: transparent;
-            padding: 2vh 0; /* Add vertical padding so it doesn't touch edges */
           }
           .shorts-flex-wrapper {
             display: flex !important;
@@ -183,32 +182,31 @@ export default function ShortsItem({ post, index, activePostId }) {
             height: 100%;
             margin: 0 auto;
             padding: 0;
-            gap: 20px;
+            gap: 0;
             background: transparent;
           }
           .shorts-video-wrapper {
-            width: auto !important;
-            height: 90vh !important;
-            aspect-ratio: 9 / 16 !important;
-            max-width: 450px !important;
-            max-height: 850px !important;
-            flex: none !important;
-            border-radius: 20px !important;
+            width: 100% !important;
+            flex: 0 1 500px !important;
+            max-width: 500px !important;
+            height: 100% !important;
+            max-height: 100% !important;
+            border-radius: 0 !important;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: none;
           }
           .shorts-desktop-comments {
             display: flex !important;
             flex-direction: column;
-            width: 400px;
-            height: 90vh !important;
-            max-height: 850px !important;
-            flex: none !important;
-            border-radius: 20px !important;
+            width: 100%;
+            flex: 0 1 500px !important;
+            max-width: 500px !important;
+            height: 100%;
+            border-radius: 0 !important;
             overflow: hidden;
             position: relative;
             background: #1a1a1a;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: none;
           }
           .mobile-only-comment-btn {
             display: flex !important;
