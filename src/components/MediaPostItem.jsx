@@ -109,7 +109,7 @@ export default function MediaPostItem({ post }) {
               <Avatar name={post.nickname || 'slime'} imageUrl={post.profileImageUrl} size={22} />
               <span style={{ fontWeight: '600', color: '#555', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{post.nickname}</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0, marginLeft: 'auto' }}>
+            <div className="media-stats-container">
               <div style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#666', fontWeight: 'bold', fontSize: '0.8rem' }}>
                 <Eye size={14} />
                 <span>{post.viewCount || 0}</span>

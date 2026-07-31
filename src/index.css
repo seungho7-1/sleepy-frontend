@@ -47,6 +47,25 @@ body {
   padding: 0 1.5rem;
 }
 
+/* Media Post Stats Layout */
+.media-stats-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+@media (max-width: 767px) {
+  .media-stats-container {
+    width: 100%;
+    justify-content: space-between;
+    margin-left: 0;
+    margin-top: 4px;
+    padding: 0 4px;
+  }
+}
+
 /* Utility */
 a {
   text-decoration: none;
@@ -2371,6 +2390,6 @@ main {
 }
 @media (min-width: 768px) {
   .shorts-feed-container {
-    max-width: 1000px;
+    max-width: 2000px;
   }
 }
