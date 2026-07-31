@@ -51,7 +51,7 @@ body {
 .media-stats-container {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex-shrink: 0;
   margin-left: auto;
 }
@@ -59,10 +59,10 @@ body {
 @media (max-width: 767px) {
   .media-stats-container {
     width: 100%;
-    justify-content: space-between;
+    justify-content: flex-start;
     margin-left: 0;
-    margin-top: 4px;
-    padding: 0 4px;
+    margin-top: 6px;
+    padding-left: 2px;
   }
 }
 
