@@ -202,8 +202,7 @@ export default function Navbar() {
       <div className={`drawer-container ${isDrawerOpen ? 'open' : ''}`}>
         {/* 드로어 헤더 */}
         <div className="drawer-header">
-          <Link to="/" className="brand-logo" onClick={() => setIsDrawerOpen(false)} style={{ display: 'flex', alignItems: 'center' }}>
-            <img src="/logo.png" alt="Sleepy Logo" style={{ height: '32px', marginRight: '8px' }} />
+          <Link to="/" className="brand-logo" onClick={() => setIsDrawerOpen(false)} style={{display: 'flex', alignItems: 'center' }}>
             <span className="brand-name">Sleepy</span>
           </Link>
           <button 

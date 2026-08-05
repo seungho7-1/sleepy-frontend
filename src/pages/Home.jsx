@@ -175,9 +175,9 @@ export default function Home() {
                     {product.name}
                   </div>
                   <div style={{ fontSize: '0.78rem', color: '#888', marginBottom: '4px' }}>{product.shopName}</div>
-                  <div style={{ display: 'flex', gap: '6px', fontSize: '0.72rem', color: '#aaa' }}>
-                    <span>⭐ {product.avgRating?.toFixed(1) || '0.0'}</span>
-                    <span>리뷰 {product.reviewCount || 0}</span>
+                  <div style={{ fontSize: '0.72rem', color: '#999', display: 'flex', alignItems: 'center', gap: '3px', fontWeight: 'bold' }}>
+                    <span style={{ color: product.reviewCount > 0 ? '#ffb400' : '#ddd', fontSize: '0.9rem' }}>★</span>
+                    <span>{product.avgRating ? product.avgRating.toFixed(1) : '0.0'} ({product.reviewCount || 0})</span>
                   </div>
                 </div>
               </div>

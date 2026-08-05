@@ -20,7 +20,7 @@ export default function ReviewSection({ productId, reviews, fetchReviews }) {
       setUploading(true);
       const res = await boardApi.uploadFile(file, 'review-photo');
       setImageUrl(res.url);
-      alert('리뷰 사진 업로드 완료! ✨');
+      alert('리뷰 사진 업로드 완료!');
     } catch (err) {
       alert('사진 업로드에 실패했습니다.');
     } finally {

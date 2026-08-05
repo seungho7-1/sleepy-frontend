@@ -114,7 +114,7 @@ export default function MediaPostItem({ post }) {
                 <Eye size={14} />
                 <span>{post.viewCount || 0}</span>
               </div>
-              {post.commentCount !== undefined && post.commentCount > 0 && (
+              {(
                 <div style={{ display: 'flex', alignItems: 'center', gap: '3px', color: 'var(--primary-color)', fontWeight: 'bold', fontSize: '0.8rem' }}>
                   <MessageCircle size={14} />
                   <span>{post.commentCount}</span>

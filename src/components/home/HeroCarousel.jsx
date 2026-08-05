@@ -104,7 +104,7 @@ export default function HeroCarousel({ latestPosts }) {
 
                   {/* 이미지 내 하단 오버레이 (아바타, 닉네임, 좋아요 표시) */}
                   <div style={{
-                    position: 'absolute', bottom: 0, left: 0, right: 0,
+                    position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 2,
                     background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 100%)',
                     padding: '12px 10px 8px 10px',
                     color: 'white',

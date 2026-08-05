@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuthStore } from '../../store'
 import { boardApi } from '../../api/board'
-import { compressVideo, needsCompression } from '../../utils/videoCompressor'
 import { extractThumbnailFromVideo } from '../../utils/thumbnailExtractor'
 import { Edit, Sparkles, Megaphone, MessageCircle } from 'lucide-react'
 import { Image } from 'lucide-react';
@@ -66,8 +65,9 @@ export default function PostCreate() {
     const selectedFile = e.target.files[0]
     if (selectedFile) {
       // 이미지: 5MB 제한 / 영상: 500MB 제한 (브라우저에서 압축 후 업로드되므로 여유 있게 허용)
+      // S3 무료 티어(5GB) 생존을 위한 '쌀먹' 용량 제한
       const isVideo = selectedFile.type.startsWith('video/');
-      const maxSizeMB = isVideo ? 500 : 5;
+      const maxSizeMB = isVideo ? 50 : 10; // 영상 최대 50MB, 사진 최대 10MB 허용
       const maxSizeBytes = maxSizeMB * 1024 * 1024;
 
       if (selectedFile.size > maxSizeBytes) {
@@ -129,7 +129,7 @@ export default function PostCreate() {
         let fileToUpload = file;
         
         if (file.type.startsWith('video/')) {
-          setUploadStatus('🖼️ 썸네일 추출 중...');
+          setUploadStatus('썸네일 추출 중...');
           try {
             const thumbFile = await extractThumbnailFromVideo(file);
             const thumbRes = await boardApi.uploadFile(thumbFile, 'post', () => {});
@@ -138,24 +138,8 @@ export default function PostCreate() {
             console.error('썸네일 추출 실패:', e);
           }
         }
-        
-        // 🎬 영상이고 20MB를 초과하면 → 브라우저에서 자동 압축
-        if (file.type.startsWith('video/') && needsCompression(file)) {
-          setUploadStatus(`🎬 영상 압축 중... (${(file.size / 1024 / 1024).toFixed(0)}MB → 720p 변환)`);
-          try {
-            fileToUpload = await compressVideo(file, (progress) => {
-              setUploadProgress(progress);
-            });
-            setUploadStatus(`✅ 압축 완료! (${(file.size / 1024 / 1024).toFixed(0)}MB → ${(fileToUpload.size / 1024 / 1024).toFixed(1)}MB)`);
-          } catch (compressErr) {
-            console.error('영상 압축 실패, 원본으로 업로드합니다:', compressErr);
-            // 압축 실패 시 원본 그대로 업로드 시도
-            fileToUpload = file;
-          }
-        }
-        
         // S3 업로드 단계
-        setUploadStatus('☁️ 서버에 업로드 중...');
+        setUploadStatus('☁️ 서버에 다이렉트 업로드 중...');
         setUploadProgress(0);
         const uploadRes = await boardApi.uploadFile(fileToUpload, 'post', (progress) => {
           setUploadProgress(progress);
