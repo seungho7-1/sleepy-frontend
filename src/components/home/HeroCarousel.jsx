@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import HoverVideo from '../HoverVideo';
 import Avatar from '../Avatar';
+import { Heart, Eye } from 'lucide-react';
 
 export default function HeroCarousel({ latestPosts }) {
   const feedScrollRef = useRef(null);
@@ -126,14 +127,14 @@ export default function HeroCarousel({ latestPosts }) {
                         {post.nickname}
                       </span>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
-                      <div style={{ color: '#ff5b94', textShadow: '0 1px 2px rgba(0,0,0,0.4)', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '2px' }}>
-                        <span>♥</span>
-                        <span style={{ fontSize: '0.7rem', color: 'white' }}>{post.likeCount}</span>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '3px' }}>
+                      <div style={{ color: '#ff5b94', textShadow: '0 1px 2px rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Heart size={12} fill="currentColor" />
+                        <span style={{ fontSize: '0.75rem', color: 'white', fontWeight: '600' }}>{post.likeCount}</span>
                       </div>
-                      <div style={{ color: '#eaeaea', textShadow: '0 1px 2px rgba(0,0,0,0.6)', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '2px' }}>
-                        <span style={{ fontSize: '0.7rem' }}>👁</span>
-                        <span style={{ fontSize: '0.65rem', color: 'white' }}>{post.viewCount}</span>
+                      <div style={{ color: '#eaeaea', textShadow: '0 1px 2px rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Eye size={12} />
+                        <span style={{ fontSize: '0.75rem', color: 'white', fontWeight: '600' }}>{post.viewCount}</span>
                       </div>
                     </div>
                   </div>
