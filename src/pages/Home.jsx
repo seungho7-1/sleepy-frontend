@@ -83,10 +83,10 @@ export default function Home() {
       if (reset) setLoading(true)
       
       let categoryApiValue = '';
-      if (activeCategory === '슬라임') categoryApiValue = 'SLIME';
-      else if (activeCategory === '슬랑이') categoryApiValue = 'SLANGY';
-      else if (activeCategory === '말랑이') categoryApiValue = 'MALLANGI';
-      else if (activeCategory === '스퀴시') categoryApiValue = 'SQUISHY';
+      if (activeCategory === '슬라임') categoryApiValue = '슬라임';
+      else if (activeCategory === '슬랑이') categoryApiValue = '슬랑이';
+      else if (activeCategory === '말랑이') categoryApiValue = '말랑이';
+      else if (activeCategory === '스퀴시') categoryApiValue = '스퀴시';
 
       const data = await productApi.getProducts(categoryApiValue, searchQuery, '', pageNumber, 20, sortOption);
       
@@ -171,7 +171,9 @@ export default function Home() {
                   style={{ width: '100%', height: '160px', objectFit: 'cover' }}
                 />
                 <div style={{ padding: '12px' }}>
-                  <div style={{ fontSize: '0.8rem', color: '#ff2070', fontWeight: 'bold', marginBottom: '4px' }}>{product.category || '기타'}</div>
+                  <div style={{ fontSize: '0.8rem', color: '#ff2070', fontWeight: 'bold', marginBottom: '4px' }}>
+                    {{'SLIME':'슬라임','SLANGI':'슬랑이','MALLANGI':'말랑이','SQUISHY':'스퀴시','SUPPLIES':'부자재','ETC':'기타'}[product.category] || product.category || '기타'}
+                  </div>
                   <h4 style={{ margin: '0 0 6px 0', fontSize: '1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.name}</h4>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                     <div style={{ fontWeight: 'bold', color: '#111' }}>{product.price ? `${product.price.toLocaleString()}원` : '가격 미정'}</div>
