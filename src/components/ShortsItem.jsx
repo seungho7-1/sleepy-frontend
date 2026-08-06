@@ -4,7 +4,7 @@ import { useAuthStore } from '../store';
 import { isVideo } from '../utils/media';
 import ShortsCommentModal from './ShortsCommentModal';
 import Avatar from './Avatar';
-import { Heart, MessageCircle, Share2, Volume2, VolumeX, MoreVertical, Edit, Trash2 } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Volume2, VolumeX, MoreVertical, Edit, Trash2, Flag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function ShortsItem({ post, index, activePostId }) {
@@ -169,31 +169,36 @@ export default function ShortsItem({ post, index, activePostId }) {
             justify-content: center;
             width: 100%;
             height: 100%;
-            margin: 0 auto;
-            padding: 0;
-            gap: 0;
-            background: transparent;
+            padding: 20px;
+            gap: 20px;
+            background: #0f0f0f;
+            box-sizing: border-box;
           }
           .shorts-video-wrapper {
             width: 100% !important;
             flex: 1 !important;
-            max-width: 500px !important;
+            max-width: 420px !important;
             height: 100% !important;
-            max-height: 100% !important;
-            border-radius: 0;
+            max-height: calc(100vh - 40px) !important;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: none;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            position: relative;
           }
           .shorts-desktop-comments {
             display: flex !important;
             flex-direction: column;
             width: 100%;
             flex: 1 !important;
-            max-width: 500px !important;
+            max-width: 440px !important;
             height: 100%;
-            border-radius: 0;
+            max-height: calc(100vh - 40px);
+            border-radius: 16px;
             overflow: hidden;
             position: relative;
+            background: #181818;
+            border: 1px solid #2a2a2a;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
           }
           .mobile-only-comment-btn {
             display: flex !important;
@@ -238,31 +243,30 @@ export default function ShortsItem({ post, index, activePostId }) {
             슬라임 숏폼
           </h2>
           <div style={{ position: 'relative' }}>
-            {canEdit && (
-              <button 
-                onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); }}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'white',
-                  cursor: 'pointer',
-                  padding: '5px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  textShadow: '0 1px 3px rgba(0,0,0,0.5)'
-                }}
-              >
-                <MoreVertical size={24} />
-              </button>
-            )}
+            <button 
+              onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'white',
+                cursor: 'pointer',
+                padding: '5px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textShadow: '0 1px 3px rgba(0,0,0,0.5)'
+              }}
+              title="옵션"
+            >
+              <MoreVertical size={24} />
+            </button>
             
             {showMenu && (
               <div style={{
                 position: 'absolute',
                 top: '100%',
                 right: 0,
-                background: 'rgba(30, 30, 30, 0.9)',
+                background: 'rgba(30, 30, 30, 0.95)',
                 borderRadius: '8px',
                 padding: '5px 0',
                 minWidth: '120px',
@@ -270,56 +274,99 @@ export default function ShortsItem({ post, index, activePostId }) {
                 boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
                 backdropFilter: 'blur(10px)'
               }}>
-                <button 
-                  onClick={handleEdit}
-                  style={{
-                    width: '100%',
-                    padding: '10px 15px',
-                    background: 'none',
-                    border: 'none',
-                    color: 'white',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    cursor: 'pointer',
-                    fontSize: '0.9rem'
-                  }}
-                >
-                  <Edit size={16} />
-                  수정
-                </button>
-                <button 
-                  onClick={handleDelete}
-                  style={{
-                    width: '100%',
-                    padding: '10px 15px',
-                    background: 'none',
-                    border: 'none',
-                    color: '#ff4d4d',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    cursor: 'pointer',
-                    fontSize: '0.9rem'
-                  }}
-                >
-                  <Trash2 size={16} />
-                  삭제
-                </button>
+                {canEdit && (
+                  <>
+                    <button 
+                      onClick={handleEdit}
+                      style={{
+                        width: '100%',
+                        padding: '10px 15px',
+                        background: 'none',
+                        border: 'none',
+                        color: 'white',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        cursor: 'pointer',
+                        fontSize: '0.9rem'
+                      }}
+                    >
+                      <Edit size={16} />
+                      수정
+                    </button>
+                    <button 
+                      onClick={handleDelete}
+                      style={{
+                        width: '100%',
+                        padding: '10px 15px',
+                        background: 'none',
+                        border: 'none',
+                        color: '#ff4d4d',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        cursor: 'pointer',
+                        fontSize: '0.9rem'
+                      }}
+                    >
+                      <Trash2 size={16} />
+                      삭제
+                    </button>
+                  </>
+                )}
+                {!isAuthor && (
+                  <button 
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      setShowMenu(false);
+                      if (!token) {
+                        alert('로그인이 필요한 기능입니다.');
+                        return;
+                      }
+                      if (window.confirm('이 숏폼 영상/게시물을 신고하시겠습니까?')) {
+                        try {
+                          await boardApi.report({
+                            targetType: 'POST',
+                            targetId: post.id,
+                            reason: '부적절한 게시물/스팸'
+                          });
+                          alert('신고가 접수되었습니다. 관리자 검토 후 조치될 예정입니다.');
+                        } catch (err) {
+                          alert(err.message || '신고 접수에 실패했습니다.');
+                        }
+                      }
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '10px 15px',
+                      background: 'none',
+                      border: 'none',
+                      color: '#ff4d4d',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      cursor: 'pointer',
+                      fontSize: '0.9rem'
+                    }}
+                  >
+                    <Flag size={16} color="#ff4d4d" />
+                    신고
+                  </button>
+                )}
               </div>
             )}
           </div>
         </div>
 
         {/* Media Player */}
-      {isVideo(mediaUrl) ? (
+      {isVideo(mediaUrl, post.thumbnailUrl) ? (
         <video 
           ref={videoRef}
           src={mediaUrl}
           loop
           muted={isMuted}
           playsInline
-          preload="none"
+          preload="metadata"
           style={{
             width: '100%',
             height: '100%',

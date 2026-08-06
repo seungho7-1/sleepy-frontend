@@ -14,6 +14,7 @@ export default function ProductList() {
   const activeCategory = searchParams.get('category') || '전체';
   const searchQuery = searchParams.get('search') || '';
   const [searchInput, setSearchInput] = useState(searchQuery);
+  const [sortOption, setSortOption] = useState('createdAt,desc');
   
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -22,7 +23,7 @@ export default function ProductList() {
     setSearchInput(searchQuery);
     fetchProducts(0, true);
     // eslint-disable-next-line
-  }, [searchQuery, activeCategory]);
+  }, [searchQuery, activeCategory, sortOption]);
 
   const fetchProducts = async (pageNumber = 0, reset = false) => {
     try {
@@ -34,7 +35,7 @@ export default function ProductList() {
       else if (activeCategory === '말랑이') categoryApiValue = 'MALLANGI';
       else if (activeCategory === '스퀴시') categoryApiValue = 'SQUISHY';
 
-      const data = await productApi.getProducts(categoryApiValue, searchQuery, '', pageNumber, 20);
+      const data = await productApi.getProducts(categoryApiValue, searchQuery, '', pageNumber, 20, sortOption);
       
       if (data && data.content) {
         setProducts(prev => reset ? data.content : [...prev, ...data.content]);
@@ -107,6 +108,19 @@ export default function ProductList() {
           </div>
 
           <div className="shop-nav-filters">
+            <select 
+              value={sortOption} 
+              onChange={(e) => setSortOption(e.target.value)}
+              style={{
+                padding: '6px 12px', borderRadius: '20px', border: '1px solid #e0e0e0', background: '#fff', fontSize: '0.85rem', color: '#555', outline: 'none', cursor: 'pointer'
+              }}
+            >
+              <option value="createdAt,desc">최신순</option>
+              <option value="reviewCount,desc">인기순</option>
+              <option value="avgRating,desc">평점순</option>
+              <option value="price,asc">낮은 가격순</option>
+              <option value="price,desc">높은 가격순</option>
+            </select>
             <form onSubmit={handleSearchSubmit} style={{ display: 'flex', alignItems: 'center', border: '1px solid #e0e0e0', borderRadius: '24px', padding: '6px 14px', background: '#f5f5f5', flex: 1, minWidth: '140px', maxWidth: '200px', transition: 'all 0.2s' }}>
               <Search size={16} color="#888" style={{ marginRight: '6px', flexShrink: 0 }} />
               <input 

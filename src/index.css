@@ -591,7 +591,7 @@ main {
   width: 100%;
   aspect-ratio: 4 / 5;
   object-fit: cover;
-  border-radius: 12px;
+  border-radius: 0;
   margin-bottom: 0.8rem;
   background-color: var(--bg-secondary); /* Skeleton feel */
 }
@@ -1525,6 +1525,23 @@ main {
   .mypage-banner-content {
     flex-direction: column;
     text-align: center;
+    align-items: center;
+  }
+  .mypage-banner-content .profile-info-header {
+    align-items: center !important;
+    text-align: center;
+    flex: unset !important;
+    width: 100%;
+  }
+  .mypage-banner-content .profile-info-header h2 {
+    white-space: normal;
+    text-align: center;
+  }
+  .seller-dashboard-stats {
+    width: 100%;
+    justify-content: space-evenly;
+    padding: 1rem;
+    gap: 1rem;
   }
 }
 
@@ -2340,52 +2357,48 @@ main {
   }
 }
 
-/* Seller Dashboard Banner */
+/* Seller Dashboard Banner - MyPage 스타일 */
 .seller-dashboard-banner {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  padding: 1rem 2rem;
-  gap: 1.5rem;
-  flex-wrap: wrap;
+  justify-content: center;
+  padding: 2rem 1.5rem 1.5rem;
+  text-align: center;
+  width: 100%;
 }
+
+/* 이전 horizontal 레이아웃 클래스들 (하위 호환용, 실제로는 사용 안 함) */
+.seller-banner-profile-row { display: flex; align-items: center; gap: 2rem; }
+.seller-banner-info { display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem; min-width: 0; flex: 1; }
+.seller-banner-title-row { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+.seller-banner-meta-row { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
 
 .seller-dashboard-stats {
   display: flex;
   gap: 2.5rem;
   text-align: center;
   background-color: rgba(255, 255, 255, 0.6);
-  padding: 1.2rem 2.5rem;
+  padding: 1rem 2.5rem;
   border-radius: 16px;
   border: 1px solid #ffe4eb;
+  align-items: center;
+  justify-content: center;
 }
 
 @media (max-width: 768px) {
   .seller-dashboard-banner {
-    flex-direction: column;
-    align-items: stretch;
     padding: 1.5rem 1rem;
-  }
-  
-  .seller-dashboard-banner > div:first-child {
-    flex-direction: column !important;
-    align-items: center !important;
-    text-align: center !important;
-    gap: 1rem !important;
-  }
-
-  .seller-dashboard-banner .profile-info-header {
-    align-items: center !important;
   }
 
   .seller-dashboard-stats {
     width: 100%;
     justify-content: space-evenly;
-    padding: 1.2rem 1rem;
+    padding: 1rem;
     gap: 1rem;
   }
 }
+
 .shorts-feed-container {
   max-width: 500px;
 }
@@ -2393,4 +2406,26 @@ main {
   .shorts-feed-container {
     max-width: 2000px;
   }
+}
+
+/* Seller My Products Grid */
+.seller-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .seller-products-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.8rem !important;
+  }
+}
+
+.post-item-container.notice-post {
+  background: #fff0f5 !important;
+  border-left: 4px solid var(--primary-color) !important;
+}
+.post-item-container.notice-post:hover {
+  background: #ffe4ee !important;
 }

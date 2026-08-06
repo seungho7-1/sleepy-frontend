@@ -105,12 +105,21 @@ export default function Community({ mode = 'all' }) {
     <div className="home-container" style={{ paddingBottom: '4rem' }}>
       <style>{`
         @media (max-width: 768px) {
-          .mobile-hide-search {
+          .desktop-only-search {
             display: none !important;
+          }
+          .mobile-only-search {
+            display: flex !important;
           }
           .popular-media-card {
             width: calc(50% - 6px) !important;
           }
+        }
+        .desktop-only-search {
+          display: flex;
+        }
+        .mobile-only-search {
+          display: none;
         }
         .popular-media-card {
           width: calc(25% - 9px);
@@ -154,11 +163,96 @@ export default function Community({ mode = 'all' }) {
           </div>
         )}
         
-        {/* 상단 툴바: 정렬 + 총 게시글 + 검색창 + 글쓰기 */}
+        {/* 검색창 (모바일 전용 상단) */}
+        {mode !== 'notice' && (
+          <div className="mobile-only-search" style={{ justifyContent: 'center', marginBottom: '1rem', width: '100%' }}>
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%', maxWidth: '600px' }}>
+              <input 
+                type="text" 
+                placeholder="검색어를 입력하세요" 
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    setKeyword(searchInput)
+                    setPage(0)
+                  }
+                }}
+                style={{
+                  width: '100%',
+                  padding: '0.7rem 1.2rem',
+                  paddingRight: searchInput ? '3.5rem' : '2.5rem',
+                  fontSize: '0.95rem',
+                  borderRadius: '24px',
+                  border: '1px solid var(--border-color)',
+                  background: 'white',
+                  outline: 'none',
+                  transition: 'all 0.2s',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
+                }}
+                onFocus={(e) => { e.target.style.borderColor = 'var(--text-main)'; e.target.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)'; }}
+                onBlur={(e) => { e.target.style.borderColor = 'var(--border-color)'; e.target.style.boxShadow = '0 2px 8px rgba(0,0,0,0.02)'; }}
+              />
+              {searchInput && (
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    setSearchInput('');
+                    setKeyword('');
+                    setPage(0);
+                  }}
+                  style={{
+                    position: 'absolute',
+                    right: '2.5rem',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: '#f5f5f5',
+                    border: 'none',
+                    color: '#888',
+                    cursor: 'pointer',
+                    fontSize: '0.75rem',
+                    width: '18px',
+                    height: '18px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                  title="검색어 지우기"
+                >
+                  ✖
+                </button>
+              )}
+              <button 
+                onClick={() => {
+                  setKeyword(searchInput)
+                  setPage(0)
+                }}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--text-main)'
+                }}
+              >
+                <Search size={20} strokeWidth={2.5} />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* 하단 툴바: 정렬 + 총 게시글 + 글쓰기 */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
           {/* 왼쪽: 정렬, 총개수 */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            {mode !== 'notice' && (
+            {mode !== 'notice' && boardType !== 'NOTICE' && (
               <select
                 value={sortBy}
                 onChange={(e) => handleSortChange(e.target.value)}
@@ -191,10 +285,10 @@ export default function Community({ mode = 'all' }) {
             </div>
           </div>
 
-          {/* 오른쪽: 검색창, 글쓰기 */}
+          {/* 오른쪽: 검색창(데스크톱) + 글쓰기 */}
           <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', flex: 1, justifyContent: 'flex-end' }}>
             {mode !== 'notice' && (
-              <div className="mobile-hide-search" style={{ position: 'relative', display: 'flex', alignItems: 'center', maxWidth: '280px', width: '100%' }}>
+              <div className="desktop-only-search" style={{ position: 'relative', alignItems: 'center', maxWidth: '280px', width: '100%' }}>
                 <input 
                   type="text" 
                   placeholder="검색어를 입력하세요" 
@@ -211,65 +305,65 @@ export default function Community({ mode = 'all' }) {
                     padding: '0.5rem 1rem',
                     paddingRight: searchInput ? '3.5rem' : '2.5rem',
                     fontSize: '0.9rem',
-                  borderRadius: '20px',
-                  border: '1px solid var(--border-color)',
-                  background: 'var(--bg-secondary)',
-                  outline: 'none',
-                  transition: 'all 0.2s',
-                }}
-                onFocus={(e) => { e.target.style.borderColor = 'var(--text-main)'; e.target.style.background = 'var(--bg-color)'; }}
-                onBlur={(e) => { e.target.style.borderColor = 'var(--border-color)'; e.target.style.background = 'var(--bg-secondary)'; }}
-              />
-              {searchInput && (
+                    borderRadius: '20px',
+                    border: '1px solid var(--border-color)',
+                    background: 'var(--bg-secondary)',
+                    outline: 'none',
+                    transition: 'all 0.2s',
+                  }}
+                  onFocus={(e) => { e.target.style.borderColor = 'var(--text-main)'; e.target.style.background = 'var(--bg-color)'; }}
+                  onBlur={(e) => { e.target.style.borderColor = 'var(--border-color)'; e.target.style.background = 'var(--bg-secondary)'; }}
+                />
+                {searchInput && (
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      setSearchInput('');
+                      setKeyword('');
+                      setPage(0);
+                    }}
+                    style={{
+                      position: 'absolute',
+                      right: '2.2rem',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      color: '#aaa',
+                      cursor: 'pointer',
+                      fontSize: '0.9rem',
+                      padding: '2px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                    title="검색어 지우기"
+                  >
+                    ✖
+                  </button>
+                )}
                 <button 
-                  type="button" 
                   onClick={() => {
-                    setSearchInput('');
-                    setKeyword('');
-                    setPage(0);
+                    setKeyword(searchInput)
+                    setPage(0)
                   }}
                   style={{
                     position: 'absolute',
-                    right: '2.2rem',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    color: '#aaa',
-                    cursor: 'pointer',
-                    fontSize: '0.9rem',
-                    padding: '2px',
+                    right: '12px',
+                    width: '28px',
+                    height: '28px',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: '#9ca3af'
                   }}
-                  title="검색어 지우기"
                 >
-                  ✖
+                  <Search size={18} strokeWidth={2.5} />
                 </button>
-              )}
-              <button 
-                onClick={() => {
-                  setKeyword(searchInput)
-                  setPage(0)
-                }}
-                style={{
-                  position: 'absolute',
-                  right: '12px',
-                  width: '28px',
-                  height: '28px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: '#9ca3af'
-                }}
-              >
-                <Search size={18} strokeWidth={2.5} />
-              </button>
-            </div>
+              </div>
             )}
             
             {(mode !== 'notice' || role === 'ADMIN') && (
@@ -299,7 +393,7 @@ export default function Community({ mode = 'all' }) {
               borderRadius: '4px'
             }}>
               {posts.map(post => (
-                <PostItem key={post.id} post={post} />
+                <PostItem key={post.id} post={post} isNoticeTab={boardType === 'NOTICE'} />
               ))}
             </div>
 

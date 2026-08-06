@@ -8,17 +8,19 @@ import CategoryNav from '../components/home/CategoryNav';
 import ProductGrid from '../components/home/ProductGrid';
 
 const CATEGORIES = ['전체', '슬라임', '슬랑이', '말랑이', '스퀴시']
-const FEED_MAX = 10 // 자랑피드 최대 표시 개수
+const FEED_MAX = 10 
 
 export default function Home() {
-  const [popularProducts, setPopularProducts] = useState([]) // 🔥 인기 상품
-  const [activeCategory, setActiveCategory] = useState('전체')
   const [latestPosts, setLatestPosts] = useState([])
+  const [popularProducts, setPopularProducts] = useState([]) 
+
   const [searchParams, setSearchParams] = useSearchParams()
+  const [activeCategory, setActiveCategory] = useState('전체')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [sortOption, setSortOption] = useState('createdAt,desc')
   
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
   const [page, setPage] = useState(0)
   const [totalPages, setTotalPages] = useState(1)
   
@@ -41,39 +43,14 @@ export default function Home() {
   }, [searchParams])
 
   useEffect(() => {
-    fetchProducts(0, true)
-    // eslint-disable-next-line
-  }, [searchQuery, activeCategory])
-
-  useEffect(() => {
     fetchLatestPosts()
+    fetchPopularProducts()
   }, [])
 
   useEffect(() => {
-    fetchPopularProducts(activeCategory)
-  }, [activeCategory])
-
-  // 🔥 인기 상품 - reviewCount*3 + avgRating*2 기반 상위 12개
-  const fetchPopularProducts = async (catName) => {
-    try {
-      let categoryApiValue = '';
-      if (catName === '슬라임') categoryApiValue = 'SLIME';
-      else if (catName === '슬랑이') categoryApiValue = 'SLANGY';
-      else if (catName === '말랑이') categoryApiValue = 'MALLANGI';
-      else if (catName === '스퀴시') categoryApiValue = 'SQUISHY';
-
-      const data = await productApi.getProducts(categoryApiValue, '', '', 0, 50, 'reviewCount,desc')
-      const all = data?.content || []
-      const scored = all
-        .map(p => ({ ...p, _score: (p.reviewCount || 0) * 3 + (p.avgRating || 0) * 2 }))
-        .filter(p => p._score > 0)
-        .sort((a, b) => b._score - a._score)
-        .slice(0, 12) // 최대 12개 표시
-      setPopularProducts(scored)
-    } catch (err) {
-      console.error('Failed to fetch popular products:', err)
-    }
-  }
+    fetchProducts(0, true)
+    // eslint-disable-next-line
+  }, [searchQuery, activeCategory, sortOption])
 
   const fetchLatestPosts = async () => {
     try {
@@ -84,6 +61,23 @@ export default function Home() {
     }
   }
 
+  // 인기 상품은 카테고리와 무관하게 전체 기준 상위 12개
+  const fetchPopularProducts = async () => {
+    try {
+      const data = await productApi.getProducts('', '', '', 0, 50, 'reviewCount,desc')
+      const all = data?.content || []
+      const scored = all
+        .map(p => ({ ...p, _score: (p.reviewCount || 0) * 3 + (p.avgRating || 0) * 2 }))
+        .filter(p => p._score > 0)
+        .sort((a, b) => b._score - a._score)
+        .slice(0, 12) 
+      setPopularProducts(scored)
+    } catch (err) {
+      console.error('Failed to fetch popular products:', err)
+    }
+  }
+
+  // 전체 상품 목록 (카테고리 및 검색어, 정렬 필터 적용)
   const fetchProducts = async (pageNumber = 0, reset = false) => {
     try {
       if (reset) setLoading(true)
@@ -94,8 +88,7 @@ export default function Home() {
       else if (activeCategory === '말랑이') categoryApiValue = 'MALLANGI';
       else if (activeCategory === '스퀴시') categoryApiValue = 'SQUISHY';
 
-      const keyword = searchQuery;
-      const data = await productApi.getProducts(categoryApiValue, keyword, '', pageNumber, 20);
+      const data = await productApi.getProducts(categoryApiValue, searchQuery, '', pageNumber, 20, sortOption);
       
       if (data && data.content) {
         setProducts(prev => reset ? data.content : [...prev, ...data.content])
@@ -117,6 +110,102 @@ export default function Home() {
     }
   }
 
+  const renderProductScroller = (title, subtitle, scrollerProducts, scrollId) => {
+    if (!scrollerProducts || scrollerProducts.length === 0) return null;
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '1.25rem', fontWeight: '800', color: '#111' }}>
+            {title}
+          </span>
+          <span style={{ fontSize: '0.8rem', color: '#aaa' }}>{subtitle}</span>
+        </div>
+        
+        <div style={{ position: 'relative' }}>
+          <button
+            onClick={() => {
+              const el = document.getElementById(scrollId);
+              if (el) el.scrollBy({ left: -el.clientWidth * 0.8, behavior: 'smooth' });
+            }}
+            aria-label="이전"
+            style={{
+              position: 'absolute', top: '50%', left: '-16px', transform: 'translateY(-50%)',
+              zIndex: 10, width: '36px', height: '36px', borderRadius: '50%',
+              background: 'white', border: '1px solid #ffeef2',
+               cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '1rem', color: '#ff2070', fontWeight: 'bold',
+              transition: 'all 0.2s'
+            }}
+          >‹</button>
+
+          <div id={scrollId} style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '12px', scrollbarWidth: 'none', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}>
+            {scrollerProducts.map((product, idx) => (
+              <div
+                key={product.id}
+                onClick={() => window.location.href = `/product/${product.id}`}
+                style={{
+                  flexShrink: 0, width: '160px',
+                  borderRadius: '0px', background: 'white',
+                  border: '1px solid #ffeef2',
+                  boxShadow: '0 2px 10px rgba(255, 32, 112, 0.06)',
+                  cursor: 'pointer', overflow: 'hidden',
+                  transition: 'transform 0.2s, box-shadow 0.2s',
+                  position: 'relative',
+                  scrollSnapAlign: 'start'
+                }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(255, 32, 112, 0.12)' }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 10px rgba(255, 32, 112, 0.06)' }}
+              >
+                <div style={{
+                  position: 'absolute', top: '8px', left: '8px', zIndex: 2,
+                  width: '24px', height: '24px', borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #ff2070 0%, #ff5c97 100%)',
+                  color: 'white', fontSize: '0.75rem', fontWeight: '900',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}>{idx + 1}</div>
+                
+                <img
+                  src={product.imageUrl || (product.imageUrls?.[0]) || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=300'}
+                  alt={product.name}
+                  style={{ width: '100%', height: '160px', objectFit: 'cover' }}
+                />
+                <div style={{ padding: '12px' }}>
+                  <div style={{ fontSize: '0.8rem', color: '#ff2070', fontWeight: 'bold', marginBottom: '4px' }}>{product.category || '기타'}</div>
+                  <h4 style={{ margin: '0 0 6px 0', fontSize: '1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.name}</h4>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                    <div style={{ fontWeight: 'bold', color: '#111' }}>{product.price ? `${product.price.toLocaleString()}원` : '가격 미정'}</div>
+                    <div style={{ fontSize: '0.7rem', color: '#999', display: 'flex', alignItems: 'center', gap: '3px', fontWeight: 'bold' }}>
+                      <span style={{ color: product.reviewCount > 0 ? '#ffb400' : '#ddd', fontSize: '1rem' }}>★</span>
+                      <span>{product.avgRating ? product.avgRating.toFixed(1) : '0.0'} ({product.reviewCount || 0})</span>
+</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <button
+            onClick={() => {
+              const el = document.getElementById(scrollId);
+              if (el) el.scrollBy({ left: el.clientWidth * 0.8, behavior: 'smooth' });
+            }}
+            aria-label="다음"
+            style={{
+              position: 'absolute', top: '50%', right: '-16px', transform: 'translateY(-50%)',
+              zIndex: 10, width: '36px', height: '36px', borderRadius: '50%',
+              background: 'white', border: '1px solid #ffeef2',
+               cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '1rem', color: '#ff2070', fontWeight: 'bold',
+              transition: 'all 0.2s'
+            }}
+          >›</button>
+        </div>
+      </div>
+    );
+  };
+
   const handleCategoryClick = (cat) => {
     setSearchParams({ category: cat })
   }
@@ -124,85 +213,18 @@ export default function Home() {
   return (
     <div className="container" style={{ padding: '2rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '2rem', flex: 1 }}>
       <HeroCarousel latestPosts={latestPosts} />
+
+      {/* 🔥 인기 상품 섹션 */}
+      {renderProductScroller('🔥 인기 슬라임 종합 랭킹', '리뷰·별점 기준', popularProducts, 'rank-scroll')}
+
+      {/* 카테고리 네비게이션 및 정렬 */}
       <CategoryNav 
         categories={CATEGORIES} 
         activeCategory={activeCategory} 
         onCategoryClick={handleCategoryClick} 
+        sortOption={sortOption}
+        onSortChange={setSortOption}
       />
-
-      {/* 🔥 인기 상품 섹션 */}
-      {popularProducts.length > 0 ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '1.25rem', fontWeight: '800', color: '#111' }}>
-              🔥 {activeCategory === '전체' ? '인기 슬라임 종합 랭킹' : `인기 ${activeCategory} 랭킹`}
-            </span>
-            <span style={{ fontSize: '0.8rem', color: '#aaa' }}>리뷰·별점 기준</span>
-          </div>
-          
-          <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '12px', scrollbarWidth: 'none' }}>
-            {popularProducts.map((product, idx) => (
-              <div
-                key={product.id}
-                onClick={() => window.location.href = `/product/${product.id}`}
-                style={{
-                  flexShrink: 0, width: '160px',
-                  borderRadius: '12px', background: 'white',
-                  border: '1px solid #f0f0f0',
-                  boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
-                  cursor: 'pointer', overflow: 'hidden',
-                  transition: 'transform 0.2s, box-shadow 0.2s',
-                  position: 'relative',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.12)' }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.06)' }}
-              >
-                {/* 순위 배지 */}
-                <div style={{
-                  position: 'absolute', top: '8px', left: '8px', zIndex: 2,
-                  width: '24px', height: '24px', borderRadius: '50%',
-                  background: idx === 0 ? '#ff2070' : idx === 1 ? '#ff7043' : idx === 2 ? '#ffa000' : 'rgba(0,0,0,0.4)',
-                  color: 'white', fontSize: '0.75rem', fontWeight: '900',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>{idx + 1}</div>
-                <img
-                  src={product.imageUrl || (product.imageUrls?.[0]) || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=300'}
-                  alt={product.name}
-                  style={{ width: '100%', height: '160px', objectFit: 'cover' }}
-                />
-                <div style={{ padding: '10px 12px 12px' }}>
-                  <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#111', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: '4px' }}>
-                    {product.name}
-                  </div>
-                  <div style={{ fontSize: '0.78rem', color: '#888', marginBottom: '4px' }}>{product.shopName}</div>
-                  <div style={{ fontSize: '0.72rem', color: '#999', display: 'flex', alignItems: 'center', gap: '3px', fontWeight: 'bold' }}>
-                    <span style={{ color: product.reviewCount > 0 ? '#ffb400' : '#ddd', fontSize: '0.9rem' }}>★</span>
-                    <span>{product.avgRating ? product.avgRating.toFixed(1) : '0.0'} ({product.reviewCount || 0})</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
-            <Link 
-              to={activeCategory === '전체' ? '/products' : `/products?category=${activeCategory}`}
-              style={{
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                padding: '0.8rem 2.5rem', borderRadius: '30px',
-                background: 'linear-gradient(135deg, #ff2070 0%, #ff5c97 100%)',
-                color: 'white', fontSize: '1rem', fontWeight: '700',
-                textDecoration: 'none', boxShadow: '0 4px 12px rgba(255, 32, 112, 0.25)',
-                transition: 'transform 0.2s'
-              }}
-              onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-              onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-            >
-              {activeCategory === '전체' ? '전체 상품 보러가기' : `${activeCategory} 전체 보기`}
-            </Link>
-          </div>
-        </div>
-      ) : null}
 
       <main style={{ padding: 0 }}>
         <div style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -210,7 +232,7 @@ export default function Home() {
             {searchQuery ? `"${searchQuery}" 검색 결과` : `${activeCategory === '전체' ? '전체' : activeCategory} 상품 목록`}
           </h2>
           <p style={{ fontSize: '0.9rem', color: '#888', margin: 0 }}>
-            새롭게 업데이트되는 슬라임들을 만나보세요!
+            다양한 슬라임들을 탐색해보세요!
           </p>
         </div>
         <ProductGrid 

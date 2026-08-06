@@ -5,6 +5,7 @@ import { formatDate } from '../utils/formatDate';
 import { useAuthStore } from '../store';
 import { db } from '../firebase';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc } from 'firebase/firestore';
+import { MessageSquare, Heart, Star, ShoppingBag, CheckCircle, XCircle, FileText, AlertTriangle, Megaphone, Bell } from 'lucide-react';
 
 export default function NotificationDropdown({ onClose }) {
   const { nickname } = useAuthStore();
@@ -196,21 +197,25 @@ export default function NotificationDropdown({ onClose }) {
               onClick={() => handleNotificationClick(notif)}
             >
               <div className="notification-icon" style={{ 
-                background: notif.type === 'NEW_LIKE' ? '#fff0f5' : 
-                            notif.type === 'NEW_COMMENT' ? '#f0f8ff' : 
-                            notif.type === 'NEW_REVIEW' ? '#fffbf0' : 
-                            (notif.type === 'SELLER_APPROVAL' || notif.type === 'NEW_SELLER_APPLICATION') ? '#f0fdf4' : 
-                            (notif.type === 'SELLER_REJECTED' || notif.type === 'NEW_REPORT') ? '#fef2f2' : '#f8f9fa'
+                background: 'rgba(255, 32, 112, 0.08)',
+                color: 'var(--primary-color)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '34px',
+                height: '34px',
+                borderRadius: '50%',
+                flexShrink: 0
               }}>
-                {notif.type === 'NEW_COMMENT' ? '💬' : 
-                 notif.type === 'NEW_LIKE' ? '❤️' : 
-                 notif.type === 'NEW_REVIEW' ? '⭐' : 
-                 notif.type === 'WISHLIST_UPDATE' ? '🛍️' : 
-                 notif.type === 'SELLER_APPROVAL' ? '✅' : 
-                 notif.type === 'SELLER_REJECTED' ? '❌' : 
-                 notif.type === 'NEW_SELLER_APPLICATION' ? '📋' : 
-                 notif.type === 'NEW_REPORT' ? '🚨' : 
-                 notif.type === 'SYSTEM_ALERT' ? '📣' : '🔔'}
+                {notif.type === 'NEW_COMMENT' ? <MessageSquare size={18} /> : 
+                 notif.type === 'NEW_LIKE' ? <Heart size={18} /> : 
+                 notif.type === 'NEW_REVIEW' ? <Star size={18} /> : 
+                 notif.type === 'WISHLIST_UPDATE' ? <ShoppingBag size={18} /> : 
+                 notif.type === 'SELLER_APPROVAL' ? <CheckCircle size={18} /> : 
+                 notif.type === 'SELLER_REJECTED' ? <XCircle size={18} /> : 
+                 notif.type === 'NEW_SELLER_APPLICATION' ? <FileText size={18} /> : 
+                 notif.type === 'NEW_REPORT' ? <AlertTriangle size={18} /> : 
+                 notif.type === 'SYSTEM_ALERT' ? <Megaphone size={18} /> : <Bell size={18} />}
               </div>
               <div className="notification-content">
                 <p className="notification-message">

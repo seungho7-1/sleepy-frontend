@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '../../store'
 import { boardApi } from '../../api/board'
 import { formatDate } from '../../utils/formatDate'
+import { Heart, Flag } from 'lucide-react'
 
 export default function PostDetail() {
   const { id } = useParams()
@@ -289,9 +290,10 @@ export default function PostDetail() {
             {token && !isAuthor && role !== 'ADMIN' && (
               <button 
                 onClick={() => { setReportTargetType('POST'); setReportTargetId(id); setIsReportModalOpen(true); }}
-                style={{ background: '#fff9f0', border: '1px solid #ffe8cc', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', color: '#e67e22', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}
+                style={{ background: '#ffffff', border: '1px solid #eeeeee', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', color: '#666666', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}
               >
-                🚨 신고
+                <Flag size={14} color="var(--primary-color)" />
+                신고
               </button>
             )}
           </div>
@@ -317,31 +319,22 @@ export default function PostDetail() {
           <button 
             onClick={toggleLike}
             disabled={isLiking}
-            onMouseOver={(e) => {
-              if(isLiking) return;
-              e.currentTarget.style.background = '#fff0f2';
-              e.currentTarget.style.borderColor = 'var(--primary-color)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.background = 'white';
-              e.currentTarget.style.borderColor = '#ddd';
-            }}
             style={{ 
-              background: 'white',
-              color: 'var(--text-main)', 
-              border: '1px solid #ddd', 
+              background: post.isLiked ? '#fff0f5' : 'white',
+              color: post.isLiked ? 'var(--primary-color)' : 'var(--text-main)', 
+              border: post.isLiked ? '1px solid #ffccd8' : '1px solid #ddd', 
               padding: '12px 28px', 
               borderRadius: '30px', 
               fontSize: '1rem',
               fontWeight: '600',
-              cursor: 'pointer',
+              cursor: isLiking ? 'default' : 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '8px',
-              transition: 'all 0.2s ease',
+              transition: 'all 0.2s ease'
             }}
           >
-            <span style={{ fontSize: '1.2rem', color: 'var(--primary-color)' }}>❤️</span>
+            <Heart size={20} color="var(--primary-color)" fill={post.isLiked ? 'var(--primary-color)' : 'none'} />
             <span>좋아요</span>
             <span style={{ fontWeight: '700' }}>
               {post.likeCount}
@@ -413,10 +406,9 @@ export default function PostDetail() {
                     <div id={`comment-${c.id}`} key={c.id} style={{ marginLeft: depth > 0 ? '1.5rem' : '0', marginTop: '0.8rem' }}>
                       <div style={{ 
                         padding: '12px 14px', 
-                        background: depth > 0 ? '#fffdfd' : 'white', 
+                        background: 'white', 
                         borderRadius: '8px', 
-                        border: '1px solid',
-                        borderColor: depth > 0 ? '#ffeef2' : '#f1f1f1',
+                        border: '1px solid #eee',
                         display: 'flex', 
                         flexDirection: 'column',
                         gap: '6px'
@@ -516,9 +508,10 @@ export default function PostDetail() {
                             <button 
                               type="button" 
                               onClick={() => { setReportTargetType('COMMENT'); setReportTargetId(c.id); setIsReportModalOpen(true); }}
-                              style={{ background: 'none', border: 'none', color: '#e67e22', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer', padding: 0 }}
+                              style={{ background: 'none', border: 'none', color: '#888888', fontSize: '0.8rem', fontWeight: '500', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', gap: '4px' }}
                             >
-                              🚨 신고
+                              <Flag size={13} color="var(--primary-color)" />
+                              신고
                             </button>
                           )}
                         </div>
@@ -526,7 +519,7 @@ export default function PostDetail() {
 
                       {/* Reply form for this specific comment */}
                       {replyToId === c.id && (
-                        <form onSubmit={handleCommentSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '0.8rem', marginLeft: '1.5rem', padding: '1rem', background: '#fff9fa', borderRadius: '8px', border: '1px solid #ffd6e0' }}>
+                        <form onSubmit={handleCommentSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '0.8rem', marginLeft: '1.5rem', padding: '1rem', background: '#f8f9fa', borderRadius: '8px', border: '1px solid #eee' }}>
                           <div style={{ color: 'var(--primary-color)', fontWeight: 'bold', fontSize: '0.85rem', marginBottom: '4px' }}>
                             ↳ @{c.nickname}님에게 답글 작성
                           </div>
@@ -535,19 +528,19 @@ export default function PostDetail() {
                             onChange={(e) => setNewComment(e.target.value)} 
                             placeholder="답글 내용을 입력해주세요."
                             style={{ 
-                              width: '100%', minHeight: '60px', padding: '10px', borderRadius: '6px', border: '1px solid #ffd6e0', 
+                              width: '100%', minHeight: '60px', padding: '10px', borderRadius: '6px', border: '1px solid #ddd', 
                               fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box', resize: 'vertical', fontFamily: 'inherit' 
                             }}
                             required
                             autoFocus
                             onFocus={(e) => e.target.style.borderColor = 'var(--primary-color)'}
-                            onBlur={(e) => e.target.style.borderColor = '#ffd6e0'}
+                            onBlur={(e) => e.target.style.borderColor = '#ddd'}
                           />
                           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
                             <button 
                               type="button" 
                               onClick={() => { setReplyToId(null); setReplyNickname(''); setNewComment(''); }} 
-                              style={{ padding: '8px 16px', border: '1px solid #ffd6e0', borderRadius: '6px', fontSize: '0.85rem', color: '#666', background: 'white', cursor: 'pointer', fontWeight: '500' }}
+                              style={{ padding: '8px 16px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '0.85rem', color: '#666', background: 'white', cursor: 'pointer', fontWeight: '500' }}
                             >
                               취소
                             </button>
@@ -579,8 +572,8 @@ export default function PostDetail() {
             style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000, backdropFilter: 'blur(2px)' }} 
           />
           <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.15)', padding: '2rem', zIndex: 1001, width: '90%', maxWidth: '420px', boxSizing: 'border-box' }}>
-            <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.2rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px', color: '#e67e22' }}>
-              🚨 {reportTargetType === 'POST' ? '게시글' : '댓글'} 신고하기
+            <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.2rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--primary-color)' }}>
+              <Flag size={20} color="var(--primary-color)" /> {reportTargetType === 'POST' ? '게시글' : '댓글'} 신고하기
             </h3>
             <p style={{ fontSize: '0.85rem', color: '#666', marginBottom: '1.5rem', lineHeight: '1.4' }}>
               부적절하거나 커뮤니티 가이드를 위반한 {reportTargetType === 'POST' ? '게시글' : '댓글'}은 신고해 주세요. 관리자 확인 후 신속히 조치하겠습니다.
@@ -628,7 +621,7 @@ export default function PostDetail() {
                 <button 
                   type="submit" 
                   disabled={submittingReport}
-                  style={{ flex: 1, padding: '0.75rem', border: 'none', borderRadius: '8px', fontSize: '0.9rem', background: '#e67e22', color: '#fff', cursor: submittingReport ? 'not-allowed' : 'pointer', fontWeight: 'bold' }}
+                  style={{ flex: 1, padding: '0.75rem', border: 'none', borderRadius: '8px', fontSize: '0.9rem', background: 'var(--primary-color)', color: '#fff', cursor: submittingReport ? 'not-allowed' : 'pointer', fontWeight: 'bold', boxShadow: '0 4px 12px rgba(255, 32, 112, 0.2)' }}
                 >
                   {submittingReport ? '제출 중...' : '신고하기'}
                 </button>

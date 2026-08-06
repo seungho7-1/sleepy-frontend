@@ -120,10 +120,10 @@ export default function SellerShopPage() {
 
   const handleOpenEdit = () => {
     setEditForm({
-      introduction: sellerInfo.introduction || '',
-      siteUrl: sellerInfo.siteUrl || '',
+      introduction: sellerInfo?.introduction || '',
+      siteUrl: sellerInfo?.siteUrl || myInfo?.siteUrl || '',
     });
-    const existingSns = [sellerInfo.youtubeUrl, sellerInfo.instagramUrl, sellerInfo.facebookUrl, sellerInfo.tiktokUrl].filter(Boolean);
+    const existingSns = [sellerInfo?.youtubeUrl, sellerInfo?.instagramUrl, sellerInfo?.facebookUrl, sellerInfo?.tiktokUrl].filter(Boolean);
     setSnsUrls(existingSns.length > 0 ? existingSns : ['']);
     setShowEditModal(true);
   };
@@ -326,6 +326,10 @@ export default function SellerShopPage() {
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem' }}>쇼핑몰 주소</label>
                 <input type="url" value={editForm.siteUrl} onChange={e => setEditForm({...editForm, siteUrl: e.target.value})} style={{ width: '100%', padding: '0.75rem', border: '1px solid #ddd', borderRadius: '8px' }} placeholder="https://..." />
+              </div>
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem' }}>소개글</label>
+                <textarea value={editForm.introduction} onChange={e => setEditForm({...editForm, introduction: e.target.value})} style={{ width: '100%', minHeight: '80px', padding: '0.75rem', border: '1px solid #ddd', borderRadius: '8px', fontFamily: 'inherit', resize: 'vertical' }} placeholder="판매자 소개글을 입력하세요." />
               </div>
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '0.9rem' }}>SNS 링크 <span style={{ fontWeight: 'normal', color: 'var(--text-sub)', fontSize: '0.8rem' }}>(URL 붙여넣기하면 자동 인식)</span></label>

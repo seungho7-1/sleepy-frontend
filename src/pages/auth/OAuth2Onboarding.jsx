@@ -60,10 +60,10 @@ export default function OAuth2Onboarding() {
       
       const response = await authApi.checkNickname(nickname);
       if (response.exists) {
-        alert('이미 사용 중인 닉네임입니다. 🥲');
+        alert('이미 사용 중인 닉네임입니다.');
         setIsNicknameChecked(false);
       } else {
-        alert('사용 가능한 닉네임입니다! 👍');
+        alert('사용 가능한 닉네임입니다!');
         setIsNicknameChecked(true);
       }
     } catch (err) {
@@ -129,7 +129,7 @@ export default function OAuth2Onboarding() {
       // 3. Save the finalized user role and nickname returned by the API
       login(token, response.role, response.nickname)
       
-      alert('가입이 완료되었습니다! 반갑습니다! 🎉')
+      alert('가입이 완료되었습니다! 반갑습니다!')
       navigate('/mypage')
     } catch (error) {
       alert(error.message || '가입 완료 중 오류가 발생했습니다.')

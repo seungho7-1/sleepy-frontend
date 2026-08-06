@@ -1,0 +1,1053 @@
+﻿diff --git a/.firebase/hosting.ZGlzdA.cache b/.firebase/hosting.ZGlzdA.cache
+index 9202205..7bedf76 100644
+--- a/.firebase/hosting.ZGlzdA.cache
++++ b/.firebase/hosting.ZGlzdA.cache
+@@ -2,50 +2,49 @@ logo.png,1785300866736,6e59aa24dc0b126a87cf500e3504e851ce7bd608c5615232e918e7b98
+ logo-square.png,1785300866727,3d41c2f610169ae358e74a2ad232bda4dafb41bed4eabe8fadf028b72652f974
+ icons.svg,1783444703416,a71fc7c82918feffdb1e7e59f1b494531849b1025cedc75bc6c0dfa2a941d54d
+ favicon.svg,1783444703358,44fea64ea0b4986cf22dbc28741fe402f021baf13dbd2cc8ce6aa04b24300573
+-index.html,1785539144751,6af8b89865a81a95be9850a1240603e67582b14c89977a0824969d1b1582332d
+-assets/Terms-CB1yKQOy.js,1785539144703,7155baa98dc2a8dd9dbeae2b83db3261cbcb23872e546319a2322fefb47834cf
+-assets/thumbnailExtractor-SnhrScEt.js,1785539144730,af3cbc6e070b310e15876253b6d9801bcc1444f333309824a5e1fba88a2c0d9a
+-assets/worker-BzdDEeh7.js,1785539144746,9f64aa407bd7c40969e0205cdabae70200f7f8e5a6d824515e1357ccb92ed9aa
+-assets/Signup-DancTAkS.js,1785539144701,69056df901baa197906d91350f2141f255ddec83e66e0303f0f8bfacd425f2e2
+-assets/ShortsFeed-B31lVm1i.js,1785539144697,692e970ba29c33cafcca1de5aeeaad865b024ae058d301dfeb5e0b2652820eff
+-assets/SellerShopPage-DHoe2BDx.js,1785539144695,4912046fc922a24fdc5c33b30db15d8df6ba39b638028fefcf859faa107f06b5
+-assets/state-DZJGj1NY.js,1785539144727,0ad98ac8cef6024765ea7d74b2183effadf34dc7b36bb71ad5333c21ea58d7a0
+-assets/seller-DI5l-J3w.js,1785539144725,7098c0b902fcff30c954a8300c383d8934585bc328d694dcad073130c9ce5542
+-assets/SellerDashboard-wCkuJGcq.js,1785539144691,f3ef12f422ae545ff52960f295643ed4e568da506f250c0741b12636479cc26f
+-assets/SellerApplyPage-D9yGI9MS.js,1785539144689,c0a10a887143980a347ce1d89fc8203a753446bd1d69e096d90d28ee3aeee5bd
+-assets/rolldown-runtime-QTnfLwEv.js,1785539144723,c29d92a968891d131e540216656a16cd917e65b16a9ad408e0b463b3578acfa7
+-assets/ProductGrid-CQvQ30_b.js,1785539144684,f7915fb70898dde758367848f18e11afacbdecd0e1d9a0f33bf9662f2493ef09
+-assets/ProductList-CTYSd7dm.js,1785539144686,d4871875ace742a3b7fb3c5f55dce499e8af19dec0ee6ceaddd4e3fa80d96934
+-assets/products-eOsLtnq4.js,1785539144719,84775429f2fa6fc81be1ad4daa51dfc8c30c98671cb7bde30e50bf876bf78c79
+-assets/reviews-Jz291Fie.js,1785539144721,a4faf162609765b108a0ca8598c62bc248763d5814bb945a5a651ee64042f11f
+-assets/ProductCard-jrGZLa8q.js,1785539144681,bbaf778b4cce90a4ad5a4d492a07e2317455604b8d37f90deb4209e2e56b30b9
+-assets/PostDetail-KMmpbQtP.js,1785539144677,1eb3d96a0bd1e7203412227af0732fc0dcc5b6fe22445b7bbb161510c018bd4d
+-assets/Privacy-BSQN0D_y.js,1785539144679,11459c7a92980d674688c3fb73af7f58caffb797fea6540b292f19c89d7e1420
+-assets/ProductDetail-DSn9eFZy.js,1785539144682,59a3b3182195885416f923e1a9abdc160a2907f7927b7fbd3092f204f437736b
+-assets/OAuth2Onboarding-CtZgf5MD.js,1785539144672,38c1a868fb7ae307a3522b36aba34e4723d229bd4c485e72ec60fef89bf43e29
+-assets/NotFound-Bde40fuB.js,1785539144670,adc681da5f419199d74559242ec84fdbc345679481c7e8047ee3efa31fa7f41f
+-assets/media-B9lajfKK.js,1785539144716,21faf69ea51c328c12136f64884cdd2dd4404f78d2b383aa0a60b1aa953720aa
+-assets/PostCreate-DafhUkbw.js,1785539144675,0533789f3d6f7de4c4f0c3cc7dabe4d83b479e85c367f35e573988e4c739c6f4
+-assets/logo_3-CHwgM8LI.js,1785539144715,99036252c4d5219f3a3b596f6310befc80f58de63e71d6f51aeeb2a7699b251d
+-assets/inquiry-DeDASu_f.js,1785539144712,85a4004488b6a1d245b8cd5566b2e2ea4b8067e08d21dcf06db0fe6356911df6
+-assets/MyPage-DKmf2iif.js,1785539144667,1503bcdd9d1c731d7200e2e8ae906672e30757b7c84f94ca5ebcecb729991df8
+-assets/Login-DQZeprn2.js,1785539144665,017dc44eaefd833fd8e7d8c014056eb628623a8bc04ae6f67491fcb1d6be8c73
+-assets/HoverVideo-DNS0a5SD.js,1785539144663,1e1530ac8adb7997702f9b934039235986a0cf15ab503ac0c18e8e83f4b094e6
+-assets/index-8LVR4B0z.css,1785539144741,168ff886a1b337910c2b2ef4e557b404ee0270f09e58817573c87b64f7e2d448
+-assets/FindPassword-9AJXtAk6.js,1785539144659,788a6faeb4c4e6d6b1b66e9728559e1f881ee5022196264ceb54e1ec7228b804
+-assets/Home-C5aLYJDx.js,1785539144661,c63115c064ddd074ba967d077b3fbef97437da881dadd945aa8504824eccf14f
+-assets/CustomerCenter-g-o183h5.js,1785539144656,ddb744a69dc4858a27582a658659d858eac89ef7c2375ea2d3ddca6443271f0c
+-assets/ChangePassword-CAy5ru94.js,1785539144651,323c3fae940595fc2cd6fe1c9016aed13ce6ae924c0efec4f11be631e8d515e5
+-assets/index-FYTusX_v.js,1785539144637,378de609ea10d146fa695ae13ed5e47d0e9f25ae72771a768dcf52214f21fbf0
+-assets/board-D0U6xWHI.js,1785539144707,2c90c981ac353a7184bfa815974df3451a9832f9d95e1d8186c75f82f4d630b2
+-assets/AdminReportsPage-rjGwz_dx.js,1785539144649,c526d09b5fd7107eba59382337fb10b391c1f926096138126d1a7b461a10a13e
+-assets/Community-B8QkeTkL.js,1785539144653,297cdccf008e6625188789cb05f996a61f1c0abe399578b99f447c0b9616c3ec
+-assets/AdminDashboard-KsoWyYSG.css,1785539144738,d919627b3084267371d8c603140fc4465503a6fff65fa9ffcf4e0be5321d8cde
+-assets/AdminDashboard-Bn2-ypOz.js,1785539144642,5354dd02daeb5dc8338757d58a0e995f04f0b1d8e7d534e969ad0ec2c58b2f56
+-assets/AdminProductsPage-CGfFMkov.js,1785539144646,90960b199b74bd287181fd6973e941fff2f1315a7ea0147d085ad00a04380700
+-assets/AdminMembersPage-CdDxe45B.js,1785539144644,e092c0920a99c6f03a92d041a78e48e10844829d6f074760eca8335c36e00988
+-assets/admin-BKhqiF0R.js,1785539144705,89c93c7eb2f0a4e24e0cfe0a94ff8aae2592c6892bbd92427508f1a5363e2123
+-assets/AdminApprovalPage-Dz0sSKWw.js,1785539144640,0bd3b53ebe162988e3921dc8e20f7539c78ba47b78eae9f05e843db4d7c1b12b
+-assets/vendor-lYTtazLy.js,1785539144733,73b6f3aee96e33bfba84106352825065c4d7b342a5b07d6db02f5766e4add941
+-assets/vendor-other-A49J27U3.js,1785539144736,0d069571ab0413deed7aa262b0aae073471e17798abfc268ca1c95445c8151e4
+-assets/logo_3-e2tmj23V.png,1785539144744,7f2d7c5a88c3433041f1fc943ac69e504a68d7f808e54dc5b9a5212ab6e3e4c6
++index.html,1785987969692,9c1a5201df11b13b14c75c04513e8d7c543368473be3611eee28cd2eb0fa0bd0
++assets/thumbnailExtractor-gRvVibCb.js,1785987969679,0f26a4a87841159b5430cdc072b570a1797ef6a758afef6dc4bf3aa53d9ddfd1
++assets/Terms-CB1yKQOy.js,1785987969661,7155baa98dc2a8dd9dbeae2b83db3261cbcb23872e546319a2322fefb47834cf
++assets/state-DZJGj1NY.js,1785987969677,0ad98ac8cef6024765ea7d74b2183effadf34dc7b36bb71ad5333c21ea58d7a0
++assets/Signup-CVw24ezE.js,1785987969658,9b43a3f91bf84bc0c5861759487ddb7fcd37f30111848235f89a9012653791ef
++assets/ShortsFeed-DcS7X09Z.js,1785987969656,5050e210b58acbcd92b5f125861a665167f5d281fe30bf6affe86ec075bf8887
++assets/SellerShopPage-BdEz2Ojh.js,1785987969655,9eb57138d1584b607924da0fec6385dcb56078b9c50a92de81a3ab27537512ae
++assets/SellerDashboard-CO6bcHlF.js,1785987969653,9ad03f067890f45e8e6642cbb3959dc32e922a48e8629c500cd2f9a0a83a5a26
++assets/SellerApplyPage-3yUPwERy.js,1785987969650,46ea04f3f78517916b75d35b9123df2914dee77e3cd9767e39efb210416830d9
++assets/seller-DzFQdPSg.js,1785987969676,e31d5ff29effd9c80f5c9a7053e62347984b96ad0a036e32f1836544c3107b26
++assets/rolldown-runtime-QTnfLwEv.js,1785987969674,c29d92a968891d131e540216656a16cd917e65b16a9ad408e0b463b3578acfa7
++assets/reviews-Duyvw5Nl.js,1785987969672,227fa31799682ed938eea7754668acf2d29fadee326c0a97100df9dc6847e4a8
++assets/products-lzfOg75G.js,1785987969671,f0ed0d443871c991064a8628556cefd257e0aae4538e8e7f98ee7ea785ee9dd2
++assets/ProductList-D9azaHna.js,1785987969648,a6ed9e82914ad7b409fa7a50967d8f3f82ad0da7f8d2b2b152a36f3f95818c39
++assets/ProductCard-jrGZLa8q.js,1785987969643,bbaf778b4cce90a4ad5a4d492a07e2317455604b8d37f90deb4209e2e56b30b9
++assets/Privacy-BSQN0D_y.js,1785987969641,11459c7a92980d674688c3fb73af7f58caffb797fea6540b292f19c89d7e1420
++assets/ProductGrid-CQvQ30_b.js,1785987969646,f7915fb70898dde758367848f18e11afacbdecd0e1d9a0f33bf9662f2493ef09
++assets/ProductDetail-BTWzwZ_k.js,1785987969644,9d42c58f5cdb1a3e57c0a00b1de46c4b7001c3732dd77290ca4eb9d898cf4652
++assets/PostCreate-DsfLlgMl.js,1785987969637,5c13c4cb7a1d5d672dda6f3593f0fbb4ea35b523768fd7c0bd6437ccc82eea21
++assets/PostDetail-D42DXoCd.js,1785987969639,5882bd40f754ad584cec08f60c19dd0303fcfafe77c9d1afa9c5d5e98cec10c8
++assets/logo_3-CHwgM8LI.js,1785987969667,99036252c4d5219f3a3b596f6310befc80f58de63e71d6f51aeeb2a7699b251d
++assets/OAuth2Onboarding-DDi8mwP_.js,1785987969635,81d84c5a2b7a288b1bf15327b14dacbe5539856af99e5df521804fd0da4717a0
++assets/NotFound-Bde40fuB.js,1785987969635,adc681da5f419199d74559242ec84fdbc345679481c7e8047ee3efa31fa7f41f
++assets/Login-BKKn2od0.js,1785987969630,0f80c62d700eec6b63221ece9a76c28bc8a137f4e8820a28e466603f5129110b
++assets/inquiry-Bu0pZgiE.js,1785987969665,45ac30a581898771bd365fdbf6122cd48394fce834af208d46b0b3da4ae097d4
++assets/MyPage-gZT_GmYm.js,1785987969632,b50daefc87ebc413e702bcb8ba0a9bdee799dad30ca47e67e48526855e08613f
++assets/index-Dls-t8Lf.js,1785987969613,45f1919deab1eeeea972a030bd9eb43af187cdf5f7ca06a662016c805e629d4b
++assets/media-B9lajfKK.js,1785987969669,21faf69ea51c328c12136f64884cdd2dd4404f78d2b383aa0a60b1aa953720aa
++assets/HoverVideo-DNS0a5SD.js,1785987969629,1e1530ac8adb7997702f9b934039235986a0cf15ab503ac0c18e8e83f4b094e6
++assets/index-BysVN9Yt.css,1785987969686,e808e3202ed2c166254b239c693b8a9111bb9cb1d0f9f179a9af762ab7281f97
++assets/Home-C4Khkyye.js,1785987969627,eae152ad4727875a92ac59d4a0bac928d78c91f1cf9516d24c9c121c7e697187
++assets/CustomerCenter-D0sMvIy5.js,1785987969624,8c560826f38323c42f048c4019fb9ff3f7281323ab04369bde136ea91c008351
++assets/FindPassword-eRqmNYNo.js,1785987969625,4da30490d165be8ec37b3f1f9d022618ebd3d97b446b4d9990bf10b830d05637
++assets/AdminDashboard-KsoWyYSG.css,1785987969684,d919627b3084267371d8c603140fc4465503a6fff65fa9ffcf4e0be5321d8cde
++assets/ChangePassword-C3yDE0JT.js,1785987969622,eb92bb46071df32fbd8fc74b14e0626505d4512015f38fd065800bc2791e301c
++assets/AdminMembersPage-30XMPL47.js,1785987969618,78bf8909167051be2046f3c38e10d1ddcf311cf20692d41f776ca94fc9132df7
++assets/board--7rKdwo2.js,1785987969664,2e7cdcf42937fe1b88075710a718312936d14f91ed0140fcf59fa20d7a5d797d
++assets/AdminProductsPage-CqsHLet3.js,1785987969619,b8f57ade87c5ff57f2f53134ddf7646257a7e4c487d9b8d01fce831b76485be1
++assets/admin-DBCNPe8_.js,1785987969663,d92968e0ac14e9a1b29c0b66b1740472265c44552b39369f0e92a00fb9daad2c
++assets/Community-DpwYoaxV.js,1785987969623,fc984f16d161f9f8bce187d42b80b1d875de5a8527a5e054b8fca299e731c37d
++assets/AdminDashboard-GoHDsGwz.js,1785987969616,2bb58de7069042d6e6b0c1c957042c8f0011f4898dbc41db348513bffa136781
++assets/AdminApprovalPage-BTBs37cV.js,1785987969614,7f625fbb6c32945a7913462b0f8243bd6a77374c1c2bfc511aafd31f68d6cd1e
++assets/AdminReportsPage-ssj-MCOr.js,1785987969621,b85085279e74bb4891c3fde64d0b74585e28972a075b06966fda8db73b23a8a0
++assets/vendor-lYTtazLy.js,1785987969681,73b6f3aee96e33bfba84106352825065c4d7b342a5b07d6db02f5766e4add941
++assets/vendor-other-Db1TlACu.js,1785987969683,1ffc3f76704e256ef7168ea9ae30ac9aba768d95b5927d003d191006361f04ee
++assets/logo_3-e2tmj23V.png,1785987969690,7f2d7c5a88c3433041f1fc943ac69e504a68d7f808e54dc5b9a5212ab6e3e4c6
+diff --git a/src/components/home/CategoryNav.jsx b/src/components/home/CategoryNav.jsx
+index a4e7afa..0b26d5c 100644
+--- a/src/components/home/CategoryNav.jsx
++++ b/src/components/home/CategoryNav.jsx
+@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
+ import { useNavigate, useLocation } from 'react-router-dom';
+ import { Search } from 'lucide-react';
+ 
+-export default function CategoryNav({ categories, activeCategory, onCategoryClick }) {
++export default function CategoryNav({ categories, activeCategory, onCategoryClick, sortOption, onSortChange }) {
+   const navigate = useNavigate();
+   const location = useLocation();
+   const [searchQuery, setSearchQuery] = useState('');
+@@ -55,8 +55,18 @@ export default function CategoryNav({ categories, activeCategory, onCategoryClic
+           ))}
+         </div>
+ 
+-        {/* 검색창 영역 */}
++        {/* 정렬 옵션 및 검색창 영역 */}
+         <div className="shop-nav-filters">
++          <select 
++            value={sortOption || 'createdAt,desc'} 
++            onChange={(e) => onSortChange && onSortChange(e.target.value)}
++            style={{
++              padding: '6px 12px', borderRadius: '20px', border: '1px solid #e0e0e0', background: '#fff', fontSize: '0.85rem', color: '#555', outline: 'none', cursor: 'pointer'
++            }}
++          >
++            <option value="createdAt,desc">최신순</option>
++            <option value="reviewCount,desc">인기순</option>
++          </select>
+           <form onSubmit={handleSearchSubmit} style={{ display: 'flex', alignItems: 'center', border: '1px solid #e0e0e0', borderRadius: '24px', padding: '6px 14px', background: '#f5f5f5', flex: 1, minWidth: '140px', maxWidth: '300px', transition: 'all 0.2s' }}>
+             <Search size={16} color="#888" style={{ marginRight: '6px', flexShrink: 0 }} />
+             <input 
+diff --git a/src/pages/Home.jsx b/src/pages/Home.jsx
+index 479cc97..0d7ebd9 100644
+--- a/src/pages/Home.jsx
++++ b/src/pages/Home.jsx
+@@ -1,28 +1,28 @@
+-import { useState, useEffect, useRef } from 'react'
+-import { Link, useSearchParams } from 'react-router-dom'
++import { useState, useEffect } from 'react'
++import { useSearchParams } from 'react-router-dom'
+ import { productApi } from '../api/products'
+ import { boardApi } from '../api/board'
+-import HeroCarousel from '../components/home/HeroCarousel';
+-import { Search } from 'lucide-react';
+-import CategoryNav from '../components/home/CategoryNav';
+-import ProductGrid from '../components/home/ProductGrid';
++import HeroCarousel from '../components/home/HeroCarousel'
++import CategoryNav from '../components/home/CategoryNav'
++import ProductGrid from '../components/home/ProductGrid'
+ 
+ const CATEGORIES = ['전체', '슬라임', '슬랑이', '말랑이', '스퀴시']
+-const FEED_MAX = 10 // 자랑피드 최대 표시 개수
++const FEED_MAX = 10 
+ 
+ export default function Home() {
+-  const [popularProducts, setPopularProducts] = useState([]) // 🔥 인기 상품
+-  const [activeCategory, setActiveCategory] = useState('전체')
+   const [latestPosts, setLatestPosts] = useState([])
++  const [popularProducts, setPopularProducts] = useState([]) 
++
+   const [searchParams, setSearchParams] = useSearchParams()
++  const [activeCategory, setActiveCategory] = useState('전체')
++  const [searchQuery, setSearchQuery] = useState('')
++  const [sortOption, setSortOption] = useState('createdAt,desc')
+   
+   const [products, setProducts] = useState([])
+   const [loading, setLoading] = useState(true)
+-  const [searchQuery, setSearchQuery] = useState('')
+   const [page, setPage] = useState(0)
+   const [totalPages, setTotalPages] = useState(1)
+-  
+-  // Sync state with URL category and search parameters
++
+   useEffect(() => {
+     const cat = searchParams.get('category')
+     const search = searchParams.get('search')
+@@ -40,50 +40,42 @@ export default function Home() {
+     }
+   }, [searchParams])
+ 
+-  useEffect(() => {
+-    fetchProducts(0, true)
+-    // eslint-disable-next-line
+-  }, [searchQuery, activeCategory])
+-
+   useEffect(() => {
+     fetchLatestPosts()
++    fetchPopularProducts()
+   }, [])
+ 
+   useEffect(() => {
+-    fetchPopularProducts(activeCategory)
+-  }, [activeCategory])
++    fetchProducts(0, true)
++    // eslint-disable-next-line
++  }, [searchQuery, activeCategory, sortOption])
+ 
+-  // 🔥 인기 상품 - reviewCount*3 + avgRating*2 기반 상위 12개
+-  const fetchPopularProducts = async (catName) => {
++  const fetchLatestPosts = async () => {
+     try {
+-      let categoryApiValue = '';
+-      if (catName === '슬라임') categoryApiValue = 'SLIME';
+-      else if (catName === '슬랑이') categoryApiValue = 'SLANGY';
+-      else if (catName === '말랑이') categoryApiValue = 'MALLANGI';
+-      else if (catName === '스퀴시') categoryApiValue = 'SQUISHY';
++      const data = await boardApi.getPosts('MEDIA', '', 0, FEED_MAX)
++      setLatestPosts((data.content || []).slice(0, FEED_MAX))
++    } catch (error) {
++      console.error('Failed to fetch latest posts:', error)
++    }
++  }
+ 
+-      const data = await productApi.getProducts(categoryApiValue, '', '', 0, 50, 'reviewCount,desc')
++  // 인기 상품은 카테고리와 무관하게 전체 기준 상위 12개
++  const fetchPopularProducts = async () => {
++    try {
++      const data = await productApi.getProducts('', '', '', 0, 50, 'reviewCount,desc')
+       const all = data?.content || []
+       const scored = all
+         .map(p => ({ ...p, _score: (p.reviewCount || 0) * 3 + (p.avgRating || 0) * 2 }))
+         .filter(p => p._score > 0)
+         .sort((a, b) => b._score - a._score)
+-        .slice(0, 12) // 최대 12개 표시
++        .slice(0, 12) 
+       setPopularProducts(scored)
+     } catch (err) {
+       console.error('Failed to fetch popular products:', err)
+     }
+   }
+ 
+-  const fetchLatestPosts = async () => {
+-    try {
+-      const data = await boardApi.getPosts('MEDIA', '', 0, FEED_MAX)
+-      setLatestPosts((data.content || []).slice(0, FEED_MAX))
+-    } catch (error) {
+-      console.error('Failed to fetch latest posts:', error)
+-    }
+-  }
+-
++  // 전체 상품 목록 (카테고리 및 검색어, 정렬 필터 적용)
+   const fetchProducts = async (pageNumber = 0, reset = false) => {
+     try {
+       if (reset) setLoading(true)
+@@ -94,8 +86,7 @@ export default function Home() {
+       else if (activeCategory === '말랑이') categoryApiValue = 'MALLANGI';
+       else if (activeCategory === '스퀴시') categoryApiValue = 'SQUISHY';
+ 
+-      const keyword = searchQuery;
+-      const data = await productApi.getProducts(categoryApiValue, keyword, '', pageNumber, 20);
++      const data = await productApi.getProducts(categoryApiValue, searchQuery, '', pageNumber, 20, sortOption);
+       
+       if (data && data.content) {
+         setProducts(prev => reset ? data.content : [...prev, ...data.content])
+@@ -121,43 +112,53 @@ export default function Home() {
+     setSearchParams({ category: cat })
+   }
+ 
+-  return (
+-    <div className="container" style={{ padding: '2rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '2rem', flex: 1 }}>
+-      <HeroCarousel latestPosts={latestPosts} />
+-      <CategoryNav 
+-        categories={CATEGORIES} 
+-        activeCategory={activeCategory} 
+-        onCategoryClick={handleCategoryClick} 
+-      />
+-
+-      {/* 🔥 인기 상품 섹션 */}
+-      {popularProducts.length > 0 ? (
+-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2rem' }}>
+-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+-            <span style={{ fontSize: '1.25rem', fontWeight: '800', color: '#111' }}>
+-              🔥 {activeCategory === '전체' ? '인기 슬라임 종합 랭킹' : `인기 ${activeCategory} 랭킹`}
+-            </span>
+-            <span style={{ fontSize: '0.8rem', color: '#aaa' }}>리뷰·별점 기준</span>
+-          </div>
+-          
+-          <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '12px', scrollbarWidth: 'none' }}>
+-            {popularProducts.map((product, idx) => (
++  const renderProductScroller = (title, subtitle, scrollerProducts, scrollId) => {
++    if (!scrollerProducts || scrollerProducts.length === 0) return null;
++    return (
++      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2rem' }}>
++        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
++          <span style={{ fontSize: '1.25rem', fontWeight: '800', color: '#111' }}>
++            {title}
++          </span>
++          <span style={{ fontSize: '0.8rem', color: '#aaa' }}>{subtitle}</span>
++        </div>
++        
++        <div style={{ position: 'relative' }}>
++          <button
++            onClick={() => {
++              const el = document.getElementById(scrollId);
++              if (el) el.scrollBy({ left: -el.clientWidth * 0.8, behavior: 'smooth' });
++            }}
++            aria-label="이전"
++            style={{
++              position: 'absolute', top: '50%', left: '-16px', transform: 'translateY(-50%)',
++              zIndex: 10, width: '36px', height: '36px', borderRadius: '50%',
++              background: 'white', border: '1px solid #ffeef2',
++               cursor: 'pointer',
++              display: 'flex', alignItems: 'center', justifyContent: 'center',
++              fontSize: '1rem', color: '#ff2070', fontWeight: 'bold',
++              transition: 'all 0.2s'
++            }}
++          >‹</button>
++
++          <div id={scrollId} style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '12px', scrollbarWidth: 'none', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}>
++            {scrollerProducts.map((product, idx) => (
+               <div
+                 key={product.id}
+                 onClick={() => window.location.href = `/product/${product.id}`}
+                 style={{
+                   flexShrink: 0, width: '160px',
+-                  borderRadius: '12px', background: 'white',
++                  borderRadius: '16px', background: 'white',
+                   border: '1px solid #f0f0f0',
+                   boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
+                   cursor: 'pointer', overflow: 'hidden',
+                   transition: 'transform 0.2s, box-shadow 0.2s',
+                   position: 'relative',
++                  scrollSnapAlign: 'start'
+                 }}
+                 onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.12)' }}
+                 onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.06)' }}
+               >
+-                {/* 순위 배지 */}
+                 <div style={{
+                   position: 'absolute', top: '8px', left: '8px', zIndex: 2,
+                   width: '24px', height: '24px', borderRadius: '50%',
+@@ -165,6 +166,7 @@ export default function Home() {
+                   color: 'white', fontSize: '0.75rem', fontWeight: '900',
+                   display: 'flex', alignItems: 'center', justifyContent: 'center'
+                 }}>{idx + 1}</div>
++                
+                 <img
+                   src={product.imageUrl || (product.imageUrls?.[0]) || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=300'}
+                   alt={product.name}
+@@ -184,25 +186,42 @@ export default function Home() {
+             ))}
+           </div>
+ 
+-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
+-            <Link 
+-              to={activeCategory === '전체' ? '/products' : `/products?category=${activeCategory}`}
+-              style={{
+-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+-                padding: '0.8rem 2.5rem', borderRadius: '30px',
+-                background: 'linear-gradient(135deg, #ff2070 0%, #ff5c97 100%)',
+-                color: 'white', fontSize: '1rem', fontWeight: '700',
+-                textDecoration: 'none', boxShadow: '0 4px 12px rgba(255, 32, 112, 0.25)',
+-                transition: 'transform 0.2s'
+-              }}
+-              onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+-              onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+-            >
+-              {activeCategory === '전체' ? '전체 상품 보러가기' : `${activeCategory} 전체 보기`}
+-            </Link>
+-          </div>
++          <button
++            onClick={() => {
++              const el = document.getElementById(scrollId);
++              if (el) el.scrollBy({ left: el.clientWidth * 0.8, behavior: 'smooth' });
++            }}
++            aria-label="다음"
++            style={{
++              position: 'absolute', top: '50%', right: '-16px', transform: 'translateY(-50%)',
++              zIndex: 10, width: '36px', height: '36px', borderRadius: '50%',
++              background: 'white', border: '1px solid #ffeef2',
++               cursor: 'pointer',
++              display: 'flex', alignItems: 'center', justifyContent: 'center',
++              fontSize: '1rem', color: '#ff2070', fontWeight: 'bold',
++              transition: 'all 0.2s'
++            }}
++          >›</button>
+         </div>
+-      ) : null}
++      </div>
++    );
++  };
++
++  return (
++    <div className="container" style={{ padding: '2rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '2rem', flex: 1 }}>
++      <HeroCarousel latestPosts={latestPosts} />
++
++      {/* 🔥 인기 상품 섹션 */}
++      {renderProductScroller('🔥 인기 슬라임 종합 랭킹', '리뷰·별점 기준', popularProducts, 'rank-scroll')}
++
++      {/* 카테고리 네비게이션 및 정렬 */}
++      <CategoryNav 
++        categories={CATEGORIES} 
++        activeCategory={activeCategory} 
++        onCategoryClick={handleCategoryClick} 
++        sortOption={sortOption}
++        onSortChange={setSortOption}
++      />
+ 
+       <main style={{ padding: 0 }}>
+         <div style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+@@ -210,7 +229,7 @@ export default function Home() {
+             {searchQuery ? `"${searchQuery}" 검색 결과` : `${activeCategory === '전체' ? '전체' : activeCategory} 상품 목록`}
+           </h2>
+           <p style={{ fontSize: '0.9rem', color: '#888', margin: 0 }}>
+-            새롭게 업데이트되는 슬라임들을 만나보세요!
++            다양한 슬라임들을 탐색해보세요!
+           </p>
+         </div>
+         <ProductGrid 
+diff --git a/src/pages/mypage/SellerDashboard.jsx b/src/pages/mypage/SellerDashboard.jsx
+index 22ec52a..554c886 100644
+--- a/src/pages/mypage/SellerDashboard.jsx
++++ b/src/pages/mypage/SellerDashboard.jsx
+@@ -15,6 +15,8 @@ export default function SellerDashboard() {
+   const [myProducts, setMyProducts] = useState([])
+   const [myReviews, setMyReviews] = useState([])
+   const [activeTab, setActiveTab] = useState('products') // 'products' | 'reviews'
++  const [filterCategory, setFilterCategory] = useState('전체')
++  const [sortBy, setSortBy] = useState('latest')
+   
+   const [showForm, setShowForm] = useState(false)
+   const [crawlUrl, setCrawlUrl] = useState('')
+@@ -61,17 +63,8 @@ export default function SellerDashboard() {
+     };
+     fetchMyInfo();
+     fetchMyProducts()
+-    fetchMyReviews()
+   }, [role])
+ 
+-  const fetchMyReviews = async () => {
+-    try {
+-      const data = await reviewApi.getSellerReviews();
+-      setMyReviews(data);
+-    } catch (err) {
+-      console.error(err);
+-    }
+-  }
+ 
+   const fetchMyProducts = async () => {
+     try {
+@@ -287,7 +280,7 @@ export default function SellerDashboard() {
+           
+           <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+             <div className="profile-avatar-container" style={{ position: 'relative', display: 'inline-block', width: '85px', height: '85px', flexShrink: 0 }}>
+-              <div className="profile-avatar" style={{ overflow: 'hidden', position: 'relative', width: '100%', height: '100%', borderRadius: '50%', border: '3px solid #fff', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f3f4f6', color: '#9ca3af', fontSize: '2rem', fontWeight: 'bold' }}>
++              <div className="profile-avatar" style={{ overflow: 'hidden', position: 'relative', width: '100%', height: '100%', borderRadius: '50%', border: '3px solid #fff', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff8f9', color: '#9ca3af', fontSize: '2rem', fontWeight: 'bold' }}>
+                 {myInfo?.profileImageUrl ? (
+                   <img src={myInfo.profileImageUrl} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                 ) : (
+@@ -295,31 +288,35 @@ export default function SellerDashboard() {
+                 )}
+               </div>
+             </div>
+-            <div className="profile-info-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0.4rem', minWidth: 0, textAlign: 'left' }}>
+-              <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '800', whiteSpace: 'nowrap', width: '100%', textAlign: 'center' }}>판매자 센터</h2>
+-              <div className="profile-details-row" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap', justifyContent: 'center', width: '100%' }}>
+-                <span className="role-badge" style={{ margin: 0, display: 'inline-block', flexShrink: 0 }}>
+-                  슬라임 판매자
+-                </span>
+-                <span style={{ fontSize: '0.9rem', color: 'var(--text-sub)' }}>
+-                  {nickname} 사장님, 환영합니다!
+-                </span>
++            <div className="profile-info-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0.6rem', minWidth: 0, flex: 1, textAlign: 'left' }}>
++              <div className="profile-info-row-1" style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', flexWrap: 'wrap' }}>
++                <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: '800', whiteSpace: 'nowrap' }}>판매자 센터</h2>
+                 {myInfo && myInfo.id && (
+                   <button 
+                     onClick={() => navigate(`/shop/${myInfo.id}`)}
+-                    style={{ marginLeft: '10px', padding: '6px 14px', fontSize: '0.85rem', background: 'var(--primary-color)', color: '#fff', border: 'none', borderRadius: '12px', cursor: 'pointer', fontWeight: 'bold', boxShadow: '0 2px 6px rgba(255, 32, 112, 0.2)' }}
++                    style={{ padding: '6px 14px', fontSize: '0.85rem', background: 'var(--primary-color)', color: '#fff', border: 'none', borderRadius: '16px', cursor: 'pointer', fontWeight: 'bold',  }}
+                   >
+                     내 브랜드 샵 보기 ➔
+                   </button>
+                 )}
+               </div>
++              
++              <div className="profile-info-row-2" style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', flexWrap: 'wrap' }}>
++                <span className="role-badge" style={{ margin: 0, display: 'inline-block', flexShrink: 0 }}>
++                  슬라임 판매자
++                </span>
++                <span style={{ fontSize: '0.95rem', color: 'var(--text-sub)', fontWeight: '500' }}>
++                  {nickname} 사장님, 환영합니다!
++                </span>
++              </div>
++              
+               {myInfo?.introduction && (
+-                <div style={{ fontSize: '0.9rem', color: 'var(--text-main)', marginTop: '0.5rem', width: '100%', textAlign: 'center', lineHeight: '1.4' }}>
++                <div style={{ fontSize: '0.9rem', color: 'var(--text-main)', marginTop: '0.5rem', width: '100%', textAlign: 'left', lineHeight: '1.4', maxWidth: '600px' }}>
+                   {myInfo.introduction}
+                 </div>
+               )}
+               {myInfo && (
+-                <div className="profile-sns-row" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '0.5rem', flexWrap: 'wrap', justifyContent: 'center', width: '100%' }}>
++                <div className="profile-sns-row" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '0.5rem', flexWrap: 'wrap', justifyContent: 'flex-start', width: '100%' }}>
+                   {myInfo.siteUrl && (
+                     <a href={myInfo.siteUrl} target="_blank" rel="noreferrer" style={{ color: '#555' }} title="쇼핑몰 사이트">
+                       <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+@@ -349,18 +346,6 @@ export default function SellerDashboard() {
+               )}
+             </div>
+           </div>
+-
+-          <div className="seller-dashboard-stats">
+-            <div style={{ cursor: 'pointer' }} onClick={() => setActiveTab('products')}>
+-              <div style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--primary-color)' }}>{myProducts.length}</div>
+-              <div style={{ fontSize: '0.85rem', color: '#666', marginTop: '4px', fontWeight: '600' }}>등록된 상품</div>
+-            </div>
+-            <div style={{ width: '1px', backgroundColor: '#ffd6e0' }}></div>
+-            <div style={{ cursor: 'pointer' }} onClick={() => setActiveTab('reviews')}>
+-              <div style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--primary-color)' }}>{myReviews.length}</div>
+-              <div style={{ fontSize: '0.85rem', color: '#666', marginTop: '4px', fontWeight: '600' }}>내 리뷰 내역</div>
+-            </div>
+-          </div>
+         </div>
+       </div>
+ 
+@@ -373,23 +358,23 @@ export default function SellerDashboard() {
+             내가 등록한 상품 관리
+           </button>
+           <button 
+-            className={`mypage-nav-btn ${activeTab === 'add-product' ? 'active' : ''}`} 
++            className={`mypage-nav-btn ${activeTab === 'add-product' && !editingProductId ? 'active' : ''}`} 
+             onClick={handleToggleForm}
++            style={{ display: editingProductId ? 'none' : 'block' }}
+           >
+             새 상품 등록
+           </button>
+-          <button 
+-            className={`mypage-nav-btn ${activeTab === 'reviews' ? 'active' : ''}`} 
+-            onClick={() => setActiveTab('reviews')}
+-          >
+-            내 상품 리뷰 관리
+-          </button>
++          {editingProductId && activeTab === 'add-product' && (
++            <button className="mypage-nav-btn active">
++              상품 정보 수정
++            </button>
++          )}
+         </div>
+ 
+         <div className="mypage-content-area" style={{ flex: 1, minWidth: 0 }}>
+           {activeTab === 'add-product' && (
+           <div className="seller-dashboard-section">
+-            <h3 style={{ marginBottom: '1.5rem', borderBottom: '1px solid #ffd6e0', paddingBottom: '0.8rem' }}>
++            <h3 style={{ marginBottom: '1.5rem', borderBottom: '1px solid #ffeef2', paddingBottom: '0.8rem' }}>
+               {editingProductId ? '상품 정보 수정 ✏️' : '새 상품 등록 (SlimeHub 전용)'}
+             </h3>
+             
+@@ -437,11 +422,11 @@ export default function SellerDashboard() {
+ 
+                     <label htmlFor="image-file-input" style={{
+                       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+-                      border: '2px dashed #ffd6e0', borderRadius: '12px', padding: '3rem 1rem', cursor: 'pointer',
++                      border: '2px dashed #ffeef2', borderRadius: '16px', padding: '3rem 1rem', cursor: 'pointer',
+                       background: '#fffafb', transition: 'all 0.2s ease', gap: '0.8rem'
+                     }}
+                     onMouseEnter={(e) => { e.currentTarget.style.background = '#ffeef2'; e.currentTarget.style.borderColor = 'var(--primary-color)' }}
+-                    onMouseLeave={(e) => { e.currentTarget.style.background = '#fffafb'; e.currentTarget.style.borderColor = '#ffd6e0' }}
++                    onMouseLeave={(e) => { e.currentTarget.style.background = '#fffafb'; e.currentTarget.style.borderColor = '#ffeef2' }}
+                     >
+                       <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                         <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+@@ -468,55 +453,55 @@ export default function SellerDashboard() {
+ 
+                   {/* 우측: 상품 기본 정보 및 가격 (구매 버튼 영역) */}
+                   <div className="seller-form-box">
+-                    <h4 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--text-main)', borderBottom: '2px solid #ffd6e0', paddingBottom: '0.8rem', margin: '0 0 1rem 0' }}>📋 상품 기본 정보</h4>
++                    <h4 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--text-main)', borderBottom: '2px solid #ffeef2', paddingBottom: '0.8rem', margin: '0 0 1rem 0' }}>📋 상품 기본 정보</h4>
+ 
+                     <div className="seller-form-row">
+                       <label style={{ fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-main)' }}>카테고리 *</label>
+-                      <select name="category" value={formData.category} onChange={handleInputChange} required style={{ width: '100%', padding: '0.7rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem', backgroundColor: '#fff' }}>
+-                        <option value="SLIME">슬라임</option>
+-                        <option value="SLANGY">슬랑이</option>
+-                        <option value="MALLANGI">말랑이</option>
+-                        <option value="SQUISHY">스퀴시</option>
++                      <select name="category" value={formData.category} onChange={handleInputChange} required style={{ width: '100%', padding: '0.7rem 1rem', borderRadius: '16px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem', backgroundColor: '#fff' }}>
++                        <option value="슬라임">슬라임</option>
++                        <option value="슬랑이">슬랑이</option>
++                        <option value="말링이">말랑이</option>
++                        <option value="스퀴시">스퀴시</option>
+                       </select>
+                     </div>
+ 
+                     <div className="seller-form-row">
+                       <label style={{ fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-main)' }}>상품명 *</label>
+-                      <input type="text" name="name" placeholder="예: 구름 슬라임" required value={formData.name} onChange={handleInputChange} style={{ width: '100%', padding: '0.7rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem' }} />
++                      <input type="text" name="name" placeholder="예: 구름 슬라임" required value={formData.name} onChange={handleInputChange} style={{ width: '100%', padding: '0.7rem 1rem', borderRadius: '16px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem' }} />
+                     </div>
+ 
+                     <div className="seller-form-row">
+                       <label style={{ fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-main)' }}>판매가 (원)</label>
+-                      <input type="number" name="price" placeholder="숫자만 입력" value={formData.price} onChange={handleInputChange} style={{ width: '100%', padding: '0.7rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem' }} />
++                      <input type="number" name="price" placeholder="숫자만 입력" value={formData.price} onChange={handleInputChange} style={{ width: '100%', padding: '0.7rem 1rem', borderRadius: '16px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem' }} />
+                     </div>
+ 
+ 
+ 
+                     <div className="seller-form-row">
+                       <label style={{ fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-main)' }}>질감</label>
+-                      <input type="text" name="texture" placeholder="예: 크런치, 클리어" value={formData.texture} onChange={handleInputChange} style={{ width: '100%', padding: '0.7rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem' }} />
++                      <input type="text" name="texture" placeholder="예: 크런치, 클리어" value={formData.texture} onChange={handleInputChange} style={{ width: '100%', padding: '0.7rem 1rem', borderRadius: '16px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem' }} />
+                     </div>
+ 
+                     <div className="seller-form-row align-start">
+                       <label style={{ fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-main)', marginTop: '8px' }}>해시태그</label>
+-                      <input type="text" name="tags" placeholder="쉼표(,)로 구분 (예: 폼슬라임)" value={formData.tags} onChange={handleInputChange} style={{ width: '100%', padding: '0.7rem 1rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem' }} />
++                      <input type="text" name="tags" placeholder="쉼표(,)로 구분 (예: 폼슬라임)" value={formData.tags} onChange={handleInputChange} style={{ width: '100%', padding: '0.7rem 1rem', borderRadius: '16px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem' }} />
+                     </div>
+ 
+                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem', paddingTop: '1rem', borderTop: '1px dashed var(--border-color)' }}>
+                       <label style={{ fontSize: '0.95rem', fontWeight: 'bold', color: 'var(--text-main)' }}>스토어 구매 링크 *</label>
+-                      <input type="text" name="purchaseUrl" placeholder="실제 판매 쇼핑몰 URL" required value={formData.purchaseUrl} onChange={handleInputChange} style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '10px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.95rem', fontWeight: 'bold', color: 'var(--primary-color)' }} />
++                      <input type="text" name="purchaseUrl" placeholder="실제 판매 쇼핑몰 URL" required value={formData.purchaseUrl} onChange={handleInputChange} style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '16px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.95rem', fontWeight: 'bold', color: 'var(--primary-color)' }} />
+                     </div>
+                   </div>
+                 </div>
+ 
+                 {/* 하단: 상세 설명 및 미디어 (긴 세로 레이아웃) */}
+                 <div className="seller-form-box">
+-                  <h4 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--text-main)', borderBottom: '2px solid #ffd6e0', paddingBottom: '0.8rem', margin: 0 }}>상세 설명 (텍스트 & 추가 미디어)</h4>
++                  <h4 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--text-main)', borderBottom: '2px solid #ffeef2', paddingBottom: '0.8rem', margin: 0 }}>상세 설명 (텍스트 & 추가 미디어)</h4>
+ <br></br>
+                   <div>
+                     <label style={{ fontSize: '0.95rem', fontWeight: 'bold', display: 'block', marginBottom: '8px', color: 'var(--text-main)' }}>텍스트 설명</label>
+                     <br></br>
+-                    <textarea name="description" placeholder="플레이 촉감이나 슬라임 특성을 자세하게 적어주시면 구매 결정에 큰 도움이 됩니다!" value={formData.description} onChange={handleInputChange} style={{ width: '100%', minHeight: '180px', padding: '1rem', borderRadius: '10px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.95rem', fontFamily: 'inherit', resize: 'vertical', lineHeight: '1.6' }} />
++                    <textarea name="description" placeholder="플레이 촉감이나 슬라임 특성을 자세하게 적어주시면 구매 결정에 큰 도움이 됩니다!" value={formData.description} onChange={handleInputChange} style={{ width: '100%', minHeight: '180px', padding: '1rem', borderRadius: '16px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.95rem', fontFamily: 'inherit', resize: 'vertical', lineHeight: '1.6' }} />
+                   </div>
+ <br></br>
+                   <div>
+@@ -545,17 +530,17 @@ export default function SellerDashboard() {
+ 
+                   {/* 동영상 설정 */}
+                   <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px dashed var(--border-color)' }}>
+-                    <label style={{ fontSize: '0.95rem', fontWeight: 'bold', color: 'var(--text-main)', display: 'block', marginBottom: '12px' }}>📹 플레이 동영상 첨부 (선택)</label>
++                    <label style={{ fontSize: '0.95rem', fontWeight: 'bold', color: 'var(--text-main)', display: 'block', marginBottom: '12px' }}>플레이 동영상 첨부 (선택)</label>
+                     <div className="seller-radio-group">
+-                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', cursor: 'pointer', padding: '0.6rem 1rem', background: mediaOption === 'NONE' ? 'var(--bg-secondary)' : '#fff', border: `1px solid ${mediaOption === 'NONE' ? 'var(--primary-color)' : 'var(--border-color)'}`, borderRadius: '10px', color: mediaOption === 'NONE' ? 'var(--primary-color)' : 'var(--text-main)', fontWeight: mediaOption === 'NONE' ? '600' : 'normal' }}>
++                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', cursor: 'pointer', padding: '0.6rem 1rem', background: mediaOption === 'NONE' ? 'var(--bg-secondary)' : '#fff', border: `1px solid ${mediaOption === 'NONE' ? 'var(--primary-color)' : 'var(--border-color)'}`, borderRadius: '16px', color: mediaOption === 'NONE' ? 'var(--primary-color)' : 'var(--text-main)', fontWeight: mediaOption === 'NONE' ? '600' : 'normal' }}>
+                         <input type="radio" checked={mediaOption === 'NONE'} onChange={() => { setMediaOption('NONE'); setFormData(prev => ({ ...prev, videoUrl: '', videoType: 'NONE' })) }} style={{ display: 'none' }} />
+                         사용 안 함
+                       </label>
+-                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', cursor: 'pointer', padding: '0.6rem 1rem', background: mediaOption === 'FILE' ? 'var(--bg-secondary)' : '#fff', border: `1px solid ${mediaOption === 'FILE' ? 'var(--primary-color)' : 'var(--border-color)'}`, borderRadius: '10px', color: mediaOption === 'FILE' ? 'var(--primary-color)' : 'var(--text-main)', fontWeight: mediaOption === 'FILE' ? '600' : 'normal' }}>
++                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', cursor: 'pointer', padding: '0.6rem 1rem', background: mediaOption === 'FILE' ? 'var(--bg-secondary)' : '#fff', border: `1px solid ${mediaOption === 'FILE' ? 'var(--primary-color)' : 'var(--border-color)'}`, borderRadius: '16px', color: mediaOption === 'FILE' ? 'var(--primary-color)' : 'var(--text-main)', fontWeight: mediaOption === 'FILE' ? '600' : 'normal' }}>
+                         <input type="radio" checked={mediaOption === 'FILE'} onChange={() => setMediaOption('FILE')} style={{ display: 'none' }} />
+                         직접 올리기 (15MB↓)
+                       </label>
+-                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', cursor: 'pointer', padding: '0.6rem 1rem', background: mediaOption === 'LINK' ? 'var(--bg-secondary)' : '#fff', border: `1px solid ${mediaOption === 'LINK' ? 'var(--primary-color)' : 'var(--border-color)'}`, borderRadius: '10px', color: mediaOption === 'LINK' ? 'var(--primary-color)' : 'var(--text-main)', fontWeight: mediaOption === 'LINK' ? '600' : 'normal' }}>
++                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', cursor: 'pointer', padding: '0.6rem 1rem', background: mediaOption === 'LINK' ? 'var(--bg-secondary)' : '#fff', border: `1px solid ${mediaOption === 'LINK' ? 'var(--primary-color)' : 'var(--border-color)'}`, borderRadius: '16px', color: mediaOption === 'LINK' ? 'var(--primary-color)' : 'var(--text-main)', fontWeight: mediaOption === 'LINK' ? '600' : 'normal' }}>
+                         <input type="radio" checked={mediaOption === 'LINK'} onChange={() => setMediaOption('LINK')} style={{ display: 'none' }} />
+                         릴스/숏츠 링크 입력
+                       </label>
+@@ -564,20 +549,20 @@ export default function SellerDashboard() {
+                     {mediaOption === 'FILE' && (
+                       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                         <input type="file" accept="video/*" onChange={handleVideoUpload} style={{ display: 'none' }} id="video-file-input" />
+-                        <label htmlFor="video-file-input" style={{ padding: '0.8rem 1.2rem', background: '#fff', border: '1px solid var(--border-color)', color: 'var(--text-main)', borderRadius: '10px', fontWeight: '600', cursor: 'pointer', fontSize: '0.9rem' }}>
++                        <label htmlFor="video-file-input" style={{ padding: '0.8rem 1.2rem', background: '#fff', border: '1px solid var(--border-color)', color: 'var(--text-main)', borderRadius: '16px', fontWeight: '600', cursor: 'pointer', fontSize: '0.9rem' }}>
+                           {uploadingVid ? '업로드 중...' : 'PC에서 동영상 선택'}
+                         </label>
+                         {formData.videoUrl && <span style={{ fontSize: '0.9rem', color: 'var(--primary-color)', fontWeight: 'bold' }}>✓ 첨부 완료</span>}
+                       </div>
+                     )}
+                     {mediaOption === 'LINK' && (
+-                      <input type="text" name="videoUrl" placeholder="동영상 주소를 복사해서 붙여넣으세요" value={formData.videoUrl} onChange={handleInputChange} style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '10px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem' }} />
++                      <input type="text" name="videoUrl" placeholder="동영상 주소를 복사해서 붙여넣으세요" value={formData.videoUrl} onChange={handleInputChange} style={{ width: '100%', padding: '0.8rem 1rem', borderRadius: '16px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem' }} />
+                     )}
+                   </div>
+                 </div>
+ 
+                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
+-                  <button type="submit" className="submit-btn" disabled={uploadingImg || uploadingVid || uploadingDescImg} style={{ padding: '1rem 3rem', fontSize: '1.1rem', borderRadius: '12px', boxShadow: '0 4px 16px rgba(255,107,158,0.25)' }}>
++                  <button type="submit" className="submit-btn" disabled={uploadingImg || uploadingVid || uploadingDescImg} style={{ padding: '1rem 3rem', fontSize: '1.1rem', borderRadius: '16px', boxShadow: '0 4px 16px rgba(255,107,158,0.25)' }}>
+                     {uploadingImg || uploadingVid ? '미디어 업로드 중...' : editingProductId ? '수정 완료하기' : '상품 등록 완료'}
+                   </button>
+                 </div>
+@@ -588,89 +573,102 @@ export default function SellerDashboard() {
+ 
+           {activeTab === 'products' && (
+             <div className="seller-dashboard-card">
+-              <h3 style={{ marginBottom: '1.5rem', borderBottom: '2px solid #ffd6e0', paddingBottom: '0.8rem' }}>내가 등록한 슬라임 관리</h3>
++              <h3 style={{ marginBottom: '1.5rem', borderBottom: '2px solid #ffeef2', paddingBottom: '0.8rem' }}>내가 등록한 상품 관리</h3>
++              
++              {/* Category Filters & Sort */}
++              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
++                <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
++                  <button 
++                    onClick={() => setFilterCategory('전체')}
++                    style={{ padding: '6px 14px', background: filterCategory === '전체' ? '#333' : '#f0f0f0', color: filterCategory === '전체' ? '#fff' : '#555', borderRadius: '16px', fontSize: '0.85rem', fontWeight: 'bold', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
++                  >
++                    전체 {myProducts.length}
++                  </button>
++                  {['슬라임', '슬랑이', '말링이', '스퀴시'].map(cat => {
++                    const count = myProducts.filter(p => p.category === cat).length;
++                    if (count === 0) return null;
++                    const isActive = filterCategory === cat;
++                    return (
++                      <button 
++                        key={cat} 
++                        onClick={() => setFilterCategory(cat)}
++                        style={{ padding: '6px 14px', background: isActive ? 'var(--primary-color)' : '#fff', color: isActive ? '#fff' : 'var(--primary-color)', borderRadius: '16px', fontSize: '0.85rem', fontWeight: 'bold', border: isActive ? '1px solid var(--primary-color)' : '1px solid #ffccd8', cursor: 'pointer', transition: 'all 0.2s' }}
++                      >
++                      {cat} {count}
++                      </button>
++                    );
++                  })}
++                </div>
++                
++                <select 
++                  value={sortBy} 
++                  onChange={(e) => setSortBy(e.target.value)}
++                  style={{ padding: '6px 12px', borderRadius: '16px', border: '1px solid #ccc', fontSize: '0.85rem', outline: 'none', cursor: 'pointer', background: '#fff' }}
++                >
++                  <option value="latest">최신순</option>
++                  <option value="popular">인기순</option>
++                </select>
++              </div>
++
+               {myProducts.length === 0 ? (
+-                <div className="empty-state">아직 등록한 슬라임이 없어요! 첫 상품을 등록해보세요.</div>
+-              ) : (
+-                <div className="admin-table-container" style={{overflowX: 'auto'}}>
+-                  <table className="admin-table">
+-                    <thead>
+-                      <tr>
+-                        <th>상품 이미지</th>
+-                        <th>상품명</th>
+-                        <th>가격</th>
+-                        <th>관리</th>
+-                      </tr>
+-                    </thead>
+-                    <tbody>
+-                      {myProducts.map(p => (
+-                        <tr key={p.id}>
+-                          <td><img src={p.imageUrl} alt={p.name} style={{width:'50px', height:'50px', objectFit:'cover', borderRadius:'4px'}} /></td>
+-                          <td><Link to={`/product/${p.id}`} style={{fontWeight:'600'}}>{p.name}</Link></td>
+-                          <td>{p.price ? `${p.price.toLocaleString()}원` : '정보 없음'}</td>
+-                          <td>
+-                            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', minWidth: '90px' }}>
+-                              <button onClick={() => handleEditClick(p)} style={{ flex: 1, background: 'var(--primary-color)', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.85rem', textAlign: 'center' }}>수정</button>
+-                              <button onClick={() => handleDeleteProduct(p.id)} style={{ flex: 1, background: '#ffe5e5', color: '#ff4d4d', border: 'none', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.85rem', textAlign: 'center' }}>삭제</button>
++                <div className="empty-state">아직 등록한 상품이 없어요! 첫 상품을 등록해보세요.</div>
++              ) : (() => {
++                const filteredProducts = myProducts
++                  .filter(p => filterCategory === '전체' || p.category === filterCategory)
++                  .sort((a, b) => {
++                    if (sortBy === 'popular') return (b.reviewCount || 0) - (a.reviewCount || 0);
++                    return b.id - a.id;
++                  });
++                  
++                return (
++                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.5rem' }}>
++                    {filteredProducts.map(p => (
++                    <div key={p.id} className="seller-product-card" style={{ position: 'relative', borderRadius: '16px', overflow: 'hidden', border: '1px solid #eee', background: '#fff', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column' }}>
++                      <Link to={`/product/${p.id}`} style={{ display: 'flex', flexDirection: 'column', flex: 1, textDecoration: 'none', color: 'inherit' }}>
++                        <div style={{ position: 'relative', aspectRatio: '1/1', background: '#f8f8f8' }}>
++                          <img src={p.imageUrl} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
++                        </div>
++                        <div style={{ padding: '12px', flex: 1, display: 'flex', flexDirection: 'column' }}>
++                          <div style={{ fontSize: '0.8rem', color: 'var(--primary-color)', fontWeight: 'bold', marginBottom: '4px' }}>{p.category || '기타'}</div>
++                          <h4 style={{ margin: '0 0 6px 0', fontSize: '1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</h4>
++                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto' }}>
++                            <div style={{ fontWeight: 'bold', color: '#111' }}>{p.price ? `${p.price.toLocaleString()}원` : '가격 미정'}</div>
++                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.85rem', color: '#666' }}>
++                              <span style={{ color: '#ffb400' }}>★</span> <span style={{ fontWeight: 'bold' }}>{p.avgRating ? p.avgRating.toFixed(1) : '0.0'}</span> ({p.reviewCount || 0})
+                             </div>
+-                          </td>
+-                        </tr>
+-                      ))}
+-                    </tbody>
+-                  </table>
++                          </div>
++                        </div>
++                      </Link>
++                      
++                      {/* Management Buttons */}
++                      <div style={{ display: 'flex', borderTop: '1px solid #eee', marginTop: 'auto' }}>
++                        <button 
++                          onClick={() => handleEditClick(p)}
++                          style={{ flex: 1, padding: '12px 10px', background: 'transparent', border: 'none', borderRight: '1px solid #eee', cursor: 'pointer', fontWeight: 'bold', color: '#555', transition: 'background 0.2s', fontSize: '0.9rem' }}
++                          onMouseEnter={e => e.target.style.background = '#f8f9fa'}
++                          onMouseLeave={e => e.target.style.background = 'transparent'}
++                        >
++                          수정 
++                        </button>
++                        <button 
++                          onClick={() => handleDeleteProduct(p.id)}
++                          style={{ flex: 1, padding: '12px 10px', background: 'transparent', border: 'none', cursor: 'pointer', fontWeight: 'bold', color: '#ff3b30', transition: 'background 0.2s', fontSize: '0.9rem' }}
++                          onMouseEnter={e => e.target.style.background = '#fff5f5'}
++                          onMouseLeave={e => e.target.style.background = 'transparent'}
++                        >
++                          삭제 
++                        </button>
++                      </div>
++                    </div>
++                  ))}
+                 </div>
+-              )}
++                );
++              })()}
+             </div>
+           )}
+ 
+-          {activeTab === 'reviews' && (
+-            <div className="seller-dashboard-card">
+-            <h3 style={{ marginBottom: '1.5rem' }}>내 상품 리뷰 관리</h3>
+-            <p style={{ color: 'var(--text-sub)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+-              고객들이 작성한 리뷰를 확인하세요.
+-            </p>
+-            
+-            {myReviews.length === 0 ? (
+-              <div className="empty-state">등록된 리뷰가 없습니다.</div>
+-            ) : (
+-              <div className="admin-table-container" style={{overflowX: 'auto'}}>
+-                <table className="admin-table">
+-                  <thead>
+-                    <tr>
+-                      <th>상품명</th>
+-                      <th>별점</th>
+-                      <th>리뷰 내용</th>
+-                      <th>작성자</th>
+-                      <th>상태</th>
+-                    </tr>
+-                  </thead>
+-                  <tbody>
+-                    {myReviews.map(r => (
+-                      <tr key={r.id}>
+-                        <td><Link to={`/product/${r.productId}`}>{r.productName}</Link></td>
+-                        <td>{'⭐'.repeat(r.rating)}</td>
+-                        <td style={{ maxWidth: '300px', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+-                          {r.content}
+-                          {r.imageUrl && <div style={{marginTop:'0.5rem'}}><img src={r.imageUrl} alt="review" style={{width:'50px', height:'50px', objectFit:'cover', borderRadius:'8px'}} /></div>}
+-                        </td>
+-                        <td>{r.nickname}</td>
+-                        <td>
+-                          {r.isHidden ? (
+-                            <span style={{ color: '#ff3b30', fontWeight: 'bold', background: '#ffeef0', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem' }}>블라인드</span>
+-                          ) : (
+-                            <span style={{ color: '#34c759', fontWeight: 'bold', background: '#e8f8ec', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem' }}>정상</span>
+-                          )}
+-                        </td>
+-                      </tr>
+-                    ))}
+-                  </tbody>
+-                </table>
+-              </div>
+-            )}
+-          </div>
+-        )}
++        </div>
+       </div>
+     </div>
+-    </div>
+   )
+ }
+diff --git a/src/pages/product/ProductList.jsx b/src/pages/product/ProductList.jsx
+index 6ee9d14..735b90b 100644
+--- a/src/pages/product/ProductList.jsx
++++ b/src/pages/product/ProductList.jsx
+@@ -14,6 +14,7 @@ export default function ProductList() {
+   const activeCategory = searchParams.get('category') || '전체';
+   const searchQuery = searchParams.get('search') || '';
+   const [searchInput, setSearchInput] = useState(searchQuery);
++  const [sortOption, setSortOption] = useState('createdAt,desc');
+   
+   const [page, setPage] = useState(0);
+   const [totalPages, setTotalPages] = useState(1);
+@@ -22,7 +23,7 @@ export default function ProductList() {
+     setSearchInput(searchQuery);
+     fetchProducts(0, true);
+     // eslint-disable-next-line
+-  }, [searchQuery, activeCategory]);
++  }, [searchQuery, activeCategory, sortOption]);
+ 
+   const fetchProducts = async (pageNumber = 0, reset = false) => {
+     try {
+@@ -34,7 +35,7 @@ export default function ProductList() {
+       else if (activeCategory === '말랑이') categoryApiValue = 'MALLANGI';
+       else if (activeCategory === '스퀴시') categoryApiValue = 'SQUISHY';
+ 
+-      const data = await productApi.getProducts(categoryApiValue, searchQuery, '', pageNumber, 20);
++      const data = await productApi.getProducts(categoryApiValue, searchQuery, '', pageNumber, 20, sortOption);
+       
+       if (data && data.content) {
+         setProducts(prev => reset ? data.content : [...prev, ...data.content]);
+@@ -107,6 +108,19 @@ export default function ProductList() {
+           </div>
+ 
+           <div className="shop-nav-filters">
++            <select 
++              value={sortOption} 
++              onChange={(e) => setSortOption(e.target.value)}
++              style={{
++                padding: '6px 12px', borderRadius: '20px', border: '1px solid #e0e0e0', background: '#fff', fontSize: '0.85rem', color: '#555', outline: 'none', cursor: 'pointer'
++              }}
++            >
++              <option value="createdAt,desc">최신순</option>
++              <option value="reviewCount,desc">인기순</option>
++              <option value="avgRating,desc">평점순</option>
++              <option value="price,asc">낮은 가격순</option>
++              <option value="price,desc">높은 가격순</option>
++            </select>
+             <form onSubmit={handleSearchSubmit} style={{ display: 'flex', alignItems: 'center', border: '1px solid #e0e0e0', borderRadius: '24px', padding: '6px 14px', background: '#f5f5f5', flex: 1, minWidth: '140px', maxWidth: '200px', transition: 'all 0.2s' }}>
+               <Search size={16} color="#888" style={{ marginRight: '6px', flexShrink: 0 }} />
+               <input 
+diff --git a/src/utils/thumbnailExtractor.js b/src/utils/thumbnailExtractor.js
+index 6c739c3..ccc3fce 100644
+--- a/src/utils/thumbnailExtractor.js
++++ b/src/utils/thumbnailExtractor.js
+@@ -1,4 +1,4 @@
+-export const extractThumbnailFromVideo = (file, timeInSeconds = 0.1) => {
++export const extractThumbnailFromVideo = (file, timeInSeconds = 1.0) => {
+   return new Promise((resolve, reject) => {
+     const video = document.createElement('video');
+     video.preload = 'metadata';
+@@ -11,32 +11,45 @@ export const extractThumbnailFromVideo = (file, timeInSeconds = 0.1) => {
+ 
+     // Wait for the metadata to load to know the dimensions
+     video.onloadedmetadata = () => {
+-      // Seek to the target time
+-      video.currentTime = timeInSeconds;
++      // 0.1초는 페이드인 효과나 로딩 딜레이로 인해 검은 화면이 캡처될 확률이 높으므로
++      // 영상의 중간 혹은 1초 지점을 썸네일로 사용합니다.
++      let targetTime = timeInSeconds;
++      if (video.duration && video.duration > 0) {
++        targetTime = Math.min(timeInSeconds, video.duration / 2);
++      }
++      video.currentTime = targetTime;
+     };
+ 
+     // When seeking is finished, draw the frame to a canvas
+     video.onseeked = () => {
+-      const canvas = document.createElement('canvas');
+-      canvas.width = video.videoWidth;
+-      canvas.height = video.videoHeight;
+-      const ctx = canvas.getContext('2d');
+-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
++      // iOS Safari 버그 방지: 캔버스에 그리기 전 약간의 딜레이
++      setTimeout(() => {
++        try {
++          const canvas = document.createElement('canvas');
++          canvas.width = video.videoWidth;
++          canvas.height = video.videoHeight;
++          const ctx = canvas.getContext('2d');
++          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+ 
+-      // Convert the canvas to a JPEG blob
+-      canvas.toBlob((blob) => {
+-        URL.revokeObjectURL(url);
+-        if (blob) {
+-          // Create a File object from the Blob
+-          const thumbnailFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + "-thumb.jpg", {
+-            type: 'image/jpeg',
+-            lastModified: Date.now(),
+-          });
+-          resolve(thumbnailFile);
+-        } else {
+-          reject(new Error('Failed to create thumbnail blob'));
++          // Convert the canvas to a JPEG blob
++          canvas.toBlob((blob) => {
++            URL.revokeObjectURL(url);
++            if (blob) {
++              // Create a File object from the Blob
++              const thumbnailFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + "-thumb.jpg", {
++                type: 'image/jpeg',
++                lastModified: Date.now(),
++              });
++              resolve(thumbnailFile);
++            } else {
++              reject(new Error('Failed to create thumbnail blob'));
++            }
++          }, 'image/jpeg', 0.8);
++        } catch (err) {
++          URL.revokeObjectURL(url);
++          reject(err);
+         }
+-      }, 'image/jpeg', 0.8);
++      }, 100); // 100ms delay to ensure frame is decoded
+     };
+ 
+     video.onerror = (e) => {
+@@ -46,7 +59,7 @@ export const extractThumbnailFromVideo = (file, timeInSeconds = 0.1) => {
+   });
+ };
+ 
+-export const extractThumbnailFromUrl = (url, timeInSeconds = 0.1) => {
++export const extractThumbnailFromUrl = (url, timeInSeconds = 1.0) => {
+   return new Promise((resolve, reject) => {
+     const video = document.createElement('video');
+     video.crossOrigin = 'anonymous'; // Important for fetching from S3/external URLs
+@@ -57,31 +70,37 @@ export const extractThumbnailFromUrl = (url, timeInSeconds = 0.1) => {
+     video.src = url;
+ 
+     video.onloadedmetadata = () => {
+-      video.currentTime = timeInSeconds;
++      let targetTime = timeInSeconds;
++      if (video.duration && video.duration > 0) {
++        targetTime = Math.min(timeInSeconds, video.duration / 2);
++      }
++      video.currentTime = targetTime;
+     };
+ 
+     video.onseeked = () => {
+-      try {
+-        const canvas = document.createElement('canvas');
+-        canvas.width = video.videoWidth;
+-        canvas.height = video.videoHeight;
+-        const ctx = canvas.getContext('2d');
+-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
++      setTimeout(() => {
++        try {
++          const canvas = document.createElement('canvas');
++          canvas.width = video.videoWidth;
++          canvas.height = video.videoHeight;
++          const ctx = canvas.getContext('2d');
++          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+ 
+-        canvas.toBlob((blob) => {
+-          if (blob) {
+-            const thumbnailFile = new File([blob], `thumb-${Date.now()}.jpg`, {
+-              type: 'image/jpeg',
+-              lastModified: Date.now(),
+-            });
+-            resolve(thumbnailFile);
+-          } else {
+-            reject(new Error('Failed to create thumbnail blob'));
+-          }
+-        }, 'image/jpeg', 0.8);
+-      } catch (err) {
+-        reject(err);
+-      }
++          canvas.toBlob((blob) => {
++            if (blob) {
++              const thumbnailFile = new File([blob], `thumb-${Date.now()}.jpg`, {
++                type: 'image/jpeg',
++                lastModified: Date.now(),
++              });
++              resolve(thumbnailFile);
++            } else {
++              reject(new Error('Failed to create thumbnail blob'));
++            }
++          }, 'image/jpeg', 0.8);
++        } catch (err) {
++          reject(err);
++        }
++      }, 100);
+     };
+ 
+     video.onerror = (e) => {

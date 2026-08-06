@@ -134,10 +134,10 @@ export default function Signup() {
     try {
       const response = await authApi.checkUsername(formData.username);
       if (response.exists) {
-        alert('이미 사용 중인 아이디입니다. 🥲');
+        alert('이미 사용 중인 아이디입니다.');
         setIsUsernameChecked(false);
       } else {
-        alert('사용 가능한 아이디입니다! 👍');
+        alert('사용 가능한 아이디입니다!');
         setIsUsernameChecked(true);
       }
     } catch (err) {

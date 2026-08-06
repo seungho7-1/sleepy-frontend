@@ -12,7 +12,7 @@ import ProductCard from '../../components/ProductCard'
 import { formatDate } from '../../utils/formatDate'
 import { useLocation } from 'react-router-dom'
 import { inquiryApi } from '../../api/inquiry'
-import { Camera, UploadCloud, Trash2, Hourglass, XCircle, CheckCircle, PartyPopper, MessageSquare, Heart, Star, ShoppingBag, Bell } from 'lucide-react'
+import { Camera, UploadCloud, Trash2, Hourglass, XCircle, CheckCircle, PartyPopper, MessageSquare, Heart, Star, ShoppingBag, Bell, FileText, AlertTriangle, Megaphone } from 'lucide-react'
 
 export default function MyPage() {
   const { token, role, nickname, setProfileImageUrl, setRole, setNickname, logout } = useAuthStore()
@@ -270,71 +270,68 @@ export default function MyPage() {
     <div className="mypage-container">
       {/* 미니멀 프로필 영역 */}
       <div className="mypage-banner">
-        <div className="seller-dashboard-banner">
+        <div className="mypage-banner-content">
           
-          {/* 좌측 프로필 정보 */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-            <div className="profile-avatar-container" style={{ position: 'relative', display: 'inline-block', width: '85px', height: '85px', flexShrink: 0 }}>
-              <div className="profile-avatar" style={{ overflow: 'hidden', position: 'relative', width: '100%', height: '100%', borderRadius: '50%', border: '3px solid #fff', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f3f4f6', color: '#9ca3af', fontSize: '2rem', fontWeight: 'bold' }}>
-                {profile?.profileImageUrl ? (
-                  <img src={profile.profileImageUrl} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : (
-                  nickname ? nickname.charAt(0).toUpperCase() : 'U'
-                )}
-                {uploadingProfileImg && (
-                  <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(255,255,255,0.7)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <span className="spinner" style={{ width: '20px', height: '20px', border: '2px solid var(--primary-color)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></span>
-                  </div>
-                )}
-              </div>
-              
-              {/* FB Style Camera Icon Button */}
-              <button 
-                onClick={() => setIsAvatarMenuOpen(!isAvatarMenuOpen)}
-                style={{ position: 'absolute', bottom: '0', right: '0', width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#e4e6eb', border: '2px solid #fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10, color: '#050505' }}
-                title="프로필 사진 관리"
-              >
-                <Camera size={14} />
-              </button>
-
-              {/* Centered Modal Menu */}
-              {isAvatarMenuOpen && (
-                <>
-                  <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 1000, animation: 'fadeIn 0.2s ease' }} onClick={() => setIsAvatarMenuOpen(false)}></div>
-                  <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)', padding: '1.2rem', zIndex: 1001, minWidth: '280px', animation: 'scaleIn 0.2s ease', textAlign: 'center' }}>
-                    <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.1rem', fontWeight: 'bold', color: '#111', borderBottom: '1px solid #eee', paddingBottom: '0.8rem' }}>프로필 사진 관리</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                      <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '0.8rem', cursor: 'pointer', borderRadius: '8px', color: '#111', fontSize: '0.95rem', fontWeight: '600', backgroundColor: '#f3f4f6', transition: 'background-color 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#e5e7eb'} onMouseLeave={e => e.currentTarget.style.backgroundColor = '#f3f4f6'}>
-                        <UploadCloud size={18} />
-                        사진 업로드
-                        <input type="file" accept="image/*" onChange={(e) => { setIsAvatarMenuOpen(false); handleProfileImageUpload(e); }} style={{ display: 'none' }} disabled={uploadingProfileImg} />
-                      </label>
-                      
-                      {profile?.profileImageUrl && (
-                        <button onClick={() => { setIsAvatarMenuOpen(false); handleProfileImageDelete(); }} disabled={uploadingProfileImg} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '0.8rem', cursor: 'pointer', borderRadius: '8px', color: '#ef4444', fontSize: '0.95rem', fontWeight: '600', width: '100%', border: 'none', backgroundColor: '#fef2f2', transition: 'background-color 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#fee2e2'} onMouseLeave={e => e.currentTarget.style.backgroundColor = '#fef2f2'}>
-                          <Trash2 size={18} />
-                          현재 사진 삭제
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </>
+          {/* 프로필 아바타 */}
+          <div className="profile-avatar-container" style={{ position: 'relative', display: 'inline-block', width: '80px', height: '80px', flexShrink: 0 }}>
+            <div className="profile-avatar" style={{ overflow: 'hidden', position: 'relative', width: '100%', height: '100%', borderRadius: '50%', border: '3px solid #fff', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f3f4f6', color: '#9ca3af', fontSize: '2rem', fontWeight: 'bold' }}>
+              {profile?.profileImageUrl ? (
+                <img src={profile.profileImageUrl} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                nickname ? nickname.charAt(0).toUpperCase() : 'U'
+              )}
+              {uploadingProfileImg && (
+                <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(255,255,255,0.7)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <span className="spinner" style={{ width: '20px', height: '20px', border: '2px solid var(--primary-color)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></span>
+                </div>
               )}
             </div>
-            <div className="profile-info-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0.4rem', minWidth: 0, textAlign: 'left' }}>
-              <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '800', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nickname}님</h2>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
-                <span className="role-badge" style={{ margin: 0, display: 'inline-block', flexShrink: 0 }}>
-                  {(role === 'USER' || role === 'BUYER') ? '일반 구매자' : role === 'SELLER' ? '슬라임 판매자' : '관리자'}
-                </span>
-                <span style={{ fontSize: '0.9rem', color: 'var(--text-sub)', wordBreak: 'break-all', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical' }}>
-                  {profile?.email || '이메일 없음'}
-                </span>
-              </div>
+            
+            {/* 카메라 버튼 */}
+            <button 
+              onClick={() => setIsAvatarMenuOpen(!isAvatarMenuOpen)}
+              style={{ position: 'absolute', bottom: '0', right: '0', width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#e4e6eb', border: '2px solid #fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10, color: '#050505' }}
+              title="프로필 사진 관리"
+            >
+              <Camera size={14} />
+            </button>
+
+            {/* 프로필 사진 관리 모달 */}
+            {isAvatarMenuOpen && (
+              <>
+                <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 1000, animation: 'fadeIn 0.2s ease' }} onClick={() => setIsAvatarMenuOpen(false)}></div>
+                <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)', padding: '1.2rem', zIndex: 1001, minWidth: '280px', animation: 'scaleIn 0.2s ease', textAlign: 'center' }}>
+                  <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.1rem', fontWeight: 'bold', color: '#111', borderBottom: '1px solid #eee', paddingBottom: '0.8rem' }}>프로필 사진 관리</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '0.8rem', cursor: 'pointer', borderRadius: '8px', color: '#111', fontSize: '0.95rem', fontWeight: '600', backgroundColor: '#f3f4f6', transition: 'background-color 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#e5e7eb'} onMouseLeave={e => e.currentTarget.style.backgroundColor = '#f3f4f6'}>
+                      <UploadCloud size={18} />
+                      사진 업로드
+                      <input type="file" accept="image/*" onChange={(e) => { setIsAvatarMenuOpen(false); handleProfileImageUpload(e); }} style={{ display: 'none' }} disabled={uploadingProfileImg} />
+                    </label>
+                    {profile?.profileImageUrl && (
+                      <button onClick={() => { setIsAvatarMenuOpen(false); handleProfileImageDelete(); }} disabled={uploadingProfileImg} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '0.8rem', cursor: 'pointer', borderRadius: '8px', color: '#ef4444', fontSize: '0.95rem', fontWeight: '600', width: '100%', border: 'none', backgroundColor: '#fef2f2', transition: 'background-color 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor = '#fee2e2'} onMouseLeave={e => e.currentTarget.style.backgroundColor = '#fef2f2'}>
+                        <Trash2 size={18} />
+                        현재 사진 삭제
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* 닉네임 + 역할 */}
+          <div className="profile-info-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0.4rem', minWidth: 0, flex: 1 }}>
+            <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '800', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{nickname}님</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+              <span className="role-badge" style={{ margin: 0, display: 'inline-block', flexShrink: 0 }}>
+                {(role === 'USER' || role === 'BUYER') ? '일반 구매자' : role === 'SELLER' ? '슬라임 판매자' : '관리자'}
+              </span>
+              
             </div>
           </div>
 
-          {/* 우측 내 활동 요약 (데스크톱 환경 등 1200px 뷰에서 균형을 맞추기 위함) */}
+          {/* 우측 활동 요약 통계 */}
           <div className="seller-dashboard-stats">
             <div style={{ cursor: 'pointer' }} onClick={() => setActiveTab('wishlist')}>
               <div style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--primary-color)' }}>{wishlist.length}</div>
@@ -415,7 +412,7 @@ export default function MyPage() {
               )}
               {application?.status === 'PENDING' && (
                 <button className="mypage-nav-btn pending-btn" disabled style={{ opacity: 0.7, cursor: 'not-allowed', backgroundColor: '#fef3c7', color: '#d97706', fontWeight: 'bold' }}>
-                  ⏳ 판매자 신청 (대기 중)
+                  판매자 신청 (대기 중)
                 </button>
               )}
             </>
@@ -450,7 +447,7 @@ export default function MyPage() {
               <div className="profile-details">
                 <div className="detail-item">
                   <span className="detail-label">아이디 계정</span>
-                  <span className="detail-value">{profile?.username || '-'}</span>
+                  <span className="detail-value" style={{ wordBreak: 'break-all', lineHeight: '1.4' }}>{profile?.username || '-'}</span>
                 </div>
 
                 <div className="detail-item" style={{ marginTop: '0.8rem' }}>
@@ -458,7 +455,7 @@ export default function MyPage() {
                   {isEditing ? (
                     <input type="email" value={editFormData.email} onChange={e => setEditFormData({...editFormData, email: e.target.value})} style={{ flex: 1, padding: '0.6rem 0.8rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-main)', fontSize: '0.85rem' }} placeholder="이메일 입력" />
                   ) : (
-                    <span className="detail-value">{profile?.email || '등록된 이메일이 없습니다.'}</span>
+                    <span className="detail-value" style={{ wordBreak: 'break-all', lineHeight: '1.4' }}>{profile?.email || '등록된 이메일이 없습니다.'}</span>
                   )}
                 </div>
                 <div className="detail-item" style={{ marginTop: '0.8rem' }}>
@@ -734,15 +731,28 @@ export default function MyPage() {
                         }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                             <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
-                              <span style={{ fontSize: '1.2rem' }}>
-                                {notif.type === 'NEW_COMMENT' ? '💬' : 
-                                 notif.type === 'NEW_LIKE' ? '❤️' : 
-                                 notif.type === 'NEW_REVIEW' ? '⭐' : 
-                                 notif.type === 'WISHLIST_UPDATE' ? '🛍️' : 
-                                 notif.type === 'SELLER_APPROVAL' ? '✅' : 
-                                 notif.type === 'SELLER_REJECTED' ? '❌' : '🔔'}
-                              </span>
-                              <span style={{ fontWeight: '500', color: 'var(--text-main)' }}>
+                              <div style={{ 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center',
+                                width: '32px',
+                                height: '32px',
+                                borderRadius: '50%',
+                                background: 'rgba(255, 32, 112, 0.08)',
+                                color: 'var(--primary-color)',
+                                flexShrink: 0
+                              }}>
+                                {notif.type === 'NEW_COMMENT' ? <MessageSquare size={16} /> : 
+                                 notif.type === 'NEW_LIKE' ? <Heart size={16} /> : 
+                                 notif.type === 'NEW_REVIEW' ? <Star size={16} /> : 
+                                 notif.type === 'WISHLIST_UPDATE' ? <ShoppingBag size={16} /> : 
+                                 notif.type === 'SELLER_APPROVAL' ? <CheckCircle size={16} /> : 
+                                 notif.type === 'SELLER_REJECTED' ? <XCircle size={16} /> : 
+                                 notif.type === 'NEW_SELLER_APPLICATION' ? <FileText size={16} /> : 
+                                 notif.type === 'NEW_REPORT' ? <AlertTriangle size={16} /> : 
+                                 notif.type === 'SYSTEM_ALERT' ? <Megaphone size={16} /> : <Bell size={16} />}
+                              </div>
+                              <span style={{ fontWeight: '500', color: 'var(--text-main)', marginTop: '4px' }}>
                                 {notif.message}
                               </span>
                             </div>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ThumbsUp } from 'lucide-react';
+import { ThumbsUp, Flag } from 'lucide-react';
 import { formatDate } from '../utils/formatDate';
 import { useAuthStore } from '../store';
 import { reviewApi } from '../api/reviews';
@@ -226,9 +226,10 @@ export default function ReviewSection({ productId, reviews, fetchReviews }) {
                   {!review.isHidden && review.nickname !== currentNickname && role !== 'ADMIN' && (
                     <button 
                       onClick={() => reportReview(review.id)}
-                      style={{ background: 'none', border: 'none', color: '#ff5b94', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 'bold' }}
+                      style={{ background: 'none', border: 'none', color: '#888', fontSize: '0.8rem', cursor: 'pointer', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '4px' }}
                     >
-                      🚨 신고
+                      <Flag size={13} color="var(--primary-color)" />
+                      <span>신고</span>
                     </button>
                   )}
                 </div>

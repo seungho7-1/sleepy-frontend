@@ -3,12 +3,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import { formatDate } from '../utils/formatDate';
 import { Heart, Eye, MessageCircle } from 'lucide-react';
 
-export default function PostItem({ post }) {
+export default function PostItem({ post, isNoticeTab = false }) {
   const navigate = useNavigate();
+
+  const isPinned = Boolean(post.isPinned || post.pinned);
+  const isPinnedNotice = (post.boardType === 'NOTICE' || isPinned) && !isNoticeTab;
 
   const getBadgeStyle = (boardType) => {
     switch (boardType) {
       case 'NOTICE':
+      case 'ALL':
         return { background: 'rgba(255, 107, 139, 0.1)', color: 'var(--primary-color)', border: '1px solid rgba(255, 107, 139, 0.2)' };
       case 'QNA':
         return { background: 'rgba(74, 144, 226, 0.1)', color: '#4a90e2', border: '1px solid rgba(74, 144, 226, 0.2)' };
@@ -21,6 +25,7 @@ export default function PostItem({ post }) {
 
   const badgeName = {
     'NOTICE': '공지',
+    'ALL': '공지',
     'QNA': '질문',
     'FREE': '잡담',
     'REVIEW': '후기',
@@ -29,9 +34,12 @@ export default function PostItem({ post }) {
 
   return (
     <div 
-      className="post-item-container" 
+      className={`post-item-container ${isPinnedNotice ? 'notice-post' : ''}`}
       onClick={() => navigate(`/community/${post.id}`)}
-      style={{ cursor: 'pointer' }}
+      style={{ 
+        cursor: 'pointer',
+        ...(isPinnedNotice ? { backgroundColor: '#fff0f5', borderLeft: '4px solid var(--primary-color)' } : {})
+      }}
     >
       <div className="post-item-left">
         {/* 뱃지 영역 */}
@@ -39,7 +47,7 @@ export default function PostItem({ post }) {
           {/* 카테고리 배지 */}
           <div style={{ width: '46px', flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
             <span style={{
-              ...getBadgeStyle(post.boardType),
+              ...getBadgeStyle(isPinnedNotice ? 'NOTICE' : post.boardType),
               fontSize: '0.75rem',
               fontWeight: '700',
               padding: '4px 0',
@@ -48,7 +56,7 @@ export default function PostItem({ post }) {
               borderRadius: '4px',
               whiteSpace: 'nowrap'
             }}>
-              {badgeName}
+              {isPinnedNotice ? '공지' : badgeName}
             </span>
           </div>
         </div>
@@ -58,7 +66,7 @@ export default function PostItem({ post }) {
           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {post.title}
           </span>
-          {((post.popularityScore !== undefined ? post.popularityScore >= 2.0 : false) || 
+          {!isPinnedNotice && post.boardType !== 'NOTICE' && !post.isPinned && !post.pinned && ((post.popularityScore !== undefined ? post.popularityScore >= 2.0 : false) || 
             (post.popularityScore === undefined && (post.viewCount >= 50 || post.likeCount >= 3 || post.commentCount >= 5))) && (
             <span style={{
               background: 'var(--primary-color)',
@@ -87,15 +95,15 @@ export default function PostItem({ post }) {
           <span>{post.viewCount}</span>
         </div>
 
-        {post.commentCount !== undefined && (
+        {post.boardType !== 'NOTICE' && post.commentCount !== undefined && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: post.commentCount > 0 ? 'var(--primary-color)' : 'inherit' }}>
             <MessageCircle style={{ width: '14px', height: '14px' }} />
             <span>{post.commentCount}</span>
           </div>
         )}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: post.likeCount > 0 ? '#ff2070' : 'inherit' }}>
-          <Heart style={{ width: '14px', height: '14px', fill: post.likeCount > 0 ? '#ff2070' : 'none' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: (post.isLiked || post.liked) ? '#ff2070' : 'inherit' }}>
+          <Heart size={14} color="#ff2070" fill={(post.isLiked || post.liked) ? '#ff2070' : 'none'} />
           <span>{post.likeCount}</span>
         </div>
 

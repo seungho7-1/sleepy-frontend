@@ -84,7 +84,7 @@ export default function HeroCarousel({ latestPosts }) {
                   position: 'relative',
                   width: '135px',
                   aspectRatio: '3 / 4',
-                  borderRadius: '12px',
+                  borderRadius: '0px',
                   overflow: 'hidden',
                   border: '1px solid #ffeef2',
                   backgroundColor: '#fafafa',

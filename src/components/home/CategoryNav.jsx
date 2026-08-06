@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Search } from 'lucide-react';
 
-export default function CategoryNav({ categories, activeCategory, onCategoryClick }) {
+export default function CategoryNav({ categories, activeCategory, onCategoryClick, sortOption, onSortChange }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,7 +29,7 @@ export default function CategoryNav({ categories, activeCategory, onCategoryClic
 
   return (
     <div style={{ borderBottom: '1px solid #e9ecef', marginBottom: '2rem', background: '#fff' }}>
-      <div className="shop-nav-container" style={{ padding: '0' }}>
+      <div className="shop-nav-container" style={{ paddingBottom: '1rem' }}>
         
         {/* 카테고리 탭 영역 */}
         <div className="shop-categories">
@@ -55,8 +55,18 @@ export default function CategoryNav({ categories, activeCategory, onCategoryClic
           ))}
         </div>
 
-        {/* 검색창 영역 */}
+        {/* 정렬 옵션 및 검색창 영역 */}
         <div className="shop-nav-filters">
+          <select 
+            value={sortOption || 'createdAt,desc'} 
+            onChange={(e) => onSortChange && onSortChange(e.target.value)}
+            style={{
+              padding: '6px 12px', borderRadius: '20px', border: '1px solid #e0e0e0', background: '#fff', fontSize: '0.85rem', color: '#555', outline: 'none', cursor: 'pointer'
+            }}
+          >
+            <option value="createdAt,desc">최신순</option>
+            <option value="reviewCount,desc">인기순</option>
+          </select>
           <form onSubmit={handleSearchSubmit} style={{ display: 'flex', alignItems: 'center', border: '1px solid #e0e0e0', borderRadius: '24px', padding: '6px 14px', background: '#f5f5f5', flex: 1, minWidth: '140px', maxWidth: '300px', transition: 'all 0.2s' }}>
             <Search size={16} color="#888" style={{ marginRight: '6px', flexShrink: 0 }} />
             <input 

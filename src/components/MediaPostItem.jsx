@@ -36,7 +36,7 @@ export default function MediaPostItem({ post }) {
       >
         {/* 3:4 비율 이미지 영역 */}
         <div style={{ position: 'relative', width: '100%', aspectRatio: '3 / 4', overflow: 'hidden', background: '#fafafa' }}>
-          {isVideo(imageUrl) ? (
+          {isVideo(imageUrl, post.thumbnailUrl) ? (
             <HoverVideo 
               src={imageUrl} 
               thumbnailUrl={post.thumbnailUrl}
@@ -67,7 +67,7 @@ export default function MediaPostItem({ post }) {
             />
           )}
           {/* HOT 배지 (우측 상단 겹치기) */}
-          {((post.popularityScore !== undefined ? post.popularityScore >= 2.0 : false) || 
+          {post.boardType !== 'NOTICE' && !post.isPinned && !post.pinned && ((post.popularityScore !== undefined ? post.popularityScore >= 2.0 : false) || 
             (post.popularityScore === undefined && (post.viewCount >= 50 || post.likeCount >= 3 || post.commentCount >= 5))) && (
             <div style={{
               position: 'absolute',
@@ -121,7 +121,7 @@ export default function MediaPostItem({ post }) {
                 </div>
               )}
               <div style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#ff2070', fontWeight: 'bold' }}>
-                <Heart size={14} fill={post.likeCount > 0 ? '#ff2070' : 'none'} />
+                <Heart size={14} color="#ff2070" fill={(post.isLiked || post.liked) ? '#ff2070' : 'none'} />
                 <span>{post.likeCount}</span>
               </div>
             </div>

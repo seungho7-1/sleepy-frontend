@@ -44,7 +44,7 @@ export default function Login() {
   }
 
   const showDemoNotice = (service) => {
-    alert(`[${service} 연동 안내]\n현재 데모 버전입니다. 실제 계정으로 서비스를 이용하시려면 아이디로 로그인해 주세요! 🧪`);
+    alert(`[${service} 연동 안내]\n현재 데모 버전입니다. 실제 계정으로 서비스를 이용하시려면 아이디로 로그인해 주세요!`);
   }
 
   return (
