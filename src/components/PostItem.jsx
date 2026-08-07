@@ -66,7 +66,7 @@ export default function PostItem({ post, isNoticeTab = false }) {
           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {post.title}
           </span>
-          {!isPinnedNotice && post.boardType !== 'NOTICE' && !post.isPinned && !post.pinned && ((post.popularityScore !== undefined ? post.popularityScore >= 2.0 : false) || 
+          {!isPinnedNotice && post.boardType !== 'NOTICE' && !post.isPinned && !post.pinned && post.authorRole !== 'ROLE_ADMIN' && ((post.popularityScore !== undefined ? post.popularityScore >= 2.0 : false) || 
             (post.popularityScore === undefined && (post.viewCount >= 50 || post.likeCount >= 3 || post.commentCount >= 5))) && (
             <span style={{
               background: 'var(--primary-color)',

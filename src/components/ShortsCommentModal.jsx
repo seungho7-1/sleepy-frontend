@@ -411,192 +411,175 @@ export default function ShortsCommentModal({ postId, onClose, onUpdateCount, inl
                           </button>
                         )}
 
-                        {/* Threaded Section with Recursive ↳ Arrow & Indentation when expanded */}
+                        {/* Flat Threaded Section for Replies when expanded */}
                         {isExpanded && descendants.length > 0 && (
-                          (() => {
-                            const renderReplyTree = (parentId, depth = 1) => {
-                              const children = commentMap[parentId] || [];
-                              if (children.length === 0) return null;
-                              children.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+                          <div 
+                            style={{ 
+                              marginTop: '12px', 
+                              display: 'flex', 
+                              flexDirection: 'column', 
+                              gap: '14px',
+                              paddingLeft: '8px',
+                              borderLeft: '2px solid rgba(255,255,255,0.1)'
+                            }}
+                          >
+                            {descendants.map(reply => {
+                              const isEditingReply = editingCommentId === reply.id;
+                              const parentComment = commentById[reply.parentId];
 
                               return (
-                                <div 
-                                  style={{ 
-                                    marginLeft: depth === 1 ? '4px' : (depth > 3 ? '6px' : '10px'), 
-                                    paddingLeft: depth === 1 ? '12px' : '8px', 
-                                    borderLeft: depth === 1 ? '2px solid rgba(255, 255, 255, 0.15)' : '1px dashed rgba(255, 255, 255, 0.2)', 
-                                    marginTop: '10px',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: '12px'
-                                  }}
-                                >
-                                  {children.map(reply => {
-                                    const isEditingReply = editingCommentId === reply.id;
-                                    const parentComment = commentById[reply.parentId];
+                                <div id={`comment-${reply.id}`} key={reply.id}>
+                                  <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                                    <Avatar name={reply.nickname} imageUrl={reply.profileImageUrl} size={28} />
 
-                                    return (
-                                      <div id={`comment-${reply.id}`} key={reply.id}>
-                                        <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                                          <Avatar name={reply.nickname} imageUrl={reply.profileImageUrl} size={28} />
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                      {/* Reply Header: Nickname + Date + Options */}
+                                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                          <span style={{ fontWeight: '600', fontSize: '0.85rem', color: '#ffffff' }}>
+                                            {reply.nickname}
+                                          </span>
+                                          <span style={{ fontSize: '0.75rem', color: '#888888', marginLeft: '4px' }}>
+                                            {formatDate(reply.createdAt, true)}
+                                          </span>
+                                        </div>
 
-                                          <div style={{ flex: 1, minWidth: 0 }}>
-                                            {/* Reply Header: Nickname + Date + Options */}
-                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}>
-                                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                                                <span style={{ fontWeight: '600', fontSize: '0.85rem', color: '#ffffff' }}>
-                                                  {reply.nickname}
-                                                </span>
-                                                <span style={{ fontSize: '0.75rem', color: '#888888', marginLeft: '4px' }}>
-                                                  {formatDate(reply.createdAt, true)}
-                                                </span>
-                                              </div>
+                                        <div style={{ position: 'relative' }}>
+                                          <button 
+                                            type="button" 
+                                            onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === reply.id ? null : reply.id); }}
+                                            style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}
+                                            title="옵션"
+                                          >
+                                            <MoreVertical size={16} />
+                                          </button>
 
-                                              <div style={{ position: 'relative' }}>
-                                                <button 
-                                                  type="button" 
-                                                  onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === reply.id ? null : reply.id); }}
-                                                  style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}
-                                                  title="옵션"
-                                                >
-                                                  <MoreVertical size={16} />
-                                                </button>
-
-                                                {openMenuId === reply.id && (
-                                                  <div 
-                                                    style={{
-                                                      position: 'absolute', top: '100%', right: 0,
-                                                      background: '#282828', borderRadius: '8px', padding: '4px 0',
-                                                      minWidth: '100px', boxShadow: '0 4px 16px rgba(0,0,0,0.6)',
-                                                      border: '1px solid #383838', zIndex: 100
-                                                    }}
-                                                  >
-                                                    <button
-                                                      type="button"
-                                                      onClick={(e) => { e.stopPropagation(); setOpenMenuId(null); handleReportComment(reply.id, reply.nickname); }}
-                                                      style={{ width: '100%', padding: '8px 12px', background: 'none', border: 'none', color: '#f1f1f1', fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', textAlign: 'left' }}
-                                                    >
-                                                      <Flag size={14} color="#ff4d4d" />
-                                                      신고
-                                                    </button>
-                                                  </div>
-                                                )}
-                                              </div>
+                                          {openMenuId === reply.id && (
+                                            <div 
+                                              style={{
+                                                position: 'absolute', top: '100%', right: 0,
+                                                background: '#282828', borderRadius: '8px', padding: '4px 0',
+                                                minWidth: '100px', boxShadow: '0 4px 16px rgba(0,0,0,0.6)',
+                                                border: '1px solid #383838', zIndex: 100
+                                              }}
+                                            >
+                                              <button
+                                                type="button"
+                                                onClick={(e) => { e.stopPropagation(); setOpenMenuId(null); handleReportComment(reply.id, reply.nickname); }}
+                                                style={{ width: '100%', padding: '8px 12px', background: 'none', border: 'none', color: '#f1f1f1', fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', textAlign: 'left' }}
+                                              >
+                                                <Flag size={14} color="#ff4d4d" />
+                                                신고
+                                              </button>
                                             </div>
-
-                                            {/* Reply Content */}
-                                            {isEditingReply ? (
-                                              <form onSubmit={(e) => handleCommentEditSubmit(e, reply.id)} style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '0.5rem', background: '#222', padding: '0.8rem', borderRadius: '8px', border: '1px solid #444' }}>
-                                                <textarea 
-                                                  value={editingText} 
-                                                  onChange={(e) => setEditingText(e.target.value)} 
-                                                  style={{ 
-                                                    width: '100%', minHeight: '60px', padding: '8px', borderRadius: '6px', border: '1px solid #444', 
-                                                    background: '#141414', color: '#fff', fontSize: '0.88rem', outline: 'none', boxSizing: 'border-box', resize: 'vertical', fontFamily: 'inherit' 
-                                                  }}
-                                                  required
-                                                  autoFocus
-                                                />
-                                                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
-                                                  <button 
-                                                    type="button" 
-                                                    onClick={() => { setEditingCommentId(null); setEditingText(''); }} 
-                                                    style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #444', background: '#333', color: '#ddd', fontSize: '0.8rem', cursor: 'pointer' }}
-                                                  >
-                                                    취소
-                                                  </button>
-                                                  <button type="submit" style={{ padding: '6px 12px', borderRadius: '6px', border: 'none', background: 'var(--primary-color)', color: 'white', fontWeight: 'bold', fontSize: '0.8rem', cursor: 'pointer' }}>
-                                                    수정 완료
-                                                  </button>
-                                                </div>
-                                              </form>
-                                            ) : (
-                                              <div style={{ fontSize: '0.88rem', color: '#f1f1f1', marginTop: '4px', lineHeight: '1.45', wordBreak: 'break-word' }}>
-                                                {parentComment && parentComment.id !== root.id && (
-                                                  <span style={{ 
-                                                    color: '#3ea6ff', 
-                                                    fontWeight: '600', 
-                                                    marginRight: '6px'
-                                                  }}>
-                                                    @{parentComment.nickname}
-                                                  </span>
-                                                )}
-                                                {reply.content}
-                                              </div>
-                                            )}
-
-                                            {/* Reply Actions */}
-                                            <div style={{ display: 'flex', gap: '12px', marginTop: '6px', alignItems: 'center' }}>
-                                              {token && !isEditingReply && (
-                                                <button 
-                                                  type="button" 
-                                                  onClick={() => handleReplyClick(root.id, reply)}
-                                                  style={{ background: 'none', border: 'none', color: '#aaaaaa', fontSize: '0.78rem', fontWeight: '600', cursor: 'pointer', padding: 0 }}
-                                                >
-                                                  답글 달기
-                                                </button>
-                                              )}
-                                              {nickname === reply.nickname && !isEditingReply && (
-                                                <>
-                                                  <button 
-                                                    type="button" 
-                                                    onClick={() => { setEditingCommentId(reply.id); setEditingText(reply.content); }}
-                                                    style={{ background: 'none', border: 'none', color: '#888888', fontSize: '0.78rem', cursor: 'pointer', padding: 0 }}
-                                                  >
-                                                    수정
-                                                  </button>
-                                                  <button 
-                                                    type="button" 
-                                                    onClick={() => handleCommentDelete(reply.id)}
-                                                    style={{ background: 'none', border: 'none', color: '#888888', fontSize: '0.78rem', cursor: 'pointer', padding: 0 }}
-                                                  >
-                                                    삭제
-                                                  </button>
-                                                </>
-                                              )}
-                                            </div>
-
-                                            {/* Inline Reply Form under this specific reply */}
-                                            {replyToId === reply.id && renderInlineReplyForm()}
-
-                                            {/* Recursive child reply tree */}
-                                            {renderReplyTree(reply.id, depth + 1)}
-                                          </div>
+                                          )}
                                         </div>
                                       </div>
-                                    );
-                                  })}
 
-                                  {depth === 1 && (
-                                    <button
-                                      type="button"
-                                      onClick={() => toggleReplies(root.id)}
-                                      style={{
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: '6px',
-                                        marginTop: '4px',
-                                        padding: '5px 14px',
-                                        borderRadius: '18px',
-                                        background: 'rgba(62, 166, 255, 0.12)',
-                                        border: 'none',
-                                        color: '#3ea6ff',
-                                        fontSize: '0.82rem',
-                                        fontWeight: '600',
-                                        cursor: 'pointer',
-                                        alignSelf: 'flex-start'
-                                      }}
-                                    >
-                                      <span style={{ fontSize: '0.75rem' }}>▲</span>
-                                      <span>간략히 보기</span>
-                                    </button>
-                                  )}
+                                      {/* Reply Content */}
+                                      {isEditingReply ? (
+                                        <form onSubmit={(e) => handleCommentEditSubmit(e, reply.id)} style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '0.5rem', background: '#222', padding: '0.8rem', borderRadius: '8px', border: '1px solid #444' }}>
+                                          <textarea 
+                                            value={editingText} 
+                                            onChange={(e) => setEditingText(e.target.value)} 
+                                            style={{ 
+                                              width: '100%', minHeight: '60px', padding: '8px', borderRadius: '6px', border: '1px solid #444', 
+                                              background: '#141414', color: '#fff', fontSize: '0.88rem', outline: 'none', boxSizing: 'border-box', resize: 'vertical', fontFamily: 'inherit' 
+                                            }}
+                                            required
+                                            autoFocus
+                                          />
+                                          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                                            <button 
+                                              type="button" 
+                                              onClick={() => { setEditingCommentId(null); setEditingText(''); }} 
+                                              style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #444', background: '#333', color: '#ddd', fontSize: '0.8rem', cursor: 'pointer' }}
+                                            >
+                                              취소
+                                            </button>
+                                            <button type="submit" style={{ padding: '6px 12px', borderRadius: '6px', border: 'none', background: 'var(--primary-color)', color: 'white', fontWeight: 'bold', fontSize: '0.8rem', cursor: 'pointer' }}>
+                                              수정 완료
+                                            </button>
+                                          </div>
+                                        </form>
+                                      ) : (
+                                        <div style={{ fontSize: '0.88rem', color: '#f1f1f1', marginTop: '4px', lineHeight: '1.45', wordBreak: 'break-word' }}>
+                                          {parentComment && parentComment.id !== root.id && (
+                                            <span style={{ 
+                                              color: '#3ea6ff', 
+                                              fontWeight: '600', 
+                                              marginRight: '6px'
+                                            }}>
+                                              @{parentComment.nickname}
+                                            </span>
+                                          )}
+                                          {reply.content}
+                                        </div>
+                                      )}
+
+                                      {/* Reply Actions */}
+                                      <div style={{ display: 'flex', gap: '12px', marginTop: '6px', alignItems: 'center' }}>
+                                        {token && !isEditingReply && (
+                                          <button 
+                                            type="button" 
+                                            onClick={() => handleReplyClick(root.id, reply)}
+                                            style={{ background: 'none', border: 'none', color: '#aaaaaa', fontSize: '0.78rem', fontWeight: '600', cursor: 'pointer', padding: 0 }}
+                                          >
+                                            답글 달기
+                                          </button>
+                                        )}
+                                        {nickname === reply.nickname && !isEditingReply && (
+                                          <>
+                                            <button 
+                                              type="button" 
+                                              onClick={() => { setEditingCommentId(reply.id); setEditingText(reply.content); }}
+                                              style={{ background: 'none', border: 'none', color: '#888888', fontSize: '0.78rem', cursor: 'pointer', padding: 0 }}
+                                            >
+                                              수정
+                                            </button>
+                                            <button 
+                                              type="button" 
+                                              onClick={() => handleCommentDelete(reply.id)}
+                                              style={{ background: 'none', border: 'none', color: '#888888', fontSize: '0.78rem', cursor: 'pointer', padding: 0 }}
+                                            >
+                                              삭제
+                                            </button>
+                                          </>
+                                        )}
+                                      </div>
+
+                                      {/* Inline Reply Form under this specific reply */}
+                                      {replyToId === reply.id && renderInlineReplyForm()}
+                                    </div>
+                                  </div>
                                 </div>
                               );
-                            };
-
-                            return renderReplyTree(root.id, 1);
-                          })()
+                            })}
+                            
+                            {/* Collapse Button */}
+                            <button
+                              type="button"
+                              onClick={() => toggleReplies(root.id)}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                marginTop: '4px',
+                                padding: '5px 14px',
+                                borderRadius: '18px',
+                                background: 'rgba(62, 166, 255, 0.12)',
+                                border: 'none',
+                                color: '#3ea6ff',
+                                fontSize: '0.82rem',
+                                fontWeight: '600',
+                                cursor: 'pointer',
+                                alignSelf: 'flex-start'
+                              }}
+                            >
+                              <span style={{ fontSize: '0.75rem' }}>▲</span>
+                              <span>간략히 보기</span>
+                            </button>
+                          </div>
                         )}
                       </div>
                     </div>

@@ -67,7 +67,7 @@ export default function MediaPostItem({ post }) {
             />
           )}
           {/* HOT 배지 (우측 상단 겹치기) */}
-          {post.boardType !== 'NOTICE' && !post.isPinned && !post.pinned && ((post.popularityScore !== undefined ? post.popularityScore >= 2.0 : false) || 
+          {post.boardType !== 'NOTICE' && !post.isPinned && !post.pinned && post.authorRole !== 'ROLE_ADMIN' && ((post.popularityScore !== undefined ? post.popularityScore >= 2.0 : false) || 
             (post.popularityScore === undefined && (post.viewCount >= 50 || post.likeCount >= 3 || post.commentCount >= 5))) && (
             <div style={{
               position: 'absolute',
