@@ -343,7 +343,7 @@ export default function PostDetail() {
         </div>
         
         {/* Comments Section */}
-        {post.boardType !== 'NOTICE' && (
+        {post.boardType !== 'NOTICE' && !post.isPinned && !post.pinned && post.authorRole !== 'ROLE_ADMIN' && (
           <div style={{ marginTop: '2rem' }}>
             <h3>댓글 ({comments.length})</h3>
           
