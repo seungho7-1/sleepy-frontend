@@ -340,7 +340,7 @@ export default function SellerDashboard() {
             className={`mypage-nav-btn ${activeTab === 'products' ? 'active' : ''}`} 
             onClick={() => setActiveTab('products')}
           >
-            내가 등록한 상품 관리
+            상품 관리
           </button>
           <button 
             className={`mypage-nav-btn ${activeTab === 'add-product' && !editingProductId ? 'active' : ''}`} 
@@ -417,8 +417,9 @@ export default function SellerDashboard() {
                       <select name="category" value={formData.category} onChange={handleInputChange} required style={{ width: '100%', padding: '0.7rem 1rem', borderRadius: '16px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem', backgroundColor: '#fff' }}>
                         <option value="슬라임">슬라임</option>
                         <option value="슬랑이">슬랑이</option>
-                        <option value="말링이">말랑이</option>
+                        <option value="말랑이">말랑이</option>
                         <option value="스퀴시">스퀴시</option>
+                        <option value="왁뿌">왁뿌</option>
                       </select>
                     </div>
 
@@ -581,7 +582,7 @@ export default function SellerDashboard() {
                   >
                     전체 {myProducts.length}
                   </button>
-                  {['슬라임', '슬랑이', '말링이', '스퀴시'].map(cat => {
+                  {['슬라임', '슬랑이', '말랑이', '스퀴시', '왁뿌'].map(cat => {
                     const count = myProducts.filter(p => p.category === cat).length;
                     if (count === 0) return null;
                     const isActive = filterCategory === cat;

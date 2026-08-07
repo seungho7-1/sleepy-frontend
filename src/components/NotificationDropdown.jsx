@@ -45,8 +45,8 @@ export default function NotificationDropdown({ onClose }) {
         const unreadNotifs = data.filter(n => !(n.isRead !== undefined ? n.isRead : n.read));
         const recentReadNotifs = data.filter(n => (n.isRead !== undefined ? n.isRead : n.read)).slice(0, 3);
         const displayNotifs = [...unreadNotifs, ...recentReadNotifs].sort((a, b) => {
-          const timeA = a.createdAt?.seconds || 0;
-          const timeB = b.createdAt?.seconds || 0;
+          const timeA = typeof a.createdAt === 'object' && a.createdAt.seconds ? a.createdAt.seconds * 1000 : (Number(a.createdAt) || 0);
+          const timeB = typeof b.createdAt === 'object' && b.createdAt.seconds ? b.createdAt.seconds * 1000 : (Number(b.createdAt) || 0);
           return timeB - timeA;
         });
         
@@ -101,12 +101,14 @@ export default function NotificationDropdown({ onClose }) {
           try {
             const envPrefix = import.meta.env.MODE === 'development' ? 'dev_' : '';
             const docRef = doc(db, `${envPrefix}notifications`, nickname, "userNotifications", String(notifId));
-            await updateDoc(docRef, { isRead: true });
+            await updateDoc(docRef, { isRead: true, read: true });
           } catch (fbErr) {
             console.error("Firebase direct update failed", fbErr);
           }
         }
       }));
+      // 상태 동기화를 위해 전역 이벤트 발생
+      window.dispatchEvent(new Event('notificationsRead'));
     } catch (e) {
       console.error("Failed to mark all as read", e);
     }

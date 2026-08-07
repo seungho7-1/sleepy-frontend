@@ -243,7 +243,7 @@ export default function PostCreate() {
                  
                   <div style={{ fontSize: '1.05rem', fontWeight: '800', color: 'var(--text-main)', marginBottom: '6px' }}>
                     슬라임 영상 또는 사진 등록
-                  </div>
+                  </div>a
                   <p style={{ fontSize: '0.82rem', color: '#666', margin: '0 0 1.5rem 0', lineHeight: '1.4' }}>
                     세로형 숏폼 비디오(mp4) 및<br/>고화질 사진(png, jpg) 지원
                   </p>
@@ -552,9 +552,6 @@ export default function PostCreate() {
                     transition: 'border-color 0.2s',
                   }}
                 >
-                  <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 0.8rem auto', border: '1px solid #ffccd8' }}>
-                    <ImageIcon color="var(--primary-color)" size={24} />
-                  </div>
                   <div style={{ fontSize: '0.95rem', fontWeight: '700', color: 'var(--primary-color)' }}>사진 또는 영상 추가</div>
                   <div style={{ fontSize: '0.8rem', color: '#666', marginTop: '4px' }}>이미지(png, jpg) 또는 비디오(mp4) 파일</div>
                   <input 

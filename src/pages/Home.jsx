@@ -7,7 +7,7 @@ import { Search } from 'lucide-react';
 import CategoryNav from '../components/home/CategoryNav';
 import ProductGrid from '../components/home/ProductGrid';
 
-const CATEGORIES = ['전체', '슬라임', '슬랑이', '말랑이', '스퀴시']
+const CATEGORIES = ['전체', '슬라임', '슬랑이', '말랑이', '스퀴시', '왁뿌']
 const FEED_MAX = 10 
 
 export default function Home() {
@@ -61,7 +61,7 @@ export default function Home() {
     }
   }
 
-  // 인기 상품은 카테고리와 무관하게 전체 기준 상위 12개
+  // 인기 상품은 카테고리와 무관하게 전체 기준 상위 10개
   const fetchPopularProducts = async () => {
     try {
       const data = await productApi.getProducts('', '', '', 0, 50, 'reviewCount,desc')
@@ -70,7 +70,7 @@ export default function Home() {
         .map(p => ({ ...p, _score: (p.reviewCount || 0) * 3 + (p.avgRating || 0) * 2 }))
         .filter(p => p._score > 0)
         .sort((a, b) => b._score - a._score)
-        .slice(0, 12) 
+        .slice(0, 10) 
       setPopularProducts(scored)
     } catch (err) {
       console.error('Failed to fetch popular products:', err)
@@ -86,7 +86,8 @@ export default function Home() {
       if (activeCategory === '슬라임') categoryApiValue = '슬라임';
       else if (activeCategory === '슬랑이') categoryApiValue = '슬랑이';
       else if (activeCategory === '말랑이') categoryApiValue = '말랑이';
-      else if (activeCategory === '스퀴시') categoryApiValue = '스퀴시';
+      else if (activeCategory === '스퀴시') categoryApiValue = 'SQUISHY';
+      else if (activeCategory === '왁뿌') categoryApiValue = 'WAKPPU';
 
       const data = await productApi.getProducts(categoryApiValue, searchQuery, '', pageNumber, 20, sortOption);
       
@@ -171,8 +172,8 @@ export default function Home() {
                   style={{ width: '100%', height: '160px', objectFit: 'cover' }}
                 />
                 <div style={{ padding: '12px' }}>
-                  <div style={{ fontSize: '0.8rem', color: '#ff2070', fontWeight: 'bold', marginBottom: '4px' }}>
-                    {{'SLIME':'슬라임','SLANGI':'슬랑이','MALLANGI':'말랑이','SQUISHY':'스퀴시','SUPPLIES':'부자재','ETC':'기타'}[product.category] || product.category || '기타'}
+                  <div style={{ position: 'absolute', top: '8px', left: '8px', background: 'rgba(0,0,0,0.6)', color: 'white', padding: '3px 8px', borderRadius: '12px', fontSize: '0.7rem', fontWeight: 'bold' }}>
+                    {{'SLIME':'슬라임','SLANGI':'슬랑이','MALLANGI':'말랑이','SQUISHY':'스퀴시','WAKPPU':'왁뿌','SUPPLIES':'부자재','ETC':'기타'}[product.category] || product.category || '기타'}
                   </div>
                   <h4 style={{ margin: '0 0 6px 0', fontSize: '1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.name}</h4>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>

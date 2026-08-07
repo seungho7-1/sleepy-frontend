@@ -99,7 +99,7 @@ export default function Navbar() {
     return location.pathname === path
   }
 
-  const categories = ['전체', '슬라임', '슬랑이', '말랑이', '스퀴시']
+  const categories = ['전체', '슬라임', '슬랑이', '말랑이', '스퀴시', '왁뿌'];
 
   // 숏폼 페이지에서는 네비게이션 바 숨김
   if (location.pathname === '/shorts') return null;

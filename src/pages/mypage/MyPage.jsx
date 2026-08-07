@@ -68,6 +68,16 @@ export default function MyPage() {
     }
   }, [token, location.search, myPostsPage, myCommentsPage, notifPage])
 
+  // 전역 알림 읽음 상태 동기화 이벤트 리스너
+  useEffect(() => {
+    const handleNotifUpdate = () => {
+      fetchMyNotifications(notifPage - 1);
+    };
+    window.addEventListener('notificationsRead', handleNotifUpdate);
+    return () => window.removeEventListener('notificationsRead', handleNotifUpdate);
+  }, [notifPage]);
+
+
   const fetchProfile = async () => {
     try {
       const data = await authApi.me()
@@ -359,7 +369,7 @@ export default function MyPage() {
             className={`mypage-nav-btn ${activeTab === 'profile' ? 'active' : ''}`} 
             onClick={() => setActiveTab('profile')}
           >
-            내 프로필 정보
+            내 프로필
           </button>
           <button 
             className={`mypage-nav-btn ${activeTab === 'wishlist' ? 'active' : ''}`} 
@@ -477,13 +487,13 @@ export default function MyPage() {
                       fontWeight: 'bold', 
                       color: application.status === 'PENDING' ? '#d97706' : application.status === 'REJECTED' ? '#ef4444' : '#10b981'
                     }}>
-                      {application.status === 'PENDING' ? '⏳ 심사 대기 중' : application.status === 'REJECTED' ? '❌ 반려됨' : '✅ 승인됨'}
+                      {application.status === 'PENDING' ? '심사 대기 중' : application.status === 'REJECTED' ? '❌ 반려됨' : '✅ 승인됨'}
                     </span>
                   </div>
                 )}
                 {application?.status === 'APPROVED' && (role === 'USER' || role === 'BUYER') && (
                   <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px' }}>
-                    <p style={{ margin: '0 0 0.8rem 0', color: '#166534', fontSize: '0.85rem', fontWeight: 'bold' }}>🎉 판매자 승인이 완료되었습니다!</p>
+                    <p style={{ margin: '0 0 0.8rem 0', color: '#166534', fontSize: '0.85rem', fontWeight: 'bold' }}>판매자 승인이 완료되었습니다!</p>
                     <p style={{ margin: '0 0 0.8rem 0', color: '#15803d', fontSize: '0.8rem', lineHeight: '1.4' }}>권한을 업데이트하고 판매자 센터로 이동하려면 다시 로그인해주세요.</p>
                     <button 
                       onClick={() => { 
@@ -702,6 +712,7 @@ export default function MyPage() {
                             }
                           }
                           fetchMyNotifications(); // 읽음 상태 갱신
+                          window.dispatchEvent(new Event('notificationsRead'));
                         } catch(e) {
                           console.error("Firebase sync failed", e);
                         }
