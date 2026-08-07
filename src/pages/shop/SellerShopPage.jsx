@@ -76,15 +76,13 @@ export default function SellerShopPage() {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        let categoryApiValue = activeCategory;
-        if (activeCategory === '전체') {
-          categoryApiValue = '';
-        } else if (activeCategory === '슬라임') {
+        let categoryApiValue = '';
+        if (activeCategory === '슬라임') {
           categoryApiValue = 'SLIME';
         } else if (activeCategory === '슬랑이') {
-          categoryApiValue = 'SLANGI';
+          categoryApiValue = 'SLANGY';
         } else if (activeCategory === '말랑이') {
-          categoryApiValue = 'MALANGI';
+          categoryApiValue = 'MALLANGI';
         } else if (activeCategory === '스퀴시') {
           categoryApiValue = 'SQUISHY';
         } else if (activeCategory === '왁뿌') {

@@ -83,9 +83,9 @@ export default function Home() {
       if (reset) setLoading(true)
       
       let categoryApiValue = '';
-      if (activeCategory === '슬라임') categoryApiValue = '슬라임';
-      else if (activeCategory === '슬랑이') categoryApiValue = '슬랑이';
-      else if (activeCategory === '말랑이') categoryApiValue = '말랑이';
+      if (activeCategory === '슬라임') categoryApiValue = 'SLIME';
+      else if (activeCategory === '슬랑이') categoryApiValue = 'SLANGY';
+      else if (activeCategory === '말랑이') categoryApiValue = 'MALLANGI';
       else if (activeCategory === '스퀴시') categoryApiValue = 'SQUISHY';
       else if (activeCategory === '왁뿌') categoryApiValue = 'WAKPPU';
 

@@ -415,11 +415,11 @@ export default function SellerDashboard() {
                     <div className="seller-form-row">
                       <label style={{ fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-main)' }}>카테고리 *</label>
                       <select name="category" value={formData.category} onChange={handleInputChange} required style={{ width: '100%', padding: '0.7rem 1rem', borderRadius: '16px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem', backgroundColor: '#fff' }}>
-                        <option value="슬라임">슬라임</option>
-                        <option value="슬랑이">슬랑이</option>
-                        <option value="말랑이">말랑이</option>
-                        <option value="스퀴시">스퀴시</option>
-                        <option value="왁뿌">왁뿌</option>
+                        <option value="SLIME">슬라임</option>
+                        <option value="SLANGY">슬랑이</option>
+                        <option value="MALLANGI">말랑이</option>
+                        <option value="SQUISHY">스퀴시</option>
+                        <option value="WAKPPU">왁뿌</option>
                       </select>
                     </div>
 

@@ -36,6 +36,19 @@ export default function ShortsFeed() {
     fetchMediaPosts();
   }, [postId, sortParam, keyword]);
 
+  // posts가 모두 로드된 후 초기 activePostId로 스크롤 이동
+  useEffect(() => {
+    if (!loading && posts.length > 0 && postId) {
+      // DOM 렌더링 후 스크롤되도록 약간의 지연 시간 부여
+      setTimeout(() => {
+        const el = document.getElementById(`shorts-item-${postId}`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'auto', block: 'start' });
+        }
+      }, 100);
+    }
+  }, [loading, postId]);
+
   const fetchMediaPosts = async () => {
     setLoading(true);
     try {
@@ -46,11 +59,7 @@ export default function ShortsFeed() {
         const idNum = Number(postId);
         const existingIndex = fetchedPosts.findIndex(p => p.id === idNum);
         
-        if (existingIndex !== -1) {
-          const targetPost = fetchedPosts[existingIndex];
-          fetchedPosts.splice(existingIndex, 1);
-          fetchedPosts.unshift(targetPost);
-        } else {
+        if (existingIndex === -1) {
           try {
             const singlePost = await boardApi.getPostDetail(idNum);
             fetchedPosts.unshift(singlePost);

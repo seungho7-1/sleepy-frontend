@@ -25,30 +25,38 @@ export default function NotificationDropdown({ onClose }) {
         orderBy("createdAt", "desc")
       );
       unsubscribe = onSnapshot(q, (snapshot) => {
-        const rawData = snapshot.docs.map(doc => ({
-          ...doc.data(),
-          docId: doc.id
-        }));
+        const now = Date.now();
+        const rawData = snapshot.docs.map(doc => {
+          const d = doc.data();
+          let parsedTime = typeof d.createdAt === 'object' && d.createdAt.seconds ? d.createdAt.seconds * 1000 : (Number(d.createdAt) || 0);
+          // 과거 버그로 인해 1시간 이상 미래 시간으로 저장된 데이터는 9시간(KST 오차)을 빼서 보정
+          if (parsedTime > now + 3600000) {
+            parsedTime -= 9 * 60 * 60 * 1000;
+          }
+          return {
+            ...d,
+            docId: doc.id,
+            correctedTime: parsedTime
+          };
+        });
         
         // 프론트엔드 중복 알림 방어 로직 (메시지+시간 기준 중복 제거)
         const uniqueDataMap = new Map();
         rawData.forEach(n => {
-          // Firebase의 id 또는 메시지와 createdAt 시간을 조합하여 유니크 키 생성
-          const key = n.id ? String(n.id) : `${n.message}_${n.createdAt?.seconds}`;
+          const key = n.id ? String(n.id) : `${n.message}_${n.correctedTime}`;
           if (!uniqueDataMap.has(key)) {
             uniqueDataMap.set(key, n);
           }
         });
-        const data = Array.from(uniqueDataMap.values());
         
-        // 안 읽은 알림은 전부 보이고, 읽은 알림은 최근 3개까지만 표시 (시간순 정렬)
+        // 보정된 시간 기준으로 전체를 먼저 내림차순 정렬
+        let data = Array.from(uniqueDataMap.values()).sort((a, b) => b.correctedTime - a.correctedTime);
+        
+        // 안 읽은 알림은 전부 보이고, 읽은 알림은 최근 3개까지만 표시
         const unreadNotifs = data.filter(n => !(n.isRead !== undefined ? n.isRead : n.read));
         const recentReadNotifs = data.filter(n => (n.isRead !== undefined ? n.isRead : n.read)).slice(0, 3);
-        const displayNotifs = [...unreadNotifs, ...recentReadNotifs].sort((a, b) => {
-          const timeA = typeof a.createdAt === 'object' && a.createdAt.seconds ? a.createdAt.seconds * 1000 : (Number(a.createdAt) || 0);
-          const timeB = typeof b.createdAt === 'object' && b.createdAt.seconds ? b.createdAt.seconds * 1000 : (Number(b.createdAt) || 0);
-          return timeB - timeA;
-        });
+        
+        const displayNotifs = [...unreadNotifs, ...recentReadNotifs].sort((a, b) => b.correctedTime - a.correctedTime);
         
         setNotifications(displayNotifs);
         setLoading(false);

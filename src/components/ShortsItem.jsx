@@ -133,6 +133,7 @@ export default function ShortsItem({ post, index, activePostId }) {
 
   return (
     <div 
+      id={`shorts-item-${post.id}`}
       className="shorts-item-container"
       ref={containerRef}
       style={{
