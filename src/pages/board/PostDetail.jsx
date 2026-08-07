@@ -562,6 +562,7 @@ export default function PostDetail() {
               return renderCommentTree();
             })()}
           </div>
+          </div>
         )}
       </div>
 
