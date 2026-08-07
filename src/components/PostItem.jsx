@@ -108,7 +108,7 @@ export default function PostItem({ post, isNoticeTab = false }) {
         </div>
 
         <div className="meta-date">
-          {formatDate(post.createdAt)}
+          {formatDate(post.createdAt, 'list')}
         </div>
       </div>
     </div>
