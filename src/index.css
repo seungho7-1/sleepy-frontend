@@ -1515,17 +1515,30 @@ main {
   .mypage-sidebar {
     width: 100%;
     flex: auto;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 0.5rem;
+  }
+  .mypage-sidebar::-webkit-scrollbar {
+    display: none;
+  }
+  .mypage-sidebar .mypage-nav-btn {
+    text-align: center;
+    white-space: nowrap;
+    padding: 0.8rem 1rem;
+    flex: 1;
   }
   .mypage-main-content {
     width: 100%;
   }
   .mypage-banner {
-    padding: 2rem;
+    padding: 1.5rem;
   }
   .mypage-banner-content {
     flex-direction: column;
     text-align: center;
     align-items: center;
+    gap: 1rem;
   }
   .mypage-banner-content .profile-info-header {
     align-items: center !important;
@@ -1542,6 +1555,7 @@ main {
     justify-content: space-evenly;
     padding: 1rem;
     gap: 1rem;
+    margin-top: 0.5rem;
   }
 }
 
