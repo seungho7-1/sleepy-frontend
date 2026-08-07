@@ -271,9 +271,23 @@ export default function ShortsCommentModal({ postId, onClose, onUpdateCount, inl
                 const isExpanded = expandedReplies[root.id];
 
                 return (
-                  <div id={`comment-${root.id}`} key={root.id} style={{ marginBottom: '1.4rem' }}>
+                  <div id={`comment-${root.id}`} key={root.id} style={{ marginBottom: '1.4rem', position: 'relative' }}>
+                    {/* Gap line for root comment's children */}
+                    {isExpanded && descendants.length > 0 && (
+                      <div style={{
+                        position: 'absolute',
+                        top: '36px', // Bottom of 36px avatar
+                        bottom: '0', // Down to the reply tree
+                        left: '17px', // Center of 36px avatar (18 - 1px border)
+                        width: '2px',
+                        background: 'rgba(255,255,255,0.15)',
+                        zIndex: 0,
+                        pointerEvents: 'none'
+                      }} />
+                    )}
+
                     {/* Root Comment */}
-                    <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
                       <Avatar name={root.nickname} imageUrl={root.profileImageUrl} size={36} />
 
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -411,150 +425,211 @@ export default function ShortsCommentModal({ postId, onClose, onUpdateCount, inl
                           </button>
                         )}
 
-                        {/* Flat Threaded Section for Replies when expanded */}
+                        {/* Threaded Section for Replies when expanded */}
                         {isExpanded && descendants.length > 0 && (
-                          <div 
-                            style={{ 
-                              marginTop: '12px', 
-                              display: 'flex', 
-                              flexDirection: 'column', 
-                              gap: '14px',
-                              paddingLeft: '8px',
-                              borderLeft: '2px solid rgba(255,255,255,0.1)'
-                            }}
-                          >
-                            {descendants.map(reply => {
-                              const isEditingReply = editingCommentId === reply.id;
-                              const parentComment = commentById[reply.parentId];
+                          <div style={{ marginTop: '12px' }}>
+                            {(() => {
+                              const renderReplyTree = (parentId, depth = 1) => {
+                                const children = commentMap[parentId] || [];
+                                if (children.length === 0) return null;
+                                children.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
-                              return (
-                                <div id={`comment-${reply.id}`} key={reply.id}>
-                                  <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                                    <Avatar name={reply.nickname} imageUrl={reply.profileImageUrl} size={28} />
+                                const lineReach = depth === 1 ? 30 : 20;
 
-                                    <div style={{ flex: 1, minWidth: 0 }}>
-                                      {/* Reply Header: Nickname + Date + Options */}
-                                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                                          <span style={{ fontWeight: '600', fontSize: '0.85rem', color: '#ffffff' }}>
-                                            {reply.nickname}
-                                          </span>
-                                          <span style={{ fontSize: '0.75rem', color: '#888888', marginLeft: '4px' }}>
-                                            {formatDate(reply.createdAt, true)}
-                                          </span>
-                                        </div>
+                                return (
+                                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                    {children.map((reply, index) => {
+                                      const isLast = index === children.length - 1;
+                                      const hasChildren = (commentMap[reply.id] || []).length > 0;
+                                      const isEditingReply = editingCommentId === reply.id;
+                                      const parentComment = commentById[reply.parentId];
 
-                                        <div style={{ position: 'relative' }}>
-                                          <button 
-                                            type="button" 
-                                            onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === reply.id ? null : reply.id); }}
-                                            style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}
-                                            title="옵션"
-                                          >
-                                            <MoreVertical size={16} />
-                                          </button>
+                                      return (
+                                        <div id={`comment-${reply.id}`} key={reply.id} style={{ position: 'relative', marginTop: index === 0 ? '0' : '12px' }}>
+                                          
+                                          {/* 1. Curve to THIS child (overlaps with parent gap line or previous sibling DOWN line) */}
+                                          <div style={{
+                                            position: 'absolute',
+                                            top: index === 0 ? '-100px' : '-12px',
+                                            left: `-${lineReach}px`,
+                                            width: `${lineReach}px`,
+                                            height: index === 0 ? '112px' : '24px', // Ends at avatar center (12px)
+                                            borderLeft: '2px solid rgba(255,255,255,0.15)',
+                                            borderBottom: '2px solid rgba(255,255,255,0.15)',
+                                            borderBottomLeftRadius: '12px',
+                                            zIndex: 0,
+                                            pointerEvents: 'none'
+                                          }} />
 
-                                          {openMenuId === reply.id && (
-                                            <div 
-                                              style={{
-                                                position: 'absolute', top: '100%', right: 0,
-                                                background: '#282828', borderRadius: '8px', padding: '4px 0',
-                                                minWidth: '100px', boxShadow: '0 4px 16px rgba(0,0,0,0.6)',
-                                                border: '1px solid #383838', zIndex: 100
-                                              }}
-                                            >
-                                              <button
-                                                type="button"
-                                                onClick={(e) => { e.stopPropagation(); setOpenMenuId(null); handleReportComment(reply.id, reply.nickname); }}
-                                                style={{ width: '100%', padding: '8px 12px', background: 'none', border: 'none', color: '#f1f1f1', fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', textAlign: 'left' }}
-                                              >
-                                                <Flag size={14} color="#ff4d4d" />
-                                                신고
-                                              </button>
+                                          {/* 2. DOWN line to next sibling */}
+                                          {!isLast && (
+                                            <div style={{
+                                              position: 'absolute',
+                                              top: '12px',
+                                              bottom: '-12px',
+                                              left: `-${lineReach}px`,
+                                              borderLeft: '2px solid rgba(255,255,255,0.15)',
+                                              zIndex: 0,
+                                              pointerEvents: 'none'
+                                            }} />
+                                          )}
+
+                                          {/* Content Wrapper */}
+                                          <div style={{ position: 'relative' }}>
+                                            {/* 3. Gap line for THIS child's children (if any) */}
+                                            {hasChildren && (
+                                              <div style={{
+                                                position: 'absolute',
+                                                top: '24px',
+                                                bottom: '0',
+                                                left: '11px',
+                                                width: '2px',
+                                                background: 'rgba(255,255,255,0.15)',
+                                                zIndex: 0,
+                                                pointerEvents: 'none'
+                                              }} />
+                                            )}
+                                            
+                                            <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
+                                              <Avatar name={reply.nickname} imageUrl={reply.profileImageUrl} size={24} />
+                                              
+                                              <div style={{ flex: 1, minWidth: 0 }}>
+                                                {/* Reply Header: Nickname + Date + Options */}
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}>
+                                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                                    <span style={{ fontWeight: '600', fontSize: '0.85rem', color: '#ffffff' }}>
+                                                      {reply.nickname}
+                                                    </span>
+                                                    <span style={{ fontSize: '0.75rem', color: '#888888', marginLeft: '4px' }}>
+                                                      {formatDate(reply.createdAt, true)}
+                                                    </span>
+                                                  </div>
+
+                                                  <div style={{ position: 'relative' }}>
+                                                    <button 
+                                                      type="button" 
+                                                      onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === reply.id ? null : reply.id); }}
+                                                      style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}
+                                                      title="옵션"
+                                                    >
+                                                      <MoreVertical size={16} />
+                                                    </button>
+
+                                                    {openMenuId === reply.id && (
+                                                      <div 
+                                                        style={{
+                                                          position: 'absolute', top: '100%', right: 0,
+                                                          background: '#282828', borderRadius: '8px', padding: '4px 0',
+                                                          minWidth: '100px', boxShadow: '0 4px 16px rgba(0,0,0,0.6)',
+                                                          border: '1px solid #383838', zIndex: 100
+                                                        }}
+                                                      >
+                                                        <button
+                                                          type="button"
+                                                          onClick={(e) => { e.stopPropagation(); setOpenMenuId(null); handleReportComment(reply.id, reply.nickname); }}
+                                                          style={{ width: '100%', padding: '8px 12px', background: 'none', border: 'none', color: '#f1f1f1', fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', textAlign: 'left' }}
+                                                        >
+                                                          <Flag size={14} color="#ff4d4d" />
+                                                          신고
+                                                        </button>
+                                                      </div>
+                                                    )}
+                                                  </div>
+                                                </div>
+
+                                                {/* Reply Content */}
+                                                {isEditingReply ? (
+                                                  <form onSubmit={(e) => handleCommentEditSubmit(e, reply.id)} style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '0.5rem', background: '#222', padding: '0.8rem', borderRadius: '8px', border: '1px solid #444' }}>
+                                                    <textarea 
+                                                      value={editingText} 
+                                                      onChange={(e) => setEditingText(e.target.value)} 
+                                                      style={{ 
+                                                        width: '100%', minHeight: '60px', padding: '8px', borderRadius: '6px', border: '1px solid #444', 
+                                                        background: '#141414', color: '#fff', fontSize: '0.88rem', outline: 'none', boxSizing: 'border-box', resize: 'vertical', fontFamily: 'inherit' 
+                                                      }}
+                                                      required
+                                                      autoFocus
+                                                    />
+                                                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                                                      <button 
+                                                        type="button" 
+                                                        onClick={() => { setEditingCommentId(null); setEditingText(''); }} 
+                                                        style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #444', background: '#333', color: '#ddd', fontSize: '0.8rem', cursor: 'pointer' }}
+                                                      >
+                                                        취소
+                                                      </button>
+                                                      <button type="submit" style={{ padding: '6px 12px', borderRadius: '6px', border: 'none', background: 'var(--primary-color)', color: 'white', fontWeight: 'bold', fontSize: '0.8rem', cursor: 'pointer' }}>
+                                                        수정 완료
+                                                      </button>
+                                                    </div>
+                                                  </form>
+                                                ) : (
+                                                  <div style={{ fontSize: '0.88rem', color: '#f1f1f1', marginTop: '4px', lineHeight: '1.45', wordBreak: 'break-word' }}>
+                                                    {parentComment && parentComment.id !== root.id && (
+                                                      <span style={{ 
+                                                        color: '#3ea6ff', 
+                                                        fontWeight: '600', 
+                                                        marginRight: '6px'
+                                                      }}>
+                                                        @{parentComment.nickname}
+                                                      </span>
+                                                    )}
+                                                    {reply.content}
+                                                  </div>
+                                                )}
+
+                                                {/* Reply Actions */}
+                                                <div style={{ display: 'flex', gap: '12px', marginTop: '6px', alignItems: 'center' }}>
+                                                  {token && !isEditingReply && (
+                                                    <button 
+                                                      type="button" 
+                                                      onClick={() => handleReplyClick(root.id, reply)}
+                                                      style={{ background: 'none', border: 'none', color: '#aaaaaa', fontSize: '0.78rem', fontWeight: '600', cursor: 'pointer', padding: 0 }}
+                                                    >
+                                                      답글 달기
+                                                    </button>
+                                                  )}
+                                                  {nickname === reply.nickname && !isEditingReply && (
+                                                    <>
+                                                      <button 
+                                                        type="button" 
+                                                        onClick={() => { setEditingCommentId(reply.id); setEditingText(reply.content); }}
+                                                        style={{ background: 'none', border: 'none', color: '#888888', fontSize: '0.78rem', cursor: 'pointer', padding: 0 }}
+                                                      >
+                                                        수정
+                                                      </button>
+                                                      <button 
+                                                        type="button" 
+                                                        onClick={() => handleCommentDelete(reply.id)}
+                                                        style={{ background: 'none', border: 'none', color: '#888888', fontSize: '0.78rem', cursor: 'pointer', padding: 0 }}
+                                                      >
+                                                        삭제
+                                                      </button>
+                                                    </>
+                                                  )}
+                                                </div>
+
+                                                {/* Inline Reply Form under this specific reply */}
+                                                {replyToId === reply.id && renderInlineReplyForm()}
+
+                                                {/* Recursive Children */}
+                                                {hasChildren && (
+                                                  <div style={{ marginTop: '12px' }}>
+                                                    {renderReplyTree(reply.id, depth + 1)}
+                                                  </div>
+                                                )}
+                                              </div>
                                             </div>
-                                          )}
-                                        </div>
-                                      </div>
-
-                                      {/* Reply Content */}
-                                      {isEditingReply ? (
-                                        <form onSubmit={(e) => handleCommentEditSubmit(e, reply.id)} style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '0.5rem', background: '#222', padding: '0.8rem', borderRadius: '8px', border: '1px solid #444' }}>
-                                          <textarea 
-                                            value={editingText} 
-                                            onChange={(e) => setEditingText(e.target.value)} 
-                                            style={{ 
-                                              width: '100%', minHeight: '60px', padding: '8px', borderRadius: '6px', border: '1px solid #444', 
-                                              background: '#141414', color: '#fff', fontSize: '0.88rem', outline: 'none', boxSizing: 'border-box', resize: 'vertical', fontFamily: 'inherit' 
-                                            }}
-                                            required
-                                            autoFocus
-                                          />
-                                          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
-                                            <button 
-                                              type="button" 
-                                              onClick={() => { setEditingCommentId(null); setEditingText(''); }} 
-                                              style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #444', background: '#333', color: '#ddd', fontSize: '0.8rem', cursor: 'pointer' }}
-                                            >
-                                              취소
-                                            </button>
-                                            <button type="submit" style={{ padding: '6px 12px', borderRadius: '6px', border: 'none', background: 'var(--primary-color)', color: 'white', fontWeight: 'bold', fontSize: '0.8rem', cursor: 'pointer' }}>
-                                              수정 완료
-                                            </button>
                                           </div>
-                                        </form>
-                                      ) : (
-                                        <div style={{ fontSize: '0.88rem', color: '#f1f1f1', marginTop: '4px', lineHeight: '1.45', wordBreak: 'break-word' }}>
-                                          {parentComment && parentComment.id !== root.id && (
-                                            <span style={{ 
-                                              color: '#3ea6ff', 
-                                              fontWeight: '600', 
-                                              marginRight: '6px'
-                                            }}>
-                                              @{parentComment.nickname}
-                                            </span>
-                                          )}
-                                          {reply.content}
                                         </div>
-                                      )}
-
-                                      {/* Reply Actions */}
-                                      <div style={{ display: 'flex', gap: '12px', marginTop: '6px', alignItems: 'center' }}>
-                                        {token && !isEditingReply && (
-                                          <button 
-                                            type="button" 
-                                            onClick={() => handleReplyClick(root.id, reply)}
-                                            style={{ background: 'none', border: 'none', color: '#aaaaaa', fontSize: '0.78rem', fontWeight: '600', cursor: 'pointer', padding: 0 }}
-                                          >
-                                            답글 달기
-                                          </button>
-                                        )}
-                                        {nickname === reply.nickname && !isEditingReply && (
-                                          <>
-                                            <button 
-                                              type="button" 
-                                              onClick={() => { setEditingCommentId(reply.id); setEditingText(reply.content); }}
-                                              style={{ background: 'none', border: 'none', color: '#888888', fontSize: '0.78rem', cursor: 'pointer', padding: 0 }}
-                                            >
-                                              수정
-                                            </button>
-                                            <button 
-                                              type="button" 
-                                              onClick={() => handleCommentDelete(reply.id)}
-                                              style={{ background: 'none', border: 'none', color: '#888888', fontSize: '0.78rem', cursor: 'pointer', padding: 0 }}
-                                            >
-                                              삭제
-                                            </button>
-                                          </>
-                                        )}
-                                      </div>
-
-                                      {/* Inline Reply Form under this specific reply */}
-                                      {replyToId === reply.id && renderInlineReplyForm()}
-                                    </div>
+                                      );
+                                    })}
                                   </div>
-                                </div>
-                              );
-                            })}
+                                );
+                              };
+
+                              return renderReplyTree(root.id, 1);
+                            })()}
                             
                             {/* Collapse Button */}
                             <button
@@ -564,7 +639,7 @@ export default function ShortsCommentModal({ postId, onClose, onUpdateCount, inl
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 gap: '6px',
-                                marginTop: '4px',
+                                marginTop: '12px',
                                 padding: '5px 14px',
                                 borderRadius: '18px',
                                 background: 'rgba(62, 166, 255, 0.12)',
@@ -573,7 +648,8 @@ export default function ShortsCommentModal({ postId, onClose, onUpdateCount, inl
                                 fontSize: '0.82rem',
                                 fontWeight: '600',
                                 cursor: 'pointer',
-                                alignSelf: 'flex-start'
+                                position: 'relative',
+                                zIndex: 1
                               }}
                             >
                               <span style={{ fontSize: '0.75rem' }}>▲</span>
