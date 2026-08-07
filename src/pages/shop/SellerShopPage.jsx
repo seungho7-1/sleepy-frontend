@@ -6,7 +6,7 @@ import ProductCard from '../../components/ProductCard';
 import { Share2, Bookmark, Link as LinkIcon, Edit3, X, Search } from 'lucide-react';
 import { useAuthStore } from '../../store';
 
-const CATEGORIES = ['전체', '슬라임', '슬랑이', '말랑이', '스퀴시'];
+const CATEGORIES = ['전체', '슬라임', '슬랑이', '말랑이', '스퀴시', '왁뿌'];
 const SORTS = [
   { label: '최신순', value: 'createdAt,desc' },
   { label: '인기순', value: 'reviewCount,desc' },
@@ -87,6 +87,8 @@ export default function SellerShopPage() {
           categoryApiValue = 'MALANGI';
         } else if (activeCategory === '스퀴시') {
           categoryApiValue = 'SQUISHY';
+        } else if (activeCategory === '왁뿌') {
+          categoryApiValue = 'WAKPPU';
         }
 
         const data = await productApi.getProducts(categoryApiValue, keyword, sellerId, 0, 100, activeSort);
@@ -172,71 +174,80 @@ export default function SellerShopPage() {
         }}
       >
         <div className="container" style={{ position: 'relative', zIndex: 2 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', '@media (minWidth: 768px)': { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' } }} className="shop-banner-layout">
-            <div style={{ flex: 1, maxWidth: '600px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '1rem', flexWrap: 'wrap' }}>
-                <h1 style={{ fontSize: '2rem', fontWeight: '800', margin: 0, letterSpacing: '-1px', wordBreak: 'break-word' }}>
-                  {sellerInfo.shopName}
-                </h1>
-                {myInfo && myInfo.id === Number(sellerId) && (
-                  <button onClick={handleOpenEdit} style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.4)', color: '#fff', padding: '4px 10px', borderRadius: '12px', cursor: 'pointer', fontSize: '0.85rem', flexShrink: 0 }}>
-                    <Edit3 size={14} /> 수정
-                  </button>
-                )}
-              </div>
-              <p style={{ fontSize: '0.95rem', lineHeight: '1.6', color: '#e0e0e0', marginBottom: '1.5rem', whiteSpace: 'pre-wrap' }}>
-                {sellerInfo.introduction}
-              </p>
-              
-              <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem' }}>
+            
+            {/* Left: Avatar + Info */}
+            <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-start', flexWrap: 'wrap', flex: '1 1 min-content' }}>
+              <div style={{ flexShrink: 0 }}>
                 {sellerInfo.profileImageUrl ? (
-                  <img src={sellerInfo.profileImageUrl} alt="profile" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
+                  <img src={sellerInfo.profileImageUrl} alt="profile" style={{ width: '96px', height: '96px', borderRadius: '50%', objectFit: 'cover', border: '3px solid rgba(255,255,255,0.4)', boxShadow: '0 4px 16px rgba(0,0,0,0.5)' }} />
                 ) : (
-                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#ff2070', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                  <div style={{ width: '96px', height: '96px', borderRadius: '50%', background: 'linear-gradient(135deg, #ff2070, #ff5c97)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold', fontSize: '2.5rem', border: '3px solid rgba(255,255,255,0.4)', boxShadow: '0 4px 16px rgba(0,0,0,0.5)' }}>
                     {sellerInfo.shopName.charAt(0)}
                   </div>
                 )}
-                <span style={{ fontSize: '0.9rem', color: '#ccc' }}>
-                  <span style={{ color: '#ff2070', fontWeight: 'bold' }}>{sellerInfo.scrapCount || 0}</span>명이 이 브랜드 상품을 스크랩했어요
-                </span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '1.5rem' }}>
-                {sellerInfo.siteUrl && (
-                  <a href={sellerInfo.siteUrl} target="_blank" rel="noreferrer" style={{ color: '#fff', opacity: 0.8 }} title="쇼핑몰 사이트">
-                    <LinkIcon size={20} />
-                  </a>
-                )}
-                {sellerInfo.youtubeUrl && (
-                  <a href={sellerInfo.youtubeUrl} target="_blank" rel="noreferrer" style={{ color: '#fff', opacity: 0.8 }} title="유튜브">
-                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.8 }}><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
-                  </a>
-                )}
-                {sellerInfo.instagramUrl && (
-                  <a href={sellerInfo.instagramUrl} target="_blank" rel="noreferrer" style={{ color: '#fff', opacity: 0.8 }} title="인스타그램">
-                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.8 }}><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                  </a>
-                )}
-                {sellerInfo.facebookUrl && (
-                  <a href={sellerInfo.facebookUrl} target="_blank" rel="noreferrer" style={{ color: '#fff', opacity: 0.8 }} title="페이스북">
-                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.8 }}><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-                  </a>
-                )}
-                {sellerInfo.tiktokUrl && (
-                  <a href={sellerInfo.tiktokUrl} target="_blank" rel="noreferrer" style={{ color: '#fff', opacity: 0.8 }} title="틱톡">
-                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.8 }}><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
-                  </a>
-                )}
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', minWidth: '220px', flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                  <h1 style={{ fontSize: '1.8rem', fontWeight: '900', margin: 0, letterSpacing: '-0.5px', wordBreak: 'break-word', textShadow: '0 2px 8px rgba(0,0,0,0.6)' }}>
+                    {sellerInfo.shopName}
+                  </h1>
+                  {myInfo && myInfo.id === Number(sellerId) && (
+                    <button onClick={handleOpenEdit} style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)', color: '#fff', padding: '6px 14px', borderRadius: '20px', cursor: 'pointer', fontSize: '0.85rem', flexShrink: 0, transition: 'background 0.2s', backdropFilter: 'blur(4px)' }} onMouseOver={e => e.currentTarget.style.background='rgba(255,255,255,0.25)'} onMouseOut={e => e.currentTarget.style.background='rgba(255,255,255,0.15)'}>
+                      <Edit3 size={14} /> 프로필 수정
+                    </button>
+                  )}
+                </div>
+
+                <div style={{ fontSize: '0.95rem', color: '#eaeaea', textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>
+                  <span style={{ color: '#ff7eb3', fontWeight: '900' }}>{sellerInfo.scrapCount || 0}</span>명이 이 스토어를 스크랩했어요
+                </div>
+
+                <p style={{ fontSize: '0.95rem', lineHeight: '1.6', color: '#f1f1f1', margin: '0.5rem 0 0 0', whiteSpace: 'pre-wrap', maxWidth: '650px', textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>
+                  {sellerInfo.introduction}
+                </p>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+                  {sellerInfo.siteUrl && (
+                    <a href={sellerInfo.siteUrl} target="_blank" rel="noreferrer" style={{ color: '#fff', opacity: 0.8, transition: 'opacity 0.2s' }} onMouseOver={e=>e.currentTarget.style.opacity=1} onMouseOut={e=>e.currentTarget.style.opacity=0.8} title="쇼핑몰 사이트">
+                      <LinkIcon size={20} />
+                    </a>
+                  )}
+                  {sellerInfo.youtubeUrl && (
+                    <a href={sellerInfo.youtubeUrl} target="_blank" rel="noreferrer" style={{ color: '#fff', opacity: 0.8, transition: 'opacity 0.2s' }} onMouseOver={e=>e.currentTarget.style.opacity=1} onMouseOut={e=>e.currentTarget.style.opacity=0.8} title="유튜브">
+                      <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
+                    </a>
+                  )}
+                  {sellerInfo.instagramUrl && (
+                    <a href={sellerInfo.instagramUrl} target="_blank" rel="noreferrer" style={{ color: '#fff', opacity: 0.8, transition: 'opacity 0.2s' }} onMouseOver={e=>e.currentTarget.style.opacity=1} onMouseOut={e=>e.currentTarget.style.opacity=0.8} title="인스타그램">
+                      <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                    </a>
+                  )}
+                  {sellerInfo.facebookUrl && (
+                    <a href={sellerInfo.facebookUrl} target="_blank" rel="noreferrer" style={{ color: '#fff', opacity: 0.8, transition: 'opacity 0.2s' }} onMouseOver={e=>e.currentTarget.style.opacity=1} onMouseOut={e=>e.currentTarget.style.opacity=0.8} title="페이스북">
+                      <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                    </a>
+                  )}
+                  {sellerInfo.tiktokUrl && (
+                    <a href={sellerInfo.tiktokUrl} target="_blank" rel="noreferrer" style={{ color: '#fff', opacity: 0.8, transition: 'opacity 0.2s' }} onMouseOver={e=>e.currentTarget.style.opacity=1} onMouseOut={e=>e.currentTarget.style.opacity=0.8} title="틱톡">
+                      <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '15px', position: 'absolute', top: 0, right: 0 }} className="shop-banner-actions">
-              <button style={{ background: 'rgba(255,255,255,0.1)', padding: '8px', borderRadius: '50%', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {/* Right: Actions */}
+            <div style={{ display: 'flex', gap: '10px', flexShrink: 0, marginTop: '4px' }}>
+              <button style={{ background: 'rgba(255,255,255,0.15)', padding: '10px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)', transition: 'background 0.2s' }} onMouseOver={e => e.currentTarget.style.background='rgba(255,255,255,0.25)'} onMouseOut={e => e.currentTarget.style.background='rgba(255,255,255,0.15)'}>
                 <Share2 size={20} />
               </button>
-              <button onClick={handleScrap} style={{ background: 'rgba(255,255,255,0.1)', padding: '8px', borderRadius: '50%', border: 'none', color: sellerInfo.isScrapped ? '#ff2070' : '#fff', cursor: 'pointer', transition: 'color 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <button onClick={handleScrap} style={{ background: 'rgba(255,255,255,0.15)', padding: '10px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.2)', color: sellerInfo.isScrapped ? '#ff2070' : '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)', transition: 'background 0.2s' }} onMouseOver={e => e.currentTarget.style.background='rgba(255,255,255,0.25)'} onMouseOut={e => e.currentTarget.style.background='rgba(255,255,255,0.15)'}>
                 <Bookmark size={20} fill={sellerInfo.isScrapped ? '#ff2070' : 'none'} />
               </button>
             </div>
+
           </div>
         </div>
       </div>
