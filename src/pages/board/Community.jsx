@@ -66,6 +66,18 @@ export default function Community({ mode = 'all' }) {
   const fetchPosts = async () => {
     try {
       const isMedia = boardType === 'MEDIA'
+      
+      let notices = []
+      // 1페이지(page 0)이고, 검색어가 없을 때 전체/질문/후기/정보/잡담 탭에서 공지사항을 상단에 고정
+      if (!isMedia && boardType !== 'NOTICE' && page === 0 && !keyword) {
+        try {
+          const noticeData = await boardApi.getPosts('NOTICE', '', 0, 5, 'createdAt,desc')
+          notices = noticeData.content || []
+        } catch(e) {
+          console.error('공지사항 로딩 실패:', e)
+        }
+      }
+
       const data = await boardApi.getPosts(
         boardType,
         keyword.replace(/^#/, ''),
@@ -73,7 +85,17 @@ export default function Community({ mode = 'all' }) {
         isMedia ? 50 : PAGE_SIZE,
         sortBy
       )
-      setPosts(data.content || [])
+      
+      let fetchedPosts = data.content || []
+      
+      // 공지사항 상단에 합치기 (중복 제거)
+      if (notices.length > 0) {
+        const noticeIds = new Set(notices.map(n => n.id))
+        fetchedPosts = fetchedPosts.filter(p => !noticeIds.has(p.id))
+        fetchedPosts = [...notices, ...fetchedPosts]
+      }
+
+      setPosts(fetchedPosts)
       setTotalElements(data.totalElements || 0)
       if (!isMedia) {
         setTotalPages(data.totalPages || 0)
