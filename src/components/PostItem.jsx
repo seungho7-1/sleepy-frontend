@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { formatDate } from '../utils/formatDate';
 import { Heart, Eye, MessageCircle } from 'lucide-react';
 
@@ -7,6 +7,7 @@ export default function PostItem({ post, isNoticeTab = false }) {
   const navigate = useNavigate();
 
   const isPinned = Boolean(post.isPinned || post.pinned);
+  // 공지사항이거나 핀된 글이면서 공지사항 탭이 아닐 때 → 빨간 고정 스타일 적용
   const isPinnedNotice = (post.boardType === 'NOTICE' || isPinned) && !isNoticeTab;
 
   const getBadgeStyle = (boardType) => {
@@ -33,18 +34,17 @@ export default function PostItem({ post, isNoticeTab = false }) {
   }[post.boardType] || post.boardType;
 
   return (
-    <div 
+    <div
       className={`post-item-container ${isPinnedNotice ? 'notice-post' : ''}`}
       onClick={() => navigate(`/community/${post.id}`)}
-      style={{ 
+      style={{
         cursor: 'pointer',
         ...(isPinnedNotice ? { backgroundColor: '#fff0f5', borderLeft: '4px solid var(--primary-color)' } : {})
       }}
     >
       <div className="post-item-left">
-        {/* 뱃지 영역 */}
+        {/* 카테고리 배지 */}
         <div className="post-item-badge-wrap" style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
-          {/* 카테고리 배지 */}
           <div style={{ width: '46px', flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
             <span style={{
               ...getBadgeStyle(isPinnedNotice ? 'NOTICE' : post.boardType),
@@ -61,13 +61,14 @@ export default function PostItem({ post, isNoticeTab = false }) {
           </div>
         </div>
 
-        {/* 메인 텍스트 (제목 + HOT 배지) */}
+        {/* 제목 + HOT 배지 */}
         <div className="post-item-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {post.title}
           </span>
-          {!isPinnedNotice && post.boardType !== 'NOTICE' && !post.isPinned && !post.pinned && post.authorRole !== 'ROLE_ADMIN' && ((post.popularityScore !== undefined ? post.popularityScore >= 2.0 : false) || 
-            (post.popularityScore === undefined && (post.viewCount >= 50 || post.likeCount >= 3 || post.commentCount >= 5))) && (
+          {!isPinnedNotice && post.boardType !== 'NOTICE' && !post.isPinned && !post.pinned && post.authorRole !== 'ROLE_ADMIN' &&
+            ((post.popularityScore !== undefined ? post.popularityScore >= 2.0 : false) ||
+              (post.popularityScore === undefined && (post.viewCount >= 50 || post.likeCount >= 3 || post.commentCount >= 5))) && (
             <span style={{
               background: 'var(--primary-color)',
               color: 'white',
@@ -95,7 +96,8 @@ export default function PostItem({ post, isNoticeTab = false }) {
           <span>{post.viewCount}</span>
         </div>
 
-        {post.boardType !== 'NOTICE' && post.commentCount !== undefined && (
+        {/* 댓글 아이콘: 공지사항(isPinnedNotice)에는 표시하지 않음 */}
+        {!isPinnedNotice && post.boardType !== 'NOTICE' && post.commentCount !== undefined && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: post.commentCount > 0 ? 'var(--primary-color)' : 'inherit' }}>
             <MessageCircle style={{ width: '14px', height: '14px' }} />
             <span>{post.commentCount}</span>
