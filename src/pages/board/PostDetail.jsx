@@ -343,8 +343,9 @@ export default function PostDetail() {
         </div>
         
         {/* Comments Section */}
-        <div style={{ marginTop: '2rem' }}>
-          <h3>댓글 ({comments.length})</h3>
+        {post.boardType !== 'NOTICE' && (
+          <div style={{ marginTop: '2rem' }}>
+            <h3>댓글 ({comments.length})</h3>
           
           {/* 새 댓글 작성 폼 */}
           <form onSubmit={handleCommentSubmit} style={{ marginTop: '1.5rem', marginBottom: '3rem' }}>
@@ -561,7 +562,7 @@ export default function PostDetail() {
               return renderCommentTree();
             })()}
           </div>
-        </div>
+        )}
       </div>
 
       {/* 신고 모달창 */}
