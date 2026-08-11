@@ -6,7 +6,7 @@ import ProductCard from '../../components/ProductCard';
 import { Share2, Bookmark, Link as LinkIcon, Edit3, X, Search } from 'lucide-react';
 import { useAuthStore } from '../../store';
 
-const CATEGORIES = ['전체', '슬라임', '슬랑이', '말랑이', '스퀴시', '왁뿌'];
+import { CATEGORIES, getCategoryApiValue } from '../../utils/categoryUtils';
 const SORTS = [
   { label: '최신순', value: 'createdAt,desc' },
   { label: '인기순', value: 'reviewCount,desc' },
@@ -76,18 +76,7 @@ export default function SellerShopPage() {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        let categoryApiValue = '';
-        if (activeCategory === '슬라임') {
-          categoryApiValue = 'SLIME';
-        } else if (activeCategory === '슬랑이') {
-          categoryApiValue = 'SLANGY';
-        } else if (activeCategory === '말랑이') {
-          categoryApiValue = 'MALLANGI';
-        } else if (activeCategory === '스퀴시') {
-          categoryApiValue = 'SQUISHY';
-        } else if (activeCategory === '왁뿌') {
-          categoryApiValue = 'WAKPPU';
-        }
+        let categoryApiValue = getCategoryApiValue(activeCategory);
 
         const data = await productApi.getProducts(categoryApiValue, keyword, sellerId, 0, 100, activeSort);
         setProducts(data.content || []);

@@ -4,7 +4,7 @@ import { productApi } from '../../api/products';
 import ProductGrid from '../../components/home/ProductGrid';
 import { Search } from 'lucide-react';
 
-const CATEGORIES = ['전체', '슬라임', '슬랑이', '말랑이', '스퀴시', '왁뿌'];
+import { CATEGORIES, getCategoryApiValue } from '../../utils/categoryUtils';
 
 export default function ProductList() {
   const [products, setProducts] = useState([]);
@@ -29,12 +29,7 @@ export default function ProductList() {
     try {
       if (reset) setLoading(true);
       
-      let categoryApiValue = '';
-      if (activeCategory === '슬라임') categoryApiValue = 'SLIME';
-      else if (activeCategory === '슬랑이') categoryApiValue = 'SLANGY';
-      else if (activeCategory === '말랑이') categoryApiValue = 'MALLANGI';
-      else if (activeCategory === '스퀴시') categoryApiValue = 'SQUISHY';
-      else if (activeCategory === '왁뿌') categoryApiValue = 'WAKPPU';
+      let categoryApiValue = getCategoryApiValue(activeCategory);
 
       const data = await productApi.getProducts(categoryApiValue, searchQuery, '', pageNumber, 20, sortOption);
       

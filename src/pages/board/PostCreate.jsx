@@ -206,7 +206,7 @@ export default function PostCreate() {
       <form onSubmit={handleSubmit}>
         {/* 슬라임 갤러리 미디어 전용 2컬럼 레이아웃 */}
         {isMediaPost ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(320px, 400px) 1fr', gap: '1.8rem', alignItems: 'stretch' }}>
+          <div className="media-post-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(320px, 400px) 1fr', gap: '1.8rem', alignItems: 'stretch' }}>
             {/* 좌측: 미디어 업로드 카드 */}
             <div style={{ background: 'white', padding: '1.8rem', borderRadius: '16px', border: '1px solid #e0e0e0', display: 'flex', flexDirection: 'column' }}>
               <label style={{ fontWeight: '700', fontSize: '0.95rem', color: 'var(--text-main)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '6px' }}>

@@ -7,6 +7,8 @@ import { reviewApi } from '../../api/reviews'
 import { authApi } from '../../api/auth'
 import ProductCard from '../../components/ProductCard'
 import { Building, Edit2, Image as ImageIcon, ClipboardList, ShoppingCart, FileText, Video, MessageCircle } from 'lucide-react'
+import { PRODUCT_CATEGORIES } from '../../utils/categoryUtils'
+
 export default function SellerDashboard() {
   const { token, role, nickname } = useAuthStore()
   const navigate = useNavigate()
@@ -411,11 +413,14 @@ export default function SellerDashboard() {
                     <div className="seller-form-row">
                       <label style={{ fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-main)' }}>카테고리 *</label>
                       <select name="category" value={formData.category} onChange={handleInputChange} required style={{ width: '100%', padding: '0.7rem 1rem', borderRadius: '16px', border: '1px solid var(--border-color)', outline: 'none', fontSize: '0.9rem', backgroundColor: '#fff' }}>
-                        <option value="SLIME">슬라임</option>
-                        <option value="SLANGY">슬랑이</option>
-                        <option value="MALLANGI">말랑이</option>
-                        <option value="SQUISHY">스퀴시</option>
-                        <option value="WAKPPU">왁뿌</option>
+                        {PRODUCT_CATEGORIES.map(cat => (
+                          <option key={cat} value={
+                            cat === '슬라임' ? 'SLIME' : 
+                            cat === '슬랑이' ? 'SLANGY' : 
+                            cat === '말랑이' ? 'MALLANGI' : 
+                            cat === '스퀴시' ? 'SQUISHY' : 'WAKPPU'
+                          }>{cat}</option>
+                        ))}
                       </select>
                     </div>
 

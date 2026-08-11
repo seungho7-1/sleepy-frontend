@@ -2443,3 +2443,9 @@ main {
 .post-item-container.notice-post:hover {
   background: #ffe4ee !important;
 }
+
+@media (max-width: 768px) {
+  .media-post-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
