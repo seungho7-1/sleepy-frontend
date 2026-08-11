@@ -385,11 +385,7 @@ export default function SellerDashboard() {
                     onMouseEnter={(e) => { e.currentTarget.style.background = '#ffeef2'; e.currentTarget.style.borderColor = 'var(--primary-color)' }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = '#fffafb'; e.currentTarget.style.borderColor = '#ffeef2' }}
                     >
-                      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                        <circle cx="8.5" cy="8.5" r="1.5"/>
-                        <polyline points="21 15 16 10 5 21"/>
-                      </svg>
+                      
                       <span style={{ fontSize: '1rem', fontWeight: 'bold', color: 'var(--primary-color)' }}>클릭하여 이미지 업로드</span>
                       <span style={{ fontSize: '0.85rem', color: 'var(--text-sub)' }}>{uploadingImg ? '업로드 중...' : '최대 5장 선택 (첫 번째가 대표 이미지)'}</span>
                     </label>
@@ -560,7 +556,7 @@ export default function SellerDashboard() {
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
-                  <button type="submit" className="submit-btn" disabled={uploadingImg || uploadingVid || uploadingDescImg} style={{ padding: '1rem 3rem', fontSize: '1.1rem', borderRadius: '16px', boxShadow: '0 4px 16px rgba(255,107,158,0.25)' }}>
+                  <button type="submit" className="submit-btn" disabled={uploadingImg || uploadingVid || uploadingDescImg} style={{ padding: '1rem 3rem', fontSize: '1.1rem', borderRadius: '16px' }}>
                     {uploadingImg || uploadingVid ? '미디어 업로드 중...' : editingProductId ? '수정 완료하기' : '상품 등록 완료'}
                   </button>
                 </div>
