@@ -277,6 +277,18 @@ export default function SellerShopPage() {
           </div>
 
           <div className="shop-nav-filters">
+            <select 
+              value={activeSort}
+              onChange={(e) => setActiveSort(e.target.value)}
+              style={{
+                padding: '6px 12px', borderRadius: '20px', border: '1px solid #e0e0e0', background: '#fff', fontSize: '0.85rem', color: '#555', outline: 'none', cursor: 'pointer'
+              }}
+            >
+              {SORTS.map(s => (
+                <option key={s.value} value={s.value}>{s.label}</option>
+              ))}
+            </select>
+
             <form onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center', border: '1px solid #e0e0e0', borderRadius: '24px', padding: '6px 14px', background: '#f5f5f5', flex: 1, minWidth: '140px', maxWidth: '200px', transition: 'all 0.2s' }}>
               <Search size={16} color="#888" style={{ marginRight: '6px', flexShrink: 0 }} />
               <input 
@@ -286,17 +298,21 @@ export default function SellerShopPage() {
                 onChange={(e) => setSearchInput(e.target.value)}
                 style={{ border: 'none', outline: 'none', background: 'transparent', fontSize: '0.85rem', width: '100%' }}
               />
+              {searchInput && (
+                <button 
+                  type="button" 
+                  onClick={() => { 
+                    setSearchInput('');
+                    setKeyword('');
+                  }}
+                  style={{
+                    background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0', marginLeft: '6px'
+                  }}
+                >
+                  ✖
+                </button>
+              )}
             </form>
-
-            <select 
-              value={activeSort}
-              onChange={(e) => setActiveSort(e.target.value)}
-              style={{ border: 'none', outline: 'none', fontSize: '0.9rem', color: '#555', cursor: 'pointer', background: 'transparent' }}
-            >
-              {SORTS.map(s => (
-                <option key={s.value} value={s.value}>{s.label}</option>
-              ))}
-            </select>
           </div>
 
         </div>
