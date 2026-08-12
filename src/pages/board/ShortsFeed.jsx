@@ -36,15 +36,7 @@ export default function ShortsFeed() {
     fetchMediaPosts();
   }, [postId, sortParam, keyword]);
 
-  // posts가 모두 로드된 후 초기 activePostId로 스크롤 이동
-  useLayoutEffect(() => {
-    if (!loading && posts.length > 0 && postId) {
-      const el = document.getElementById(`shorts-item-${postId}`);
-      if (el) {
-        el.scrollIntoView({ behavior: 'instant', block: 'start' });
-      }
-    }
-  }, [loading, posts.length, postId]);
+  // Remove scrollIntoView logic since the target post will always be at index 0
 
   const fetchMediaPosts = async () => {
     setLoading(true);
@@ -56,7 +48,11 @@ export default function ShortsFeed() {
         const idNum = Number(postId);
         const existingIndex = fetchedPosts.findIndex(p => p.id === idNum);
         
-        if (existingIndex === -1) {
+        if (existingIndex !== -1) {
+          const targetPost = fetchedPosts[existingIndex];
+          fetchedPosts.splice(existingIndex, 1);
+          fetchedPosts.unshift(targetPost);
+        } else {
           try {
             const singlePost = await boardApi.getPostDetail(idNum);
             fetchedPosts.unshift(singlePost);
