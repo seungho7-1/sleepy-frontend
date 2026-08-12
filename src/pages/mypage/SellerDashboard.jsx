@@ -6,6 +6,7 @@ import { boardApi } from '../../api/board'
 import { reviewApi } from '../../api/reviews'
 import { authApi } from '../../api/auth'
 import ProductCard from '../../components/ProductCard'
+import Avatar from '../../components/Avatar';
 import { Building, Edit2, Image as ImageIcon, ClipboardList, ShoppingCart, FileText, Video, MessageCircle } from 'lucide-react'
 import { PRODUCT_CATEGORIES, getCategoryDisplayName } from '../../utils/categoryUtils'
 
@@ -288,11 +289,11 @@ export default function SellerDashboard() {
 
           {/* 아바타 */}
           <div className="profile-avatar-container" style={{ position: 'relative', display: 'inline-block', width: '80px', height: '80px', flexShrink: 0 }}>
-            <div className="profile-avatar" style={{ overflow: 'hidden', width: '100%', height: '100%', borderRadius: '50%', border: '3px solid #fff', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f3f4f6', color: '#9ca3af', fontSize: '2.2rem', fontWeight: 'bold' }}>
+            <div className="profile-avatar" style={{ overflow: 'hidden', width: '100%', height: '100%', borderRadius: '50%', border: '3px solid #fff', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f0f2f5', color: '#8b95a1', fontSize: '2.2rem', fontWeight: 'bold' }}>
               {myInfo?.profileImageUrl ? (
                 <img src={myInfo.profileImageUrl} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
-                nickname ? nickname.charAt(0).toUpperCase() : 'U'
+                <Avatar name={nickname} size={96} style={{ border: 'none', boxShadow: 'none' }} />
               )}
             </div>
           </div>
