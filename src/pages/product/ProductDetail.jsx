@@ -516,7 +516,7 @@ export default function ProductDetail() {
                 display: 'flex', 
                 alignItems: 'center', 
                 justifyContent: 'center', 
-                background: 'linear-gradient(135deg, var(--primary-color) 0%, #ff5b94 100%)', 
+                background: 'var(--primary-color)', 
                 color: 'white', 
                 textDecoration: 'none'
               }}

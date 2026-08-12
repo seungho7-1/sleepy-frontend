@@ -199,7 +199,7 @@ export default function ReviewSection({ productId, reviews, fetchReviews }) {
               </div>
             )}
           </div>
-          <button type="submit" className="review-submit-btn" style={{ background: 'linear-gradient(135deg, var(--primary-color) 0%, #ff5b94 100%)', color: 'white', borderRadius: '0px', padding: '10px 24px', cursor: 'pointer', border: 'none', fontWeight: 'bold' }}>리뷰 등록</button>
+          <button type="submit" className="review-submit-btn" style={{ background: 'var(--primary-color)', color: 'white', borderRadius: '0px', padding: '10px 24px', cursor: 'pointer', border: 'none', fontWeight: 'bold' }}>리뷰 등록</button>
           <div style={{ clear: 'both' }}></div>
         </form>
       ) : (
