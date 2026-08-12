@@ -367,7 +367,7 @@ export default function ShortsItem({ post, index, activePostId }) {
           loop
           muted={isMuted}
           playsInline
-          preload="metadata"
+          preload="none"
           style={{
             width: '100%',
             height: '100%',

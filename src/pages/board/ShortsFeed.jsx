@@ -43,7 +43,7 @@ export default function ShortsFeed() {
       setTimeout(() => {
         const el = document.getElementById(`shorts-item-${postId}`);
         if (el) {
-          el.scrollIntoView({ behavior: 'auto', block: 'start' });
+          el.scrollIntoView({ behavior: 'instant', block: 'start' });
         }
       }, 100);
     }
@@ -98,7 +98,6 @@ export default function ShortsFeed() {
           height: '100%',
           overflowY: 'scroll',
           scrollSnapType: 'y mandatory',
-          scrollBehavior: 'smooth',
           scrollbarWidth: 'none',
           msOverflowStyle: 'none'
         }}
