@@ -87,13 +87,20 @@ export default function Community({ mode = 'all' }) {
 
   // 페이지 번호 목록 생성 (최대 5개씩 보여주기)
   const getPageNumbers = () => {
-    const pages = []
-    const startPage = Math.max(0, page - 2)
-    const endPage = Math.min(totalPages - 1, page + 2)
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i)
+    const maxVisiblePages = 5;
+    let startPage = Math.max(0, page - Math.floor(maxVisiblePages / 2));
+    let endPage = startPage + maxVisiblePages - 1;
+
+    if (endPage >= totalPages) {
+      endPage = totalPages - 1;
+      startPage = Math.max(0, endPage - maxVisiblePages + 1);
     }
-    return pages
+
+    const pages = [];
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+    return pages;
   }
 
   const handleSortChange = (newSort) => {
