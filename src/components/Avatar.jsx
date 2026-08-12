@@ -5,8 +5,8 @@ import React from 'react';
  * 자체 인라인 CSS 아바타 컴포넌트입니다.
  */
 export default function Avatar({ name, imageUrl, size = 38, style = {} }) {
-  // 이름이 없을 경우 기본값
-  const displayName = name || 'User';
+  // 이름이 없을 경우 기본값 (항상 문자열로 변환)
+  const displayName = String(name || 'User');
   // 첫 글자 추출
   const initial = displayName.charAt(0).toUpperCase();
 
