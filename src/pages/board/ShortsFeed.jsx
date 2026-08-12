@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { boardApi } from '../../api/board';
 import ShortsItem from '../../components/ShortsItem';
 import { useAuthStore } from '../../store';
@@ -36,22 +36,12 @@ export default function ShortsFeed() {
     fetchMediaPosts();
   }, [postId, sortParam, keyword]);
 
-  const [initialScrollDone, setInitialScrollDone] = useState(false);
-
   // posts가 모두 로드된 후 초기 activePostId로 스크롤 이동
-  useEffect(() => {
-    if (!loading && posts.length > 0) {
-      if (postId) {
-        // DOM 렌더링 후 스크롤되도록 약간의 지연 시간 부여
-        setTimeout(() => {
-          const el = document.getElementById(`shorts-item-${postId}`);
-          if (el) {
-            el.scrollIntoView({ behavior: 'instant', block: 'start' });
-          }
-          setInitialScrollDone(true);
-        }, 50);
-      } else {
-        setInitialScrollDone(true);
+  useLayoutEffect(() => {
+    if (!loading && posts.length > 0 && postId) {
+      const el = document.getElementById(`shorts-item-${postId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'instant', block: 'start' });
       }
     }
   }, [loading, posts.length, postId]);
@@ -106,9 +96,7 @@ export default function ShortsFeed() {
           overflowY: 'scroll',
           scrollSnapType: 'y mandatory',
           scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-          opacity: initialScrollDone ? 1 : 0,
-          transition: 'opacity 0.2s ease-in-out'
+          msOverflowStyle: 'none'
         }}
         className="hide-scrollbar"
       >
