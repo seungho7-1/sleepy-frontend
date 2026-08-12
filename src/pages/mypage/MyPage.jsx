@@ -912,9 +912,7 @@ export default function MyPage() {
                       {brand.profileImageUrl ? (
                         <img src={brand.profileImageUrl} alt="profile" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', marginBottom: '1rem' }} />
                       ) : (
-                        <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#ff2070', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: '#fff', fontSize: '1.5rem', marginBottom: '1rem' }}>
-                          {brand.shopName.charAt(0)}
-                        </div>
+                        <Avatar name={brand.shopName} size={80} style={{ marginBottom: '1rem', border: 'none', boxShadow: 'none' }} />
                       )}
                       <h3 style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: '0 0 0.5rem 0', color: '#333' }}>{brand.shopName}</h3>
                       <p style={{ fontSize: '0.85rem', color: '#888', margin: 0 }}>스크랩 {brand.scrapCount}명</p>

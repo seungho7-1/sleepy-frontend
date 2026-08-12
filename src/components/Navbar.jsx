@@ -226,11 +226,11 @@ export default function Navbar() {
         <div className="drawer-profile-section">
           {token ? (
             <div className="profile-logged-in">
-              <div className="profile-avatar" style={{ overflow: 'hidden', border: 'none', background: 'none' }}>
+              <div className="drawer-profile-avatar" style={{ overflow: 'hidden', border: 'none', background: 'none' }}>
                 {profileImageUrl ? (
                   <img src={profileImageUrl} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
                 ) : (
-                  <Avatar name={nickname} size={38} />
+                  <Avatar name={nickname} size={56} />
                 )}
               </div>
               <div className="profile-info">

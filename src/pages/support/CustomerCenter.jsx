@@ -9,22 +9,19 @@ export default function CustomerCenter() {
   const navigate = useNavigate();
   const { token } = useAuthStore();
   
-  const tabFromUrl = searchParams.get('tab') || 'FAQ';
+  const tabFromUrl = searchParams.get('tab') || 'INQUIRY';
   const [activeTab, setActiveTab] = useState(tabFromUrl.toUpperCase());
   
   // Inquiry state
   const [inquiryForm, setInquiryForm] = useState({ title: '', content: '' });
 
-  // FAQ state
-  const [openFaqIndex, setOpenFaqIndex] = useState(null);
-
   useEffect(() => {
-    const validTabs = ['FAQ', 'INQUIRY', 'GUIDE'];
+    const validTabs = ['INQUIRY', 'GUIDE'];
     const formattedTab = tabFromUrl.toUpperCase();
     if (validTabs.includes(formattedTab)) {
       setActiveTab(formattedTab);
     } else {
-      setActiveTab('FAQ');
+      setActiveTab('INQUIRY');
     }
   }, [searchParams]);
 
@@ -54,38 +51,6 @@ export default function CustomerCenter() {
       alert('문의 등록 중 오류가 발생했습니다.');
     }
   };
-
-  const faqData = [
-    { q: '회원가입 시 어떤 혜택이 있나요?', a: '슬리피에 가입하시면 판매자들의 다채로운 슬라임 구매 기록을 관리할 수 있을 뿐만 아니라, 슬라임 갤러리에 나만의 슬라임 숏폼 영상 업로드, 커뮤니티 게시글 및 댓글 작성, 1:1 문의 등 다양한 활동이 가능합니다. 소셜 계정으로 3초 만에 가입해보세요!' },
-    { q: '회원 탈퇴는 어떻게 하나요?', a: '마이페이지 하단의 \'회원 탈퇴\' 버튼을 통해 간편하게 진행하실 수 있습니다. 탈퇴 시 모든 개인 정보 및 게시글, 댓글 내역은 영구 삭제되니 유의해주세요.' },
-    { q: '숏폼 영상(슬라임 갤러리)은 어떻게 올리나요?', a: '로그인 후 [슬라임 갤러리] 탭에서 우측 하단의 \'+\' 플로팅 버튼을 눌러 소장하고 계신 슬라임 영상을 자유롭게 업로드할 수 있습니다.' },
-    { q: '커뮤니티 게시판은 어떻게 구분되나요?', a: '커뮤니티는 질문, 후기, 정보, 잡담 총 4가지 카테고리로 세분화되어 운영됩니다. 다른 유저들에게 궁금한 점은 \'질문\' 탭에, 구매하신 슬라임 리뷰는 \'후기\' 탭에 자유롭게 남겨주세요.' },
-    { q: '게시글이나 댓글을 수정/삭제하고 싶어요.', a: '본인이 작성한 게시글 및 댓글은 각 화면 우측의 메뉴(또는 수정/삭제 버튼)를 통해 언제든지 수정하거나 삭제하실 수 있습니다.' }
-  ];
-
-  const renderFAQ = () => (
-    <div className="support-section">
-      <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', fontWeight: 'bold' }}>자주 묻는 질문 (FAQ)</h2>
-      <div className="faq-list" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        {faqData.map((faq, idx) => (
-          <div key={idx} className="faq-item" style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
-            <button 
-              onClick={() => setOpenFaqIndex(openFaqIndex === idx ? null : idx)}
-              style={{ width: '100%', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f9fafb', border: 'none', cursor: 'pointer', textAlign: 'left', fontWeight: 'bold', fontSize: '1rem', color: '#374151' }}
-            >
-              <span>Q. {faq.q}</span>
-              {openFaqIndex === idx ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-            </button>
-            {openFaqIndex === idx && (
-              <div style={{ padding: '1.5rem', background: 'white', color: '#4b5563', lineHeight: '1.6' }}>
-                <p style={{ margin: 0 }}>A. {faq.a}</p>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
 
   const renderInquiry = () => (
     <div className="support-section">
@@ -183,7 +148,7 @@ export default function CustomerCenter() {
       <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '2rem', color: '#111827' }}>고객센터</h1>
       
       <div className="support-tabs" style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', borderBottom: '2px solid #f3f4f6' }}>
-        {['FAQ', 'INQUIRY', 'GUIDE'].map((tab) => (
+        {['INQUIRY', 'GUIDE'].map((tab) => (
           <button
             key={tab}
             onClick={() => handleTabChange(tab)}
@@ -199,13 +164,12 @@ export default function CustomerCenter() {
               marginBottom: '-2px'
             }}
           >
-            {tab === 'FAQ' ? '자주 묻는 질문' : tab === 'INQUIRY' ? '1:1 문의하기' : '이용 가이드'}
+            {tab === 'INQUIRY' ? '1:1 문의하기' : '이용 가이드'}
           </button>
         ))}
       </div>
 
       <div className="support-content">
-        {activeTab === 'FAQ' && renderFAQ()}
         {activeTab === 'INQUIRY' && renderInquiry()}
         {activeTab === 'GUIDE' && renderGuide()}
       </div>
