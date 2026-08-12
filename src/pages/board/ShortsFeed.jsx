@@ -36,18 +36,25 @@ export default function ShortsFeed() {
     fetchMediaPosts();
   }, [postId, sortParam, keyword]);
 
+  const [initialScrollDone, setInitialScrollDone] = useState(false);
+
   // posts가 모두 로드된 후 초기 activePostId로 스크롤 이동
   useEffect(() => {
-    if (!loading && posts.length > 0 && postId) {
-      // DOM 렌더링 후 스크롤되도록 약간의 지연 시간 부여
-      setTimeout(() => {
-        const el = document.getElementById(`shorts-item-${postId}`);
-        if (el) {
-          el.scrollIntoView({ behavior: 'instant', block: 'start' });
-        }
-      }, 100);
+    if (!loading && posts.length > 0) {
+      if (postId) {
+        // DOM 렌더링 후 스크롤되도록 약간의 지연 시간 부여
+        setTimeout(() => {
+          const el = document.getElementById(`shorts-item-${postId}`);
+          if (el) {
+            el.scrollIntoView({ behavior: 'instant', block: 'start' });
+          }
+          setInitialScrollDone(true);
+        }, 50);
+      } else {
+        setInitialScrollDone(true);
+      }
     }
-  }, [loading, postId]);
+  }, [loading, posts.length, postId]);
 
   const fetchMediaPosts = async () => {
     setLoading(true);
@@ -99,7 +106,9 @@ export default function ShortsFeed() {
           overflowY: 'scroll',
           scrollSnapType: 'y mandatory',
           scrollbarWidth: 'none',
-          msOverflowStyle: 'none'
+          msOverflowStyle: 'none',
+          opacity: initialScrollDone ? 1 : 0,
+          transition: 'opacity 0.2s ease-in-out'
         }}
         className="hide-scrollbar"
       >
