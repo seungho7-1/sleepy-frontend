@@ -167,7 +167,16 @@ export default function Navbar() {
             <div className="desktop-user-actions">
               {token ? (
                 <div className="user-nav-actions">
-                  <span className="welcome-badge"><span className="dot"></span>{nickname}님</span>
+                  <div className="welcome-profile" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f0f0f0' }}>
+                      {profileImageUrl ? (
+                        <img src={profileImageUrl} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        <Avatar name={nickname} size={32} />
+                      )}
+                    </div>
+                    <span style={{ fontSize: '0.95rem', fontWeight: '500', color: '#333' }}>{nickname}님</span>
+                  </div>
                   <div className="notification-wrapper" style={{ position: 'relative' }}>
                     <button className="nav-btn notification-btn" onClick={() => setIsNotificationOpen(!isNotificationOpen)}>
                       <Bell size={20} strokeWidth={2.2} />

@@ -110,7 +110,7 @@ export default function ReviewSection({ productId, reviews, fetchReviews }) {
       </div>
       
       {token ? (
-        <form className="review-form" onSubmit={handleReviewSubmit} style={{ background: '#fffbfd', border: '1px solid #ffd6e0', borderRadius: '12px', padding: '1.5rem', marginBottom: '2.5rem' }}>
+        <form className="review-form" onSubmit={handleReviewSubmit} style={{ background: '#fffbfd', border: '1px solid #ffd6e0', borderRadius: '0px', padding: '1.5rem', marginBottom: '2.5rem' }}>
           <div style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#333', marginBottom: '8px' }}>만족도를 선택해주세요</div>
           <div className="review-rating-input" style={{ marginBottom: '1rem' }}>
             {[1, 2, 3, 4, 5].map(star => (
@@ -135,7 +135,7 @@ export default function ReviewSection({ productId, reviews, fetchReviews }) {
             placeholder="이 슬라임 어떠셨나요? 플레이 느낌이나 질감 후기를 들려주세요! 후기는 다른 구매자들에게 큰 도움이 됩니다."
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            style={{ borderRadius: '8px', border: '1px solid #ffd6e0', padding: '12px', width: '100%', minHeight: '80px', boxSizing: 'border-box' }}
+            style={{ borderRadius: '0px', border: '1px solid #ffd6e0', padding: '12px', width: '100%', minHeight: '80px', boxSizing: 'border-box' }}
           />
           <div style={{ marginTop: '15px', marginBottom: '15px' }}>
             <label style={{ fontSize: '0.85rem', fontWeight: '600', display: 'block', marginBottom: '8px', color: '#555' }}>
@@ -143,7 +143,7 @@ export default function ReviewSection({ productId, reviews, fetchReviews }) {
             </label>
             
             {imageUrl ? (
-              <div style={{ position: 'relative', width: '120px', height: '120px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #ffd6e0', marginBottom: '10px' }}>
+              <div style={{ position: 'relative', width: '120px', height: '120px', borderRadius: '0px', overflow: 'hidden', border: '1px solid #ffd6e0', marginBottom: '10px' }}>
                 <img src={imageUrl} alt="Review Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 <button 
                   type="button" 
@@ -154,7 +154,7 @@ export default function ReviewSection({ productId, reviews, fetchReviews }) {
                     right: '4px', 
                     width: '20px', 
                     height: '20px', 
-                    borderRadius: '50%', 
+                    borderRadius: '0px', 
                     background: 'rgba(0,0,0,0.6)', 
                     color: '#fff', 
                     border: 'none', 
@@ -185,7 +185,7 @@ export default function ReviewSection({ productId, reviews, fetchReviews }) {
                     background: '#fff', 
                     border: '1.5px dashed var(--primary-color)', 
                     color: 'var(--primary-color)', 
-                    borderRadius: '20px', 
+                    borderRadius: '0px', 
                     fontWeight: 'bold', 
                     cursor: 'pointer', 
                     fontSize: '0.85rem',
@@ -199,18 +199,18 @@ export default function ReviewSection({ productId, reviews, fetchReviews }) {
               </div>
             )}
           </div>
-          <button type="submit" className="review-submit-btn" style={{ background: 'linear-gradient(135deg, var(--primary-color) 0%, #ff5b94 100%)', color: 'white', borderRadius: '20px', padding: '10px 24px', cursor: 'pointer', border: 'none', boxShadow: '0 4px 10px rgba(255, 32, 112, 0.15)', fontWeight: 'bold' }}>리뷰 등록</button>
+          <button type="submit" className="review-submit-btn" style={{ background: 'linear-gradient(135deg, var(--primary-color) 0%, #ff5b94 100%)', color: 'white', borderRadius: '0px', padding: '10px 24px', cursor: 'pointer', border: 'none', fontWeight: 'bold' }}>리뷰 등록</button>
           <div style={{ clear: 'both' }}></div>
         </form>
       ) : (
-        <div className="empty-state" style={{ padding: '2.5rem', background: '#fffbfd', border: '1px solid #ffd6e0', borderRadius: '12px', marginBottom: '2.5rem', fontSize: '0.9rem', color: 'var(--primary-color)', fontWeight: '600' }}>
+        <div className="empty-state" style={{ padding: '2.5rem', background: '#fffbfd', border: '1px solid #ffd6e0', borderRadius: '0px', marginBottom: '2.5rem', fontSize: '0.9rem', color: 'var(--primary-color)', fontWeight: '600' }}>
           리뷰를 작성하려면 로그인이 필요합니다.
         </div>
       )}
       
       <div className="review-list">
         {reviews.length === 0 ? (
-          <div className="empty-state" style={{ padding: '4rem 0', background: '#fffbfd', border: '1px solid #ffd6e0', borderRadius: '12px', color: '#888' }}>아직 등록된 리뷰가 없습니다. 첫 리뷰를 작성해보세요!</div>
+          <div className="empty-state" style={{ padding: '4rem 0', background: '#fffbfd', border: '1px solid #ffd6e0', borderRadius: '0px', color: '#888' }}>아직 등록된 리뷰가 없습니다. 첫 리뷰를 작성해보세요!</div>
         ) : (
           reviews.map(review => (
             <div id={`review-${review.id}`} key={review.id} className="review-item" style={{ borderBottom: '1px solid #ffeef2', padding: '1.5rem 0' }}>
@@ -236,7 +236,7 @@ export default function ReviewSection({ productId, reviews, fetchReviews }) {
               </div>
               
               {review.isHidden ? (
-                <div style={{ padding: '1.5rem', background: '#f5f5f5', borderRadius: '8px', color: '#888', textAlign: 'center', margin: '1rem 0' }}>
+                <div style={{ padding: '1.5rem', background: '#f5f5f5', borderRadius: '0px', color: '#888', textAlign: 'center', margin: '1rem 0' }}>
                   신고 누적으로 인해 블라인드 처리된 리뷰입니다.
                 </div>
               ) : (
@@ -244,14 +244,14 @@ export default function ReviewSection({ productId, reviews, fetchReviews }) {
                   <div className="review-content" style={{ marginTop: '0.5rem', color: '#333', fontSize: '0.95rem', lineHeight: '1.6' }}>{review.content}</div>
                   {review.imageUrl && (
                     <div style={{ marginTop: '1rem' }}>
-                      <img src={review.imageUrl} alt="review" style={{ maxWidth: '240px', maxHeight: '240px', objectFit: 'contain', borderRadius: '8px', border: '1px solid #eee' }} />
+                      <img src={review.imageUrl} alt="review" style={{ maxWidth: '240px', maxHeight: '240px', objectFit: 'contain', borderRadius: '0px', border: '1px solid #eee' }} />
                     </div>
                   )}
                   <div style={{ marginTop: '1.2rem' }}>
                     <button 
                       onClick={() => toggleReviewLike(review.id)}
                       disabled={isLiking}
-                      style={{ background: '#fff', border: '1px solid #ffd6e0', borderRadius: '20px', padding: '6px 14px', cursor: isLiking ? 'default' : 'pointer', fontSize: '0.85rem', color: 'var(--primary-color)', display: 'flex', alignItems: 'center', gap: '4px', transition: 'all 0.2s', fontWeight: 'bold', opacity: isLiking ? 0.7 : 1 }}
+                      style={{ background: '#fff', border: '1px solid #ffd6e0', borderRadius: '0px', padding: '6px 14px', cursor: isLiking ? 'default' : 'pointer', fontSize: '0.85rem', color: 'var(--primary-color)', display: 'flex', alignItems: 'center', gap: '4px', transition: 'all 0.2s', fontWeight: 'bold', opacity: isLiking ? 0.7 : 1 }}
                       onMouseEnter={(e) => {
                         if (isLiking) return;
                         e.target.style.background = '#fff5f7';

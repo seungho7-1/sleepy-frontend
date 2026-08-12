@@ -6,29 +6,8 @@ import ProductCard from '../../components/ProductCard';
 import { Share2, Bookmark, Link as LinkIcon, Edit3, X, Search } from 'lucide-react';
 import { useAuthStore } from '../../store';
 
-import { CATEGORIES, getCategoryApiValue } from '../../utils/categoryUtils';
-const SORTS = [
-  { label: '최신순', value: 'createdAt,desc' },
-  { label: '인기순', value: 'reviewCount,desc' },
-  { label: '저가순', value: 'price,asc' },
-  { label: '고가순', value: 'price,desc' },
-];
-
-function getSnsIcon(url) {
-  if (!url) return <svg viewBox="0 0 24 24" width="18" height="18" stroke="#aaa" strokeWidth="2" fill="none"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-  const lower = url.toLowerCase()
-  if (lower.includes('youtube.com') || lower.includes('youtu.be'))
-    return <svg viewBox="0 0 24 24" width="18" height="18" fill="#FF0000"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.4 19.6c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#fff"/></svg>
-  if (lower.includes('instagram.com'))
-    return <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#E1306C" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-  if (lower.includes('facebook.com') || lower.includes('fb.com'))
-    return <svg viewBox="0 0 24 24" width="18" height="18" fill="#1877F2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-  if (lower.includes('tiktok.com'))
-    return <svg viewBox="0 0 24 24" width="18" height="18" stroke="#000" strokeWidth="2" fill="none"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
-  if (lower.includes('twitter.com') || lower.includes('x.com'))
-    return <svg viewBox="0 0 24 24" width="18" height="18" fill="#000"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-  return <svg viewBox="0 0 24 24" width="18" height="18" stroke="#888" strokeWidth="2" fill="none"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-}
+import { CATEGORIES, getCategoryApiValue, SORTS } from '../../utils/categoryUtils';
+import SnsIcon from '../../components/SnsIcon';
 
 export default function SellerShopPage() {
   const { sellerId } = useParams();
@@ -351,7 +330,7 @@ export default function SellerShopPage() {
                   {snsUrls.map((url, i) => (
                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                       <div style={{ width: '28px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        {getSnsIcon(url)}
+                        <SnsIcon url={url} />
                       </div>
                       <input
                         type="url"

@@ -243,15 +243,9 @@ export default function ProductDetail() {
             position: 'relative',
 
             aspectRatio: '1 / 1',
-
-            borderRadius: '16px',
-
+            borderRadius: '0px',
             overflow: 'hidden',
-
             border: '1px solid #ffeef2',
-
-            boxShadow: '0 8px 24px rgba(255, 32, 112, 0.06)',
-
             backgroundColor: '#fffcfd'
 
           }}
@@ -299,14 +293,10 @@ export default function ProductDetail() {
                     style={{
 
                       position: 'absolute', top: '50%', left: '12px', transform: 'translateY(-50%)',
-
-                      width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255, 255, 255, 0.8)',
-
+                      width: '32px', height: '32px', borderRadius: '0px', background: 'rgba(255, 255, 255, 0.8)',
                       border: '1px solid #ffeef2', display: 'flex', alignItems: 'center', justifyContent: 'center',
-
                       cursor: 'pointer', fontWeight: 'bold', fontSize: '1rem', color: 'var(--primary-color)',
-
-                      boxShadow: '0 2px 6px rgba(0,0,0,0.15)', zIndex: 10
+                      zIndex: 10
 
                     }}
 
@@ -325,14 +315,10 @@ export default function ProductDetail() {
                     style={{
 
                       position: 'absolute', top: '50%', right: '12px', transform: 'translateY(-50%)',
-
-                      width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255, 255, 255, 0.8)',
-
+                      width: '32px', height: '32px', borderRadius: '0px', background: 'rgba(255, 255, 255, 0.8)',
                       border: '1px solid #ffeef2', display: 'flex', alignItems: 'center', justifyContent: 'center',
-
                       cursor: 'pointer', fontWeight: 'bold', fontSize: '1rem', color: 'var(--primary-color)',
-
-                      boxShadow: '0 2px 6px rgba(0,0,0,0.15)', zIndex: 10
+                      zIndex: 10
 
                     }}
 
@@ -360,7 +346,7 @@ export default function ProductDetail() {
 
                         style={{
 
-                          width: '8px', height: '8px', borderRadius: '50%',
+                          width: '8px', height: '8px', borderRadius: '0px',
 
                           background: idx === currentImageIndex ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.5)',
 
@@ -408,7 +394,7 @@ export default function ProductDetail() {
                 style={{ 
                   background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', 
                   color: sellerInfo.isScrapped ? '#ff2070' : '#888', marginLeft: '10px',
-                  padding: '4px', borderRadius: '4px'
+                  padding: '4px', borderRadius: '0px'
                 }}
                 title="브랜드 스크랩"
               >
@@ -476,7 +462,7 @@ export default function ProductDetail() {
                     background: '#fff0f3', 
                     color: 'var(--primary-color)', 
                     padding: '0.35rem 0.7rem', 
-                    borderRadius: '20px', 
+                    borderRadius: '0px', 
                     fontSize: '0.8rem', 
                     fontWeight: '500', 
                     border: '1px solid #ffe1e7',
@@ -499,7 +485,7 @@ export default function ProductDetail() {
               style={{
                 flex: '0 0 56px',
                 height: '56px',
-                borderRadius: '12px',
+                borderRadius: '0px',
                 border: '2px solid #ffd6e0',
                 background: isWished ? '#fff0f3' : '#fff',
                 color: isWished ? 'var(--primary-color)' : '#999',
@@ -524,7 +510,7 @@ export default function ProductDetail() {
               style={{ 
                 flex: '1', 
                 height: '56px', 
-                borderRadius: '12px', 
+                borderRadius: '0px', 
                 fontSize: '1.1rem', 
                 fontWeight: 'bold', 
                 display: 'flex', 
@@ -532,8 +518,7 @@ export default function ProductDetail() {
                 justifyContent: 'center', 
                 background: 'linear-gradient(135deg, var(--primary-color) 0%, #ff5b94 100%)', 
                 color: 'white', 
-                textDecoration: 'none',
-                boxShadow: '0 4px 14px rgba(255, 32, 112, 0.2)'
+                textDecoration: 'none'
               }}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
@@ -653,7 +638,7 @@ export default function ProductDetail() {
 
               {product.videoUrl && product.videoType !== 'NONE' && (
 
-                <div className="product-video-section" style={{ marginTop: '2.5rem', background: '#fffcfd', border: '1px solid #ffd6e0', borderRadius: '16px', padding: '1.5rem', boxShadow: '0 4px 12px rgba(255, 32, 112, 0.04)' }}>
+                <div className="product-video-section" style={{ marginTop: '2.5rem', background: '#fffcfd', border: '1px solid #ffd6e0', borderRadius: '0px', padding: '1.5rem' }}>
 
                   <h4 style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: '800', color: 'var(--primary-color)' }}>
 
@@ -672,9 +657,7 @@ export default function ProductDetail() {
                       margin: '0 auto',
 
                       aspectRatio: product.videoUrl.includes('instagram.com') ? '1 / 1.25' : '16 / 9', 
-
-                      borderRadius: '12px', 
-
+                      borderRadius: '0px', 
                       overflow: 'hidden', 
 
                       border: '1px solid #ffd6e0',
@@ -816,12 +799,8 @@ export default function ProductDetail() {
                         style={{ 
 
                           maxWidth: '100%', 
-
-                          borderRadius: '12px', 
-
-                          border: '1px solid #ffeef2',
-
-                          boxShadow: '0 8px 24px rgba(255, 32, 112, 0.05)'
+                          borderRadius: '0px', 
+                          border: '1px solid #ffeef2'
 
                         }} 
 

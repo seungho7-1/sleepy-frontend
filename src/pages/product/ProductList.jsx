@@ -4,7 +4,7 @@ import { productApi } from '../../api/products';
 import ProductGrid from '../../components/home/ProductGrid';
 import { Search } from 'lucide-react';
 
-import { CATEGORIES, getCategoryApiValue } from '../../utils/categoryUtils';
+import { CATEGORIES, getCategoryApiValue, SORTS } from '../../utils/categoryUtils';
 
 export default function ProductList() {
   const [products, setProducts] = useState([]);
@@ -111,11 +111,7 @@ export default function ProductList() {
                 padding: '6px 12px', borderRadius: '20px', border: '1px solid #e0e0e0', background: '#fff', fontSize: '0.85rem', color: '#555', outline: 'none', cursor: 'pointer'
               }}
             >
-              <option value="createdAt,desc">최신순</option>
-              <option value="reviewCount,desc">인기순</option>
-              <option value="avgRating,desc">평점순</option>
-              <option value="price,asc">낮은 가격순</option>
-              <option value="price,desc">높은 가격순</option>
+              {SORTS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
             </select>
             <form onSubmit={handleSearchSubmit} style={{ display: 'flex', alignItems: 'center', border: '1px solid #e0e0e0', borderRadius: '24px', padding: '6px 14px', background: '#f5f5f5', flex: 1, minWidth: '140px', maxWidth: '200px', transition: 'all 0.2s' }}>
               <Search size={16} color="#888" style={{ marginRight: '6px', flexShrink: 0 }} />
