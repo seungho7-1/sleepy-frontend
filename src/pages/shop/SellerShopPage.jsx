@@ -8,6 +8,7 @@ import { useAuthStore } from '../../store';
 
 import { CATEGORIES, getCategoryApiValue, SORTS } from '../../utils/categoryUtils';
 import SnsIcon from '../../components/SnsIcon';
+import Avatar from '../../components/Avatar';
 
 export default function SellerShopPage() {
   const { sellerId } = useParams();
@@ -148,9 +149,7 @@ export default function SellerShopPage() {
                 {sellerInfo.profileImageUrl ? (
                   <img src={sellerInfo.profileImageUrl} alt="profile" style={{ width: '96px', height: '96px', borderRadius: '50%', objectFit: 'cover', border: '3px solid rgba(255,255,255,0.4)', boxShadow: '0 4px 16px rgba(0,0,0,0.5)' }} />
                 ) : (
-                  <div style={{ width: '96px', height: '96px', borderRadius: '50%', background: 'linear-gradient(135deg, #ff2070, #ff5c97)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold', fontSize: '2.5rem', border: '3px solid rgba(255,255,255,0.4)', boxShadow: '0 4px 16px rgba(0,0,0,0.5)' }}>
-                    {sellerInfo.shopName.charAt(0)}
-                  </div>
+                  <Avatar name={sellerInfo.shopName} size={96} style={{ border: '3px solid rgba(255,255,255,0.4)', boxShadow: '0 4px 16px rgba(0,0,0,0.5)' }} />
                 )}
               </div>
 

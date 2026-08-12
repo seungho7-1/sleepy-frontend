@@ -10,16 +10,9 @@ export default function Avatar({ name, imageUrl, size = 38, style = {} }) {
   // 첫 글자 추출
   const initial = displayName.charAt(0).toUpperCase();
 
-  // 닉네임을 해시화하여 일관된 배경색 생성
-  let hash = 0;
-  for (let i = 0; i < displayName.length; i++) {
-    hash = displayName.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  
-  // HSL 색상 모델을 사용하여 파스텔톤 계열의 예쁜 색상 추출
-  const hue = Math.abs(hash % 360);
-  const bgColor = `hsl(${hue}, 70%, 85%)`;
-  const textColor = `hsl(${hue}, 70%, 30%)`; // 배경색과 어울리는 진한 글씨색
+  // 요청에 따라 통일된 회색 배경 및 글씨색 사용
+  const bgColor = '#f0f2f5';
+  const textColor = '#8b95a1';
 
   return (
     <div 
