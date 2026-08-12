@@ -10,6 +10,7 @@ export default function ProductCard({ product }) {
   };
 
   return (
+    <Link to={`/product/${product.id}`} className="product-card">
       <div className="product-image-wrapper">
         <img src={product.imageUrl} alt={product.name} className="product-image" />
       </div>

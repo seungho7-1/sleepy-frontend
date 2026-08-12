@@ -336,29 +336,47 @@ export default function ShortsCommentModal({ postId, onClose, onUpdateCount, inl
 
                         {/* Content or Edit Form */}
                         {isEditingRoot ? (
-                          <form onSubmit={(e) => handleCommentEditSubmit(e, root.id)} style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '0.5rem', background: '#222', padding: '0.8rem', borderRadius: '8px', border: '1px solid #444' }}>
-                            <textarea 
+                          <form onSubmit={(e) => handleCommentEditSubmit(e, root.id)} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px', width: '100%' }}>
+                            <input 
+                              type="text" 
                               value={editingText} 
                               onChange={(e) => setEditingText(e.target.value)} 
                               style={{ 
-                                width: '100%', minHeight: '60px', padding: '8px', borderRadius: '6px', border: '1px solid #444', 
-                                background: '#141414', color: '#fff', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box', resize: 'vertical', fontFamily: 'inherit' 
+                                flex: 1, 
+                                border: 'none', 
+                                borderBottom: '1px solid #555', 
+                                background: 'transparent', 
+                                color: '#fff', 
+                                fontSize: '0.92rem', 
+                                padding: '4px 0', 
+                                outline: 'none' 
                               }}
                               required
                               autoFocus
                             />
-                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
-                              <button 
-                                type="button" 
-                                onClick={() => { setEditingCommentId(null); setEditingText(''); }} 
-                                style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #444', background: '#333', color: '#ddd', fontSize: '0.8rem', cursor: 'pointer' }}
-                              >
-                                취소
-                              </button>
-                              <button type="submit" style={{ padding: '6px 12px', borderRadius: '6px', border: 'none', background: 'var(--primary-color)', color: 'white', fontWeight: 'bold', fontSize: '0.8rem', cursor: 'pointer' }}>
-                                수정 완료
-                              </button>
-                            </div>
+                            <button 
+                              type="submit" 
+                              disabled={!editingText.trim()}
+                              style={{ 
+                                background: 'none', 
+                                border: 'none', 
+                                color: editingText.trim() ? '#ff70a0' : '#666', 
+                                fontWeight: 'bold', 
+                                fontSize: '0.85rem', 
+                                cursor: editingText.trim() ? 'pointer' : 'default',
+                                padding: '0 4px',
+                                whiteSpace: 'nowrap'
+                              }}
+                            >
+                              수정
+                            </button>
+                            <button 
+                              type="button" 
+                              onClick={() => { setEditingCommentId(null); setEditingText(''); }} 
+                              style={{ background: 'none', border: 'none', color: '#aaa', fontSize: '0.9rem', cursor: 'pointer', padding: '0 4px' }}
+                            >
+                              ✕
+                            </button>
                           </form>
                         ) : (
                           <div style={{ fontSize: '0.92rem', color: '#f1f1f1', marginTop: '4px', lineHeight: '1.45', wordBreak: 'break-word' }}>
@@ -539,29 +557,47 @@ export default function ShortsCommentModal({ postId, onClose, onUpdateCount, inl
 
                                                 {/* Reply Content */}
                                                 {isEditingReply ? (
-                                                  <form onSubmit={(e) => handleCommentEditSubmit(e, reply.id)} style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '0.5rem', background: '#222', padding: '0.8rem', borderRadius: '8px', border: '1px solid #444' }}>
-                                                    <textarea 
+                                                  <form onSubmit={(e) => handleCommentEditSubmit(e, reply.id)} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px', width: '100%' }}>
+                                                    <input 
+                                                      type="text" 
                                                       value={editingText} 
                                                       onChange={(e) => setEditingText(e.target.value)} 
                                                       style={{ 
-                                                        width: '100%', minHeight: '60px', padding: '8px', borderRadius: '6px', border: '1px solid #444', 
-                                                        background: '#141414', color: '#fff', fontSize: '0.88rem', outline: 'none', boxSizing: 'border-box', resize: 'vertical', fontFamily: 'inherit' 
+                                                        flex: 1, 
+                                                        border: 'none', 
+                                                        borderBottom: '1px solid #555', 
+                                                        background: 'transparent', 
+                                                        color: '#fff', 
+                                                        fontSize: '0.88rem', 
+                                                        padding: '4px 0', 
+                                                        outline: 'none' 
                                                       }}
                                                       required
                                                       autoFocus
                                                     />
-                                                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
-                                                      <button 
-                                                        type="button" 
-                                                        onClick={() => { setEditingCommentId(null); setEditingText(''); }} 
-                                                        style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #444', background: '#333', color: '#ddd', fontSize: '0.8rem', cursor: 'pointer' }}
-                                                      >
-                                                        취소
-                                                      </button>
-                                                      <button type="submit" style={{ padding: '6px 12px', borderRadius: '6px', border: 'none', background: 'var(--primary-color)', color: 'white', fontWeight: 'bold', fontSize: '0.8rem', cursor: 'pointer' }}>
-                                                        수정 완료
-                                                      </button>
-                                                    </div>
+                                                    <button 
+                                                      type="submit" 
+                                                      disabled={!editingText.trim()}
+                                                      style={{ 
+                                                        background: 'none', 
+                                                        border: 'none', 
+                                                        color: editingText.trim() ? '#ff70a0' : '#666', 
+                                                        fontWeight: 'bold', 
+                                                        fontSize: '0.85rem', 
+                                                        cursor: editingText.trim() ? 'pointer' : 'default',
+                                                        padding: '0 4px',
+                                                        whiteSpace: 'nowrap'
+                                                      }}
+                                                    >
+                                                      수정
+                                                    </button>
+                                                    <button 
+                                                      type="button" 
+                                                      onClick={() => { setEditingCommentId(null); setEditingText(''); }} 
+                                                      style={{ background: 'none', border: 'none', color: '#aaa', fontSize: '0.9rem', cursor: 'pointer', padding: '0 4px' }}
+                                                    >
+                                                      ✕
+                                                    </button>
                                                   </form>
                                                 ) : (
                                                   <div style={{ fontSize: '0.88rem', color: '#f1f1f1', marginTop: '4px', lineHeight: '1.45', wordBreak: 'break-word' }}>
