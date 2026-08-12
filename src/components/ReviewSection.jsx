@@ -260,7 +260,7 @@ export default function ReviewSection({ productId, reviews, fetchReviews }) {
                         e.target.style.background = '#fff';
                       }}
                     >
-                      👍 도움이 됐어요 {review.likeCount || 0}
+                      <ThumbsUp size={14} /> 도움이 됐어요 {review.likeCount || 0}
                     </button>
                   </div>
                 </>

@@ -144,14 +144,13 @@ export default function Home() {
                   flexShrink: 0, width: '160px',
                   borderRadius: '0px', background: 'white',
                   border: '1px solid #ffeef2',
-                  boxShadow: '0 2px 10px rgba(255, 32, 112, 0.06)',
                   cursor: 'pointer', overflow: 'hidden',
-                  transition: 'transform 0.2s, box-shadow 0.2s',
+                  transition: 'transform 0.2s',
                   position: 'relative',
                   scrollSnapAlign: 'start'
                 }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(255, 32, 112, 0.12)' }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 10px rgba(255, 32, 112, 0.06)' }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; }}
               >
                 <div style={{
                   position: 'absolute', top: '8px', left: '8px', zIndex: 2,
@@ -210,10 +209,10 @@ export default function Home() {
 
   return (
     <div className="container" style={{ padding: '2rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '2rem', flex: 1 }}>
-      <HeroCarousel latestPosts={latestPosts} />
+      {!searchQuery && <HeroCarousel latestPosts={latestPosts} />}
 
       {/* 🔥 인기 상품 섹션 */}
-      {renderProductScroller('🔥 인기 슬라임 종합 랭킹', '리뷰·별점 기준', popularProducts, 'rank-scroll')}
+      {!searchQuery && renderProductScroller('🔥 인기 슬라임 종합 랭킹', '리뷰·별점 기준', popularProducts, 'rank-scroll')}
 
       {/* 카테고리 네비게이션 및 정렬 */}
       <CategoryNav 
