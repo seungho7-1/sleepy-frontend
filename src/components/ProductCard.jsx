@@ -11,7 +11,10 @@ export default function ProductCard({ product }) {
 
   return (
     <Link to={`/product/${product.id}`} className="product-card">
-      <div className="product-image-wrapper">
+      <div className="product-image-wrapper" style={{ position: 'relative' }}>
+        <div style={{ position: 'absolute', top: '8px', left: '8px', background: 'rgba(0,0,0,0.6)', color: 'white', padding: '3px 8px', borderRadius: '0px', fontSize: '0.7rem', fontWeight: 'bold', zIndex: 2 }}>
+          {{'SLIME':'슬라임','SLANGY':'슬랑이','MALLANGI':'말랑이','SQUISHY':'스퀴시','WAKPPU':'왁뿌','SUPPLIES':'부자재','ETC':'기타'}[product.category] || product.category || '기타'}
+        </div>
         <img src={product.imageUrl} alt={product.name} className="product-image" />
       </div>
       <div className="product-info">

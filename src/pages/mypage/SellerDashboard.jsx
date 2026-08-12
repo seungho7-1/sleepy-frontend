@@ -7,7 +7,7 @@ import { reviewApi } from '../../api/reviews'
 import { authApi } from '../../api/auth'
 import ProductCard from '../../components/ProductCard'
 import { Building, Edit2, Image as ImageIcon, ClipboardList, ShoppingCart, FileText, Video, MessageCircle } from 'lucide-react'
-import { PRODUCT_CATEGORIES } from '../../utils/categoryUtils'
+import { PRODUCT_CATEGORIES, getCategoryDisplayName } from '../../utils/categoryUtils'
 
 export default function SellerDashboard() {
   const { token, role, nickname } = useAuthStore()
@@ -624,11 +624,11 @@ export default function SellerDashboard() {
                     {filteredProducts.map(p => (
                     <div key={p.id} className="seller-product-card" style={{ position: 'relative', borderRadius: '0px', overflow: 'hidden', border: '1px solid #eee', background: '#fff', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column' }}>
                       <Link to={`/product/${p.id}`} style={{ display: 'flex', flexDirection: 'column', flex: 1, textDecoration: 'none', color: 'inherit' }}>
-                        <div style={{ position: 'relative', aspectRatio: '1/1', background: '#f8f8f8' }}>
-                          <img src={p.imageUrl} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <div style={{ position: 'relative', paddingTop: '100%', background: '#f8f8f8' }}>
+                          <img src={p.imageUrl} alt={p.name} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
                         <div style={{ padding: '12px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                          <div style={{ fontSize: '0.8rem', color: 'var(--primary-color)', fontWeight: 'bold', marginBottom: '4px' }}>{p.category || '기타'}</div>
+                          <div style={{ fontSize: '0.8rem', color: 'var(--primary-color)', fontWeight: 'bold', marginBottom: '4px' }}>{getCategoryDisplayName(p.category)}</div>
                           <h4 style={{ margin: '0 0 6px 0', fontSize: '1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</h4>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto' }}>
                             <div style={{ fontWeight: 'bold', color: '#111' }}>{p.price ? `${p.price.toLocaleString()}원` : '가격 미정'}</div>

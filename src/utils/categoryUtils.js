@@ -11,6 +11,15 @@ export const getCategoryApiValue = (activeCategory) => {
   return '';
 };
 
+export const getCategoryDisplayName = (apiValue) => {
+  if (apiValue === 'SLIME') return '슬라임';
+  if (apiValue === 'SLANGY') return '슬랑이';
+  if (apiValue === 'MALLANGI') return '말랑이';
+  if (apiValue === 'SQUISHY') return '스퀴시';
+  if (apiValue === 'WAKPPU') return '왁뿌';
+  return apiValue || '기타';
+};
+
 export const SORTS = [
   { label: '최신순', value: 'createdAt,desc' },
   { label: '인기순', value: 'reviewCount,desc' },
