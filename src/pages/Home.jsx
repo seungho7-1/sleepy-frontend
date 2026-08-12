@@ -166,8 +166,11 @@ export default function Home() {
                   style={{ width: '100%', height: '160px', objectFit: 'cover' }}
                 />
                 <div style={{ padding: '12px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '6px' }}>
-                    <div style={{color: '#666', padding: '2px 6px', fontSize: '0.65rem', fontWeight: 'bold' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <div style={{ fontSize: '0.75rem', color: '#888', fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, marginRight: '4px' }}>
+                      {product.shopName}
+                    </div>
+                    <div style={{ background: '#f5f5f5', color: '#666', padding: '2px 6px', fontSize: '0.65rem', fontWeight: 'bold', border: '1px solid #eee', flexShrink: 0 }}>
                       {{'SLIME':'슬라임','SLANGY':'슬랑이','MALLANGI':'말랑이','SQUISHY':'스퀴시','WAKPPU':'왁뿌','SUPPLIES':'부자재','ETC':'기타'}[product.category] || product.category || '기타'}
                     </div>
                   </div>

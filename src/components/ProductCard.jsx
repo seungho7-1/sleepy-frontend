@@ -30,9 +30,7 @@ export default function ProductCard({ product }) {
             )}
             <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.shopName}</span>
           </div>
-           <div className="product-image-wrapper">
-        <img src={product.imageUrl} alt={product.name} className="product-image" />
-      </div>
+           
           
           <div style={{color: '#666', padding: '2px 6px', fontSize: '0.65rem', fontWeight: 'bold',  }}>
             {{'SLIME':'슬라임','SLANGY':'슬랑이','MALLANGI':'말랑이','SQUISHY':'스퀴시','WAKPPU':'왁뿌','SUPPLIES':'부자재','ETC':'기타'}[product.category] || product.category || '기타'}
