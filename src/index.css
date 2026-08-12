@@ -307,17 +307,18 @@ button {
   align-items: center;
   gap: 12px;
 }
-.profile-avatar {
-  width: 38px;
-  height: 38px;
+.drawer-profile-avatar {
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   background: #f7f7f7;
   color: #666;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 1px solid #eaeaea;
+  flex-shrink: 0;
 }
 .profile-nickname {
   font-size: 0.95rem;

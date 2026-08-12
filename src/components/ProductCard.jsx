@@ -38,7 +38,7 @@ export default function ProductCard({ product }) {
         </div>
         <h3 className="product-title" style={{ marginTop: 0 }}>{product.name}</h3>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto' }}>
-          <div className="product-price">{product.price.toLocaleString()}원</div>
+          <div className="product-price">{product.price ? `${product.price.toLocaleString()}원` : '가격 미정'}</div>
           <div style={{ fontSize: '0.8rem', color: '#999', display: 'flex', alignItems: 'center', gap: '3px', fontWeight: 'bold' }}>
             <span style={{ color: product.reviewCount > 0 ? '#ffb400' : '#ddd', fontSize: '1rem' }}>★</span>
             <span>{product.avgRating ? product.avgRating.toFixed(1) : '0.0'} ({product.reviewCount || 0})</span>

@@ -12,6 +12,7 @@ import ProductCard from '../../components/ProductCard'
 import { formatDate } from '../../utils/formatDate'
 import { useLocation } from 'react-router-dom'
 import { inquiryApi } from '../../api/inquiry'
+import Avatar from '../../components/Avatar'
 import { Camera, UploadCloud, Trash2, Hourglass, XCircle, CheckCircle, PartyPopper, MessageSquare, Heart, Star, ShoppingBag, Bell, FileText, AlertTriangle, Megaphone } from 'lucide-react'
 
 export default function MyPage() {
@@ -284,11 +285,11 @@ export default function MyPage() {
           
           {/* 프로필 아바타 */}
           <div className="profile-avatar-container" style={{ position: 'relative', display: 'inline-block', width: '80px', height: '80px', flexShrink: 0 }}>
-            <div className="profile-avatar" style={{ overflow: 'hidden', position: 'relative', width: '100%', height: '100%', borderRadius: '50%', border: '3px solid #fff', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f3f4f6', color: '#9ca3af', fontSize: '2rem', fontWeight: 'bold' }}>
+            <div className="profile-avatar" style={{ overflow: 'hidden', position: 'relative', width: '100%', height: '100%', borderRadius: '50%', border: '3px solid #fff', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f0f2f5', color: '#8b95a1', fontSize: '2rem', fontWeight: 'bold' }}>
               {profile?.profileImageUrl ? (
                 <img src={profile.profileImageUrl} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
-                nickname ? nickname.charAt(0).toUpperCase() : 'U'
+                <Avatar name={nickname} size={80} style={{ border: 'none', boxShadow: 'none' }} />
               )}
               {uploadingProfileImg && (
                 <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(255,255,255,0.7)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
