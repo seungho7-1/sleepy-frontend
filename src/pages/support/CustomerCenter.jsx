@@ -9,7 +9,7 @@ export default function CustomerCenter() {
   const navigate = useNavigate();
   const { token } = useAuthStore();
   
-  const tabFromUrl = searchParams.get('tab') || 'INQUIRY';
+  const tabFromUrl = searchParams.get('tab') || 'GUIDE';
   const [activeTab, setActiveTab] = useState(tabFromUrl.toUpperCase());
   
   // Inquiry state
@@ -21,7 +21,7 @@ export default function CustomerCenter() {
     if (validTabs.includes(formattedTab)) {
       setActiveTab(formattedTab);
     } else {
-      setActiveTab('INQUIRY');
+      setActiveTab('GUIDE');
     }
   }, [searchParams]);
 
@@ -148,7 +148,7 @@ export default function CustomerCenter() {
       <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '2rem', color: '#111827' }}>고객센터</h1>
       
       <div className="support-tabs" style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', borderBottom: '2px solid #f3f4f6' }}>
-        {['INQUIRY', 'GUIDE'].map((tab) => (
+        {['GUIDE', 'INQUIRY'].map((tab) => (
           <button
             key={tab}
             onClick={() => handleTabChange(tab)}
@@ -164,14 +164,14 @@ export default function CustomerCenter() {
               marginBottom: '-2px'
             }}
           >
-            {tab === 'INQUIRY' ? '1:1 문의하기' : '이용 가이드'}
+            {tab === 'GUIDE' ? '이용 가이드' : '1:1 문의하기'}
           </button>
         ))}
       </div>
 
       <div className="support-content">
-        {activeTab === 'INQUIRY' && renderInquiry()}
         {activeTab === 'GUIDE' && renderGuide()}
+        {activeTab === 'INQUIRY' && renderInquiry()}
       </div>
     </div>
   );
