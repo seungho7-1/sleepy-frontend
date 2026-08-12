@@ -7,6 +7,7 @@ import { authApi } from '../../api/auth'
 import { boardApi } from '../../api/board'
 import { Heart, Star, Share2, AlertTriangle, Plus, Minus, Bookmark } from 'lucide-react'
 import ReviewSection from '../../components/ReviewSection'
+import Avatar from '../../components/Avatar'
 
 function getYoutubeId(url) {
   if (!url) return null;
@@ -382,7 +383,12 @@ export default function ProductDetail() {
           {/* 스토어 정보 (슬라임 핑크 스타일) */}
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', marginBottom: '8px' }}>
-            <div onClick={() => navigate(`/shop/${product.sellerId}`)} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <div onClick={() => navigate(`/shop/${product.sellerId}`)} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              {sellerInfo?.profileImageUrl ? (
+                <img src={sellerInfo.profileImageUrl} alt="shop profile" style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }} />
+              ) : (
+                <Avatar name={product.shopName || 'Shop'} size={24} />
+              )}
               <span style={{ fontSize: '0.95rem', fontWeight: 'bold', color: 'var(--primary-color)' }}>
                 {product.shopName || '일반스토어'}
               </span>
