@@ -367,7 +367,8 @@ export default function ShortsItem({ post, index, activePostId }) {
           loop
           muted={isMuted}
           playsInline
-          preload="none"
+          poster={post.thumbnailUrl || undefined}
+          preload={index === 0 ? "auto" : "none"}
           style={{
             width: '100%',
             height: '100%',
