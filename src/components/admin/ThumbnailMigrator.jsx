@@ -80,11 +80,11 @@ export default function ThumbnailMigrator() {
           });
           
           successCount++;
-          addLog(`✅ 게시글 #${post.id} 썸네일 생성 및 업데이트 완료.`);
+          addLog(`게시글 #${post.id} 썸네일 생성 및 업데이트 완료.`);
         } catch (err) {
           console.error(err);
           failCount++;
-          addLog(`❌ 게시글 #${post.id} 오류: ${err.message}`);
+          addLog(`게시글 #${post.id} 오류: ${err.message}`);
         }
         setProgress(i + 1);
       }

@@ -36,6 +36,8 @@ const NotFound = lazy(() => import('./pages/NotFound'))
 
 import ScrollToTop from './components/ScrollToTop'
 
+import ErrorBoundary from './components/ErrorBoundary'
+
 function App() {
   const { login, logout } = useAuthStore();
 
@@ -57,41 +59,43 @@ function App() {
     <Router>
       <ScrollToTop />
       <Navbar />
-      <Suspense fallback={
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '100px', fontSize: '1.2rem', color: 'var(--primary-color)' }}>
-          로딩 중...
-        </div>
-      }>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/products" element={<ProductList />} />
-          <Route path="/product/:id" element={<ProductDetail />} />
-          <Route path="/shop/:sellerId" element={<SellerShopPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/find-password" element={<FindPassword />} />
-          <Route path="/change-password" element={<ChangePassword />} />
-          <Route path="/oauth2/onboarding" element={<OAuth2Onboarding />} />
-          <Route path="/mypage" element={<MyPage />} />
-          <Route path="/seller" element={<SellerDashboard />} />
-          <Route path="/seller/apply" element={<SellerApplyPage />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/applications" element={<AdminApprovalPage />} />
-          <Route path="/admin/products" element={<AdminProductsPage />} />
-          <Route path="/admin/members" element={<AdminMembersPage />} />
-          <Route path="/admin/reports" element={<AdminReportsPage />} />
-          <Route path="/gallery" element={<Community key="gallery" mode="gallery" />} />
-          <Route path="/shorts" element={<ShortsFeed />} />
-          <Route path="/lounge" element={<Community key="lounge" mode="lounge" />} />
-          <Route path="/notice" element={<Community key="notice" mode="notice" />} />
-          <Route path="/community/create" element={<PostCreate />} />
-          <Route path="/community/:id" element={<PostDetail />} />
-          <Route path="/support" element={<CustomerCenter />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '100px', fontSize: '1.2rem', color: 'var(--primary-color)' }}>
+            로딩 중...
+          </div>
+        }>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/products" element={<ProductList />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/shop/:sellerId" element={<SellerShopPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/find-password" element={<FindPassword />} />
+            <Route path="/change-password" element={<ChangePassword />} />
+            <Route path="/oauth2/onboarding" element={<OAuth2Onboarding />} />
+            <Route path="/mypage" element={<MyPage />} />
+            <Route path="/seller" element={<SellerDashboard />} />
+            <Route path="/seller/apply" element={<SellerApplyPage />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/applications" element={<AdminApprovalPage />} />
+            <Route path="/admin/products" element={<AdminProductsPage />} />
+            <Route path="/admin/members" element={<AdminMembersPage />} />
+            <Route path="/admin/reports" element={<AdminReportsPage />} />
+            <Route path="/gallery" element={<Community key="gallery" mode="gallery" />} />
+            <Route path="/shorts" element={<ShortsFeed />} />
+            <Route path="/lounge" element={<Community key="lounge" mode="lounge" />} />
+            <Route path="/notice" element={<Community key="notice" mode="notice" />} />
+            <Route path="/community/create" element={<PostCreate />} />
+            <Route path="/community/:id" element={<PostDetail />} />
+            <Route path="/support" element={<CustomerCenter />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </ErrorBoundary>
       <Footer />
     </Router>
   )
