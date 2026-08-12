@@ -155,7 +155,6 @@ export default function Community({ mode = 'all' }) {
                   fontWeight: boardType === cat.id ? 'bold' : 'normal',
                   cursor: 'pointer',
                   fontSize: '0.9rem',
-                  boxShadow: boardType === cat.id ? '0 4px 10px rgba(255, 32, 112, 0.2)' : '0 2px 5px rgba(0,0,0,0.02)',
                   transition: 'all 0.2s ease'
                 }}
               >
@@ -189,11 +188,10 @@ export default function Community({ mode = 'all' }) {
                   border: '1px solid var(--border-color)',
                   background: 'white',
                   outline: 'none',
-                  transition: 'all 0.2s',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
+                  transition: 'all 0.2s'
                 }}
-                onFocus={(e) => { e.target.style.borderColor = 'var(--text-main)'; e.target.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)'; }}
-                onBlur={(e) => { e.target.style.borderColor = 'var(--border-color)'; e.target.style.boxShadow = '0 2px 8px rgba(0,0,0,0.02)'; }}
+                onFocus={(e) => { e.target.style.borderColor = 'var(--text-main)'; }}
+                onBlur={(e) => { e.target.style.borderColor = 'var(--border-color)'; }}
               />
               {searchInput && (
                 <button 
@@ -391,7 +389,6 @@ export default function Community({ mode = 'all' }) {
               borderTop: '2px solid var(--text-main)', 
               borderBottom: '1px solid var(--border-color)',
               background: 'white',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
               borderRadius: '4px'
             }}>
               {posts.map(post => (
