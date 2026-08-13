@@ -10,10 +10,10 @@ export default defineConfig({
       'Cross-Origin-Opener-Policy': 'same-origin',
     },
     proxy: {
-      '/oauth2/authorization': 'http://localhost:8383',
-      '/login/oauth2': 'http://localhost:8383',
-      '/api': 'http://localhost:8383',
-      '/uploads': 'http://localhost:8383',
+      '/oauth2/authorization': 'http://localhost:8080',
+      '/login/oauth2': 'http://localhost:8080',
+      '/api': 'http://localhost:8080',
+      '/uploads': 'http://localhost:8080',
     }
   },
   optimizeDeps: {
