@@ -28,7 +28,7 @@ export default function Login() {
   }, [location, login, navigate])
 
   const getBackendUrl = () => {
-    return window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'http://slippy.kr';
+    return window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'https://api.slippy.kr';
   };
 
   const handleLogin = async (e) => {
