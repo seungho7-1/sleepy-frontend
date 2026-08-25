@@ -43,7 +43,7 @@ export default function Signup() {
   const navigate = useNavigate()
 
   const getBackendUrl = () => {
-    return window.location.hostname === 'localhost' ? 'http://localhost:8383' : 'https://api.sleepyslime.p-e.kr';
+    return window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'http://slippy.kr';
   }
 
   const handleChange = (e) => {

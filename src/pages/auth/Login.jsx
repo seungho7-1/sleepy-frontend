@@ -28,8 +28,8 @@ export default function Login() {
   }, [location, login, navigate])
 
   const getBackendUrl = () => {
-    return window.location.hostname === 'localhost' ? 'http://localhost:8383' : 'https://api.sleepyslime.p-e.kr';
-  }
+    return window.location.hostname === 'localhost' ? 'http://localhost:8080' : 'http://slippy.kr';
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault()
