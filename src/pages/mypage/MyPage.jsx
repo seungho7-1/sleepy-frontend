@@ -463,10 +463,10 @@ export default function MyPage() {
 
                 <div className="detail-item" style={{ marginTop: '0.8rem' }}>
                   <span className="detail-label">이메일 주소</span>
-                  {isEditing ? (
+                  {isEditing && !profile?.oauthProvider ? (
                     <input type="email" value={editFormData.email} onChange={e => setEditFormData({...editFormData, email: e.target.value})} style={{ flex: 1, padding: '0.6rem 0.8rem', borderRadius: '8px', border: '1px solid var(--border-color)', outline: 'none', backgroundColor: 'var(--bg-secondary)', color: 'var(--text-main)', fontSize: '0.85rem' }} placeholder="이메일 입력" />
                   ) : (
-                    <span className="detail-value" style={{ wordBreak: 'break-all', lineHeight: '1.4' }}>{profile?.email || '등록된 이메일이 없습니다.'}</span>
+                    <span className="detail-value" style={{ wordBreak: 'break-all', lineHeight: '1.4' }}>{profile?.email || '등록된 이메일이 없습니다.'} {isEditing && profile?.oauthProvider && <span style={{ fontSize: '0.75rem', color: '#888', marginLeft: '8px' }}>(소셜 로그인은 변경 불가)</span>}</span>
                   )}
                 </div>
                 <div className="detail-item" style={{ marginTop: '0.8rem' }}>
